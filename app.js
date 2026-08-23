@@ -1,0 +1,1007 @@
+import {
+  combinationCopy,
+  contentLensData,
+  correctionLensData,
+  correctionLensMap,
+  questions,
+} from "./data.js";
+
+const app = document.querySelector("#app");
+
+const state = {
+  answers: [],
+  field: null,
+  questionIndex: 0,
+};
+
+const validCorrectionKeys = Object.keys(correctionLensData);
+const validContentKeys = Object.keys(contentLensData);
+
+function setDocumentTitle(title) {
+  document.title = `${title} | weKO AI 시력검사`;
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+function updateRoute(params, { replace = false } = {}) {
+  const url = new URL(window.location.href);
+  url.search = new URLSearchParams(params).toString();
+  window.history[replace ? "replaceState" : "pushState"]({}, "", url);
+}
+
+function renderHomeReimagined({ replace = false } = {}) {
+  setDocumentTitle("홈");
+  if (replace) updateRoute({}, { replace: true });
+  app.classList.add("is-home");
+
+  const homeLensOrder = ["cooperation", "participation", "case", "empathy"];
+  const homeLensCards = homeLensOrder
+    .map((key) => {
+      const lens = correctionLensData[key];
+      return `
+        <article class="landing-lens-card" style="--lens-accent: ${lens.accent}; --lens-soft: ${lens.soft}">
+          <img src="${lens.image}" alt="${lens.displayName} 안경" width="240" height="120" />
+          <h3>${lens.displayName}</h3>
+          <p>${lens.shortCopy}</p>
+        </article>
+      `;
+    })
+    .join("");
+
+  const profiles = [
+    {
+      name: "WENKI",
+      image: "./assets/home/profile-wenki.png",
+      link: "https://www.instagram.com/p/DcYq-UPlETM/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
+    },
+    {
+      name: "EUISEONG",
+      image: "./assets/home/profile-euiseong.png",
+      link: "https://www.instagram.com/p/DbvUkT2lF6j/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    },
+    {
+      name: "YESEUL",
+      image: "./assets/home/profile-yeseul.png",
+      link: "https://www.instagram.com/p/DbvQ3ctlDxC/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    },
+    {
+      name: "AIN",
+      image: "./assets/home/profile-ain.png",
+      link: "https://www.instagram.com/p/DbvS2UClKLf/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    },
+    {
+      name: "SUA",
+      image: "./assets/home/profile-sua.png",
+      link: "https://www.instagram.com/p/DbvQDjHlEBr/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    },
+  ];
+
+  const profileCards = profiles
+    .map(
+      (profile) => `
+        <a class="landing-profile-card" href="${profile.link}" target="_blank" rel="noreferrer">
+          <img src="${profile.image}" alt="${profile.name} 프로필" loading="lazy" />
+          <strong>${profile.name}</strong>
+          <span>click!</span>
+        </a>
+      `,
+    )
+    .join("");
+
+  app.innerHTML = `
+    <div class="landing-home" data-screen="home">
+      <section class="landing-hero" aria-labelledby="home-page-title">
+        <div class="landing-container landing-hero-grid">
+          <div class="landing-hero-copy">
+            <p class="landing-kicker">협력의 시야를 맞추는 AI웹 안경점</p>
+            <h1 id="home-page-title">당신의 시선,<br />세상을 바꾸는<br /><em>렌즈</em>가 될 수 있어요.</h1>
+            <p class="landing-description">
+              KOICA와 함께 개발협력(ODA)에 대한 이해와 참여를 넓혀보세요.<br />
+              AI 시력검사로 당신의 시선을 진단하고 맞춤형 렌즈를 처방해 드립니다.
+            </p>
+            <button class="landing-cta" type="button" data-action="start">시력 검사 시작하기 <span>→</span></button>
+          </div>
+          <div class="landing-hero-visual">
+            <img src="./assets/home/hero-collage.png" alt="WE:NK 팀과 안경, 지구가 함께 배치된 콜라주" width="1254" height="1254" />
+          </div>
+        </div>
+
+        <div class="landing-container landing-process" aria-label="AI 시력검사 진행 방식">
+          <article><b>01</b><strong>AI 시력 검사</strong><p>정확한 진단으로<br />당신의 시력을 분석해요</p></article>
+          <article><b>02</b><strong>맞춤형 렌즈 처방</strong><p>라이프스타일에 맞는<br />렌즈를 추천해 드려요</p></article>
+          <article><b>03</b><strong>KOICA와 함께</strong><p>세상을 바꾸는 일에<br />당신의 시선이 더해져요</p></article>
+          <article><b>04</b><strong>더 나은 세상</strong><p>따뜻한 시선이 모여<br />변화를 만들어가요</p></article>
+        </div>
+      </section>
+
+      <section class="landing-lenses" id="lenses" aria-labelledby="lenses-title">
+        <div class="landing-container">
+          <div class="landing-section-heading">
+            <p>FIND YOUR LENS</p>
+            <h2 id="lenses-title">당신에게 필요한 <em>렌즈</em></h2>
+            <span>네 가지 렌즈로 세상을 바라보는 시선을 바꿔보세요.</span>
+          </div>
+          <div class="landing-lens-grid">${homeLensCards}</div>
+        </div>
+      </section>
+
+      <section class="landing-team" id="team" aria-labelledby="team-title">
+        <div class="landing-container">
+          <div class="landing-team-heading">
+            <p>WE:NK</p>
+            <h2 id="team-title">Profile</h2>
+            <span>사진을 누르면 각 팀원의 이야기를 볼 수 있어요.</span>
+          </div>
+          <div class="landing-profile-grid">${profileCards}</div>
+        </div>
+      </section>
+
+      <section class="landing-impact" id="impact" aria-labelledby="impact-title">
+        <div class="landing-container landing-impact-grid">
+          <div class="landing-impact-copy">
+            <p>KOICA ODA IMPACT</p>
+            <h2 id="impact-title">한 번의 시선이,<br /><em>누군가의 내일을 바꿉니다.</em></h2>
+            <p>
+              KOICA가 만드는 변화는 한 번의 지원으로 끝나지 않습니다. 누군가가 스스로 삶을 바꾸고,
+              지역이 다시 성장하며, 그 변화가 다음 세대까지 이어질 수 있도록 지속가능한 기반을 함께 만들어갑니다.
+            </p>
+            <a href="https://www.koica.go.kr/sites/koica_kr/index.do" target="_blank" rel="noreferrer">KOICA 협력 더 알아보기 →</a>
+            <div class="landing-stats">
+              <span><strong>155개국+</strong>파트너 국가</span>
+              <span><strong>1,734개+</strong>사업 수행</span>
+              <span><strong>6,700만명+</strong>수혜자</span>
+            </div>
+          </div>
+          <div class="landing-impact-gallery">
+            <img src="./assets/home/impact-volunteer.jpg" alt="KOICA 해외봉사단 단체 사진" loading="lazy" />
+            <img src="./assets/home/impact-koica.jpg" alt="KOICA 봉사활동 현장" loading="lazy" />
+          </div>
+        </div>
+      </section>
+
+      <section class="landing-final-cta">
+        <div class="landing-container">
+          <h2>지금 당신의 시선으로 세상을 바꿔보세요.</h2>
+          <p>AI 시력검사를 통해 나의 시력을 확인하고 세상에 선한 영향을 전하는 첫걸음을 함께해요.</p>
+          <button class="landing-cta" type="button" data-action="start">무료로 검사 시작하기 <span>→</span></button>
+        </div>
+      </section>
+    </div>
+  `;
+
+  app.querySelectorAll('[data-action="start"]').forEach((button) => {
+    button.addEventListener("click", () => {
+      state.answers = [];
+      state.field = null;
+      state.questionIndex = 0;
+      updateRoute({ view: "quiz", question: "1" });
+      renderQuestion(0);
+    });
+  });
+
+  scrollToTop();
+}
+
+function renderHome({ replace = false } = {}) {
+  setDocumentTitle("홈");
+  if (replace) updateRoute({}, { replace: true });
+  app.classList.add("is-home");
+
+  const profileLinks = {
+    wenki:
+      "https://www.instagram.com/p/DcYq-UPlETM/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
+    euiseong:
+      "https://www.instagram.com/p/DbvUkT2lF6j/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    yeseul:
+      "https://www.instagram.com/p/DbvQ3ctlDxC/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    ain:
+      "https://www.instagram.com/p/DbvS2UClKLf/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    sua:
+      "https://www.instagram.com/p/DbvQDjHlEBr/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+  };
+
+  app.innerHTML = `
+    <main class="home-screen figma-home-exact" data-screen="home">
+      <div class="figma-home-artboard" aria-label="WE:NK AI 시력검사 홈">
+        <img
+          class="figma-home-image"
+          src="./assets/figma/home-figma-4x.png"
+          width="1560"
+          height="3956"
+          decoding="sync"
+          fetchpriority="high"
+          alt="당신의 시선, 세상을 바꾸는 렌즈가 될 수 있어요. WE:NK 팀과 네 가지 렌즈, KOICA 개발협력 이야기를 소개합니다."
+        />
+
+        <div class="home-polish-layer" aria-hidden="true">
+          <span class="home-hero-glow"></span>
+          <span class="home-lens-glint lens-glint-cooperation"></span>
+          <span class="home-lens-glint lens-glint-participation"></span>
+          <span class="home-lens-glint lens-glint-case"></span>
+          <span class="home-lens-glint lens-glint-empathy"></span>
+        </div>
+
+        <button class="home-hotspot home-start-hotspot" type="button" data-action="start" aria-label="시력 검사 시작하기"></button>
+        <span class="home-shimmer" aria-hidden="true"></span>
+
+        <a class="home-hotspot home-profile-hotspot profile-wenki" href="${profileLinks.wenki}" target="_blank" rel="noreferrer" aria-label="WENKI 프로필 보기"></a>
+        <a class="home-hotspot home-profile-hotspot profile-euiseong" href="${profileLinks.euiseong}" target="_blank" rel="noreferrer" aria-label="EUISEONG 프로필 보기"></a>
+        <a class="home-hotspot home-profile-hotspot profile-yeseul" href="${profileLinks.yeseul}" target="_blank" rel="noreferrer" aria-label="YESEUL 프로필 보기"></a>
+        <a class="home-hotspot home-profile-hotspot profile-ain" href="${profileLinks.ain}" target="_blank" rel="noreferrer" aria-label="AIN 프로필 보기"></a>
+        <a class="home-hotspot home-profile-hotspot profile-sua" href="${profileLinks.sua}" target="_blank" rel="noreferrer" aria-label="SUA 프로필 보기"></a>
+
+        <a class="home-hotspot home-koica-hotspot" href="https://www.koica.go.kr/sites/koica_kr/index.do" target="_blank" rel="noreferrer" aria-label="KOICA 협력 더 알아보기"></a>
+        <button class="home-hotspot home-bottom-start-hotspot" type="button" data-action="start" aria-label="무료로 검사 시작하기"></button>
+      </div>
+    </main>
+  `;
+
+  app.querySelectorAll('[data-action="start"]').forEach((button) => {
+    button.addEventListener("click", () => {
+      state.answers = [];
+      state.field = null;
+      state.questionIndex = 0;
+      updateRoute({ view: "quiz", question: "1" });
+      renderQuestion(0);
+    });
+  });
+
+  scrollToTop();
+}
+
+function renderQuestion(index) {
+  const safeIndex = Math.min(Math.max(index, 0), questions.length - 1);
+  const question = questions[safeIndex];
+  const currentAnswer = state.answers[safeIndex] ?? null;
+  const currentAnswerIndex = question.options.indexOf(currentAnswer);
+  state.questionIndex = safeIndex;
+  setDocumentTitle(`${safeIndex + 1}번 질문`);
+  app.classList.remove("is-home");
+
+  const options = question.options
+    .map(
+      (option, optionIndex) => `
+        <button
+          class="option-button${optionIndex === currentAnswerIndex ? " is-selected" : ""}"
+          type="button"
+          data-option-index="${optionIndex}"
+          aria-label="${option.label}"
+          aria-pressed="${optionIndex === currentAnswerIndex}"
+        >
+          <span class="option-index" aria-hidden="true">${String.fromCharCode(65 + optionIndex)}</span>
+          <span class="option-copy">
+            <span class="option-label">${option.label}</span>
+            ${option.detail ? `<span class="option-detail">${option.detail}</span>` : ""}
+          </span>
+          <span class="option-check" aria-hidden="true">✓</span>
+        </button>
+      `,
+    )
+    .join("");
+
+  app.innerHTML = `
+    <section class="screen question-screen" data-screen="question" data-question="${safeIndex + 1}">
+      <span class="question-paper" aria-hidden="true"></span>
+      <header class="question-heading">
+        <p class="question-number" aria-label="${questions.length}개 중 ${safeIndex + 1}번 질문">Q${safeIndex + 1}</p>
+        <button class="question-back-button" type="button" data-action="back" aria-label="이전 화면으로">← 이전</button>
+        <img class="question-plane" src="./assets/figma/quiz-plane.png" alt="" />
+        <h1 class="question-title">${question.title}</h1>
+        ${question.context ? `<p class="question-context">${question.context}</p>` : ""}
+      </header>
+      <div class="question-body">
+        <div class="option-list" role="group" aria-label="답변 선택">
+          ${options}
+        </div>
+      </div>
+      <footer class="question-actions">
+        <img class="question-magnifier" src="./assets/figma/quiz-magnifier.png" alt="" />
+        <button
+          class="primary-button question-next-button"
+          type="button"
+          data-action="next"
+          ${currentAnswer ? "" : "disabled"}
+        >
+          ${safeIndex === questions.length - 1 ? "결과 확인하기" : "다음으로 →"}
+        </button>
+        <p class="selection-guide" data-selection-guide aria-live="polite">
+          ${currentAnswer ? "선택 완료 · 한 번 더 누르면 선택이 취소돼요" : "한 문항에 하나만 선택할 수 있어요"}
+        </p>
+      </footer>
+    </section>
+  `;
+
+  app.querySelector('[data-action="back"]').addEventListener("click", () => {
+    if (safeIndex === 0) {
+      updateRoute({});
+      renderHome();
+      return;
+    }
+
+    const previousIndex = safeIndex - 1;
+    updateRoute({ view: "quiz", question: String(previousIndex + 1) });
+    renderQuestion(previousIndex);
+  });
+
+  app.querySelectorAll("[data-option-index]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const selectedOption = question.options[Number(button.dataset.optionIndex)];
+      const shouldCancel = state.answers[safeIndex] === selectedOption;
+      state.answers[safeIndex] = shouldCancel ? null : selectedOption;
+
+      if (question.type === "field") {
+        state.field = shouldCancel ? null : selectedOption.value;
+      }
+
+      app.querySelectorAll("[data-option-index]").forEach((optionButton) => {
+        const isSelected =
+          !shouldCancel && optionButton.dataset.optionIndex === button.dataset.optionIndex;
+        optionButton.classList.toggle("is-selected", isSelected);
+        optionButton.setAttribute("aria-pressed", String(isSelected));
+      });
+
+      const nextButton = app.querySelector('[data-action="next"]');
+      nextButton.disabled = !state.answers[safeIndex];
+      app.querySelector("[data-selection-guide]").textContent = state.answers[safeIndex]
+        ? "선택 완료 · 한 번 더 누르면 선택이 취소돼요"
+        : "선택이 취소됐어요 · 하나만 선택할 수 있어요";
+    });
+  });
+
+  app.querySelector('[data-action="next"]').addEventListener("click", () => {
+    if (!state.answers[safeIndex]) return;
+
+    if (safeIndex < questions.length - 1) {
+      const nextIndex = safeIndex + 1;
+      updateRoute({ view: "quiz", question: String(nextIndex + 1) });
+      renderQuestion(nextIndex);
+      return;
+    }
+
+    const result = calculateResult();
+    updateRoute({
+      view: "result",
+      correction: result.correctionLens,
+      content: result.contentLens,
+    });
+    renderResult(result.correctionLens, result.contentLens, result.rawResultType);
+  });
+
+  scrollToTop();
+}
+
+function calculateResult() {
+  const scores = {
+    misunderstanding: 0,
+    indifference: 0,
+    actionLoss: 0,
+    conceptBlur: 0,
+    cooperation: 0,
+  };
+
+  questions.forEach((question, index) => {
+    const answer = state.answers[index];
+    if (question.type === "diagnosis" && answer?.score) {
+      scores[answer.score] += question.weight ?? 1;
+    }
+  });
+
+  const highestScore = Math.max(...Object.values(scores));
+  const tiedTypes = Object.keys(scores).filter((key) => scores[key] === highestScore);
+  let rawResultType = tiedTypes[0];
+
+  for (let index = state.answers.length - 1; index >= 0; index -= 1) {
+    const score = state.answers[index]?.score;
+    if (score && tiedTypes.includes(score)) {
+      rawResultType = score;
+      break;
+    }
+  }
+
+  return {
+    rawResultType,
+    correctionLens: correctionLensMap[rawResultType],
+    contentLens: state.field ?? "education",
+  };
+}
+
+function getResultShareData(correctionKey, contentKey) {
+  const correction = correctionLensData[correctionKey];
+  const content = contentLensData[contentKey];
+  const url = new URL(window.location.href);
+  url.search = new URLSearchParams({
+    view: "result",
+    correction: correctionKey,
+    content: contentKey,
+  }).toString();
+
+  return {
+    title: `나의 weKO 렌즈는 ${correction.displayName} + ${content.displayName}`,
+    text: `내 AI 시력검사 결과는 ${correction.displayName} + ${content.displayName}였어! 👓\n너는 어떤 렌즈가 나오는지 한번 해봐!`,
+    url: url.toString(),
+  };
+}
+
+async function copyText(text) {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch {
+      // 권한이 막힌 브라우저에서는 아래의 선택 복사 방식으로 한 번 더 시도합니다.
+    }
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.append(textarea);
+  textarea.select();
+  const didCopy = document.execCommand("copy");
+  textarea.remove();
+  if (!didCopy) throw new Error("클립보드 복사를 지원하지 않습니다.");
+}
+
+function showShareStatus(message, type = "success") {
+  const status = app.querySelector("[data-share-status]");
+  if (!status) return;
+  status.textContent = message;
+  status.dataset.type = type;
+}
+
+function loadCanvasImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`이미지를 불러오지 못했습니다: ${src}`));
+    image.src = src;
+  });
+}
+
+function roundedRectPath(context, x, y, width, height, radius) {
+  const safeRadius = Math.min(radius, width / 2, height / 2);
+  context.beginPath();
+  context.moveTo(x + safeRadius, y);
+  context.arcTo(x + width, y, x + width, y + height, safeRadius);
+  context.arcTo(x + width, y + height, x, y + height, safeRadius);
+  context.arcTo(x, y + height, x, y, safeRadius);
+  context.arcTo(x, y, x + width, y, safeRadius);
+  context.closePath();
+}
+
+function drawCoverImage(context, image, x, y, width, height, radius) {
+  const sourceRatio = image.width / image.height;
+  const targetRatio = width / height;
+  let sourceWidth = image.width;
+  let sourceHeight = image.height;
+  let sourceX = 0;
+  let sourceY = 0;
+
+  if (sourceRatio > targetRatio) {
+    sourceWidth = image.height * targetRatio;
+    sourceX = (image.width - sourceWidth) / 2;
+  } else {
+    sourceHeight = image.width / targetRatio;
+    sourceY = (image.height - sourceHeight) / 2;
+  }
+
+  context.save();
+  roundedRectPath(context, x, y, width, height, radius);
+  context.clip();
+  context.drawImage(
+    image,
+    sourceX,
+    sourceY,
+    sourceWidth,
+    sourceHeight,
+    x,
+    y,
+    width,
+    height,
+  );
+  context.restore();
+}
+
+function drawWrappedText(context, text, x, y, maxWidth, lineHeight, maxLines = 10) {
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = "";
+
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word;
+    if (context.measureText(testLine).width <= maxWidth || !currentLine) {
+      currentLine = testLine;
+    } else {
+      lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+  if (currentLine) lines.push(currentLine);
+
+  lines.slice(0, maxLines).forEach((line, index) => {
+    const isLastVisibleLine = index === maxLines - 1 && lines.length > maxLines;
+    context.fillText(isLastVisibleLine ? `${line}…` : line, x, y + index * lineHeight);
+  });
+
+  return y + Math.min(lines.length, maxLines) * lineHeight;
+}
+
+function drawCombination(context, correction, content, y, fontSize, canvasWidth) {
+  const plus = " + ";
+  context.font = `700 ${fontSize}px "Noto Sans KR", sans-serif`;
+  const correctionWidth = context.measureText(correction.displayName).width;
+  const plusWidth = context.measureText(plus).width;
+  const contentWidth = context.measureText(content.displayName).width;
+  let x = (canvasWidth - correctionWidth - plusWidth - contentWidth) / 2;
+
+  context.textAlign = "left";
+  context.fillStyle = correction.accent;
+  context.fillText(correction.displayName, x, y);
+  x += correctionWidth;
+  context.fillStyle = "#68128c";
+  context.fillText(plus, x, y);
+  x += plusWidth;
+  context.fillStyle = "#3f72e8";
+  context.fillText(content.displayName, x, y);
+  context.textAlign = "center";
+}
+
+async function createResultShareCard(correction, content, copy, format) {
+  await document.fonts?.ready;
+  const isStory = format === "story";
+  const width = 1080;
+  const height = isStory ? 1920 : 1080;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  const [lensImage, storyImage] = await Promise.all([
+    loadCanvasImage(correction.image),
+    loadCanvasImage(content.mainImage),
+  ]);
+
+  const background = context.createLinearGradient(0, 0, width, height);
+  background.addColorStop(0, "#fffaf6");
+  background.addColorStop(0.55, correction.soft);
+  background.addColorStop(1, "#eef4ff");
+  context.fillStyle = background;
+  context.fillRect(0, 0, width, height);
+
+  context.globalAlpha = 0.28;
+  context.fillStyle = correction.accent;
+  context.beginPath();
+  context.arc(950, 120, isStory ? 260 : 190, 0, Math.PI * 2);
+  context.fill();
+  context.fillStyle = "#3f72e8";
+  context.beginPath();
+  context.arc(90, height - 70, isStory ? 330 : 220, 0, Math.PI * 2);
+  context.fill();
+  context.globalAlpha = 1;
+
+  const margin = isStory ? 86 : 70;
+  const cardY = isStory ? 110 : 54;
+  const cardHeight = height - cardY * 2;
+  context.fillStyle = "rgba(255, 255, 255, 0.93)";
+  roundedRectPath(context, margin, cardY, width - margin * 2, cardHeight, 48);
+  context.fill();
+  context.strokeStyle = "rgba(104, 18, 140, 0.16)";
+  context.lineWidth = 3;
+  context.stroke();
+
+  context.textAlign = "center";
+  context.fillStyle = "#68128c";
+  context.font = `700 ${isStory ? 36 : 29}px "Noto Sans KR", sans-serif`;
+  context.fillText("weKO · AI LENS TEST", width / 2, isStory ? 205 : 118);
+
+  context.fillStyle = correction.soft;
+  roundedRectPath(context, width / 2 - 180, isStory ? 250 : 148, 360, 72, 36);
+  context.fill();
+  context.fillStyle = correction.accent;
+  context.font = `700 ${isStory ? 30 : 25}px "Noto Sans KR", sans-serif`;
+  context.fillText("AI 시력검사 완료!", width / 2, isStory ? 298 : 195);
+
+  context.fillStyle = "#171717";
+  context.font = `700 ${isStory ? 48 : 38}px "Noto Sans KR", sans-serif`;
+  context.fillText("내게 필요한 렌즈는", width / 2, isStory ? 390 : 270);
+  drawCombination(
+    context,
+    correction,
+    content,
+    isStory ? 480 : 342,
+    isStory ? 68 : 54,
+    width,
+  );
+
+  const lensY = isStory ? 535 : 380;
+  const lensWidth = isStory ? 720 : 500;
+  const lensHeight = lensWidth * 0.46;
+  context.drawImage(
+    lensImage,
+    0,
+    lensImage.height * 0.27,
+    lensImage.width,
+    lensImage.height * 0.46,
+    (width - lensWidth) / 2,
+    lensY,
+    lensWidth,
+    lensHeight,
+  );
+
+  context.fillStyle = "#3b3340";
+  context.font = `600 ${isStory ? 34 : 27}px "Noto Sans KR", sans-serif`;
+  context.textAlign = "center";
+  drawWrappedText(
+    context,
+    copy,
+    width / 2,
+    isStory ? 930 : 635,
+    isStory ? 790 : 860,
+    isStory ? 54 : 43,
+    isStory ? 4 : 3,
+  );
+
+  if (isStory) {
+    drawCoverImage(context, storyImage, 146, 1170, 788, 405, 32);
+    context.fillStyle = "#171717";
+    context.font = '700 43px "Noto Sans KR", sans-serif';
+    context.fillText(`${content.displayName} · ${content.field}`, width / 2, 1650);
+    context.fillStyle = "#746b77";
+    context.font = '600 29px "Noto Sans KR", sans-serif';
+    context.fillText(content.country, width / 2, 1702);
+  } else {
+    drawCoverImage(context, storyImage, 104, 735, 326, 235, 28);
+    context.textAlign = "left";
+    context.fillStyle = "#3f72e8";
+    context.font = '700 39px "Noto Sans KR", sans-serif';
+    context.fillText(`${content.displayName} · ${content.field}`, 480, 800);
+    context.fillStyle = "#68128c";
+    context.font = '700 27px "Noto Sans KR", sans-serif';
+    context.fillText(content.country, 480, 850);
+    context.fillStyle = "#554a52";
+    context.font = '500 24px "Noto Sans KR", sans-serif';
+    context.textAlign = "left";
+    drawWrappedText(context, content.oneLine, 480, 900, 470, 36, 3);
+  }
+
+  const ctaY = isStory ? 1770 : 990;
+  context.fillStyle = "#68128c";
+  roundedRectPath(context, width / 2 - 270, ctaY, 540, isStory ? 82 : 64, 36);
+  context.fill();
+  context.fillStyle = "#ffffff";
+  context.textAlign = "center";
+  context.font = `700 ${isStory ? 30 : 25}px "Noto Sans KR", sans-serif`;
+  context.fillText("너도 어떤 렌즈인지 확인해봐!", width / 2, ctaY + (isStory ? 53 : 42));
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error("공유 이미지를 만들지 못했습니다."))),
+      "image/png",
+      0.96,
+    );
+  });
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function shareResultCard(format, cardPromise, shareData, correctionKey, contentKey) {
+  showShareStatus("공유 이미지를 준비하고 있어요…", "pending");
+
+  try {
+    const blob = await cardPromise;
+    if (!blob) throw new Error("공유 이미지 생성 실패");
+    const file = new File([blob], `weko-${correctionKey}-${contentKey}-${format}.png`, {
+      type: "image/png",
+    });
+
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: shareData.title,
+          text: `${shareData.text}\n${shareData.url}`,
+        });
+        showShareStatus(
+          `${format === "story" ? "스토리" : "피드"}용 결과 이미지를 공유 메뉴로 보냈어요. Instagram을 선택해주세요.`,
+        );
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          showShareStatus("공유가 취소됐어요.", "neutral");
+          return;
+        }
+      }
+    }
+
+    downloadBlob(blob, file.name);
+    try {
+      await copyText(`${shareData.text}\n${shareData.url}`);
+      showShareStatus(
+        `${format === "story" ? "스토리" : "피드"}용 이미지를 저장하고 소개 문구도 복사했어요. Instagram에서 이미지를 선택해주세요.`,
+      );
+    } catch {
+      showShareStatus(
+        `${format === "story" ? "스토리" : "피드"}용 이미지를 저장했어요. Instagram에서 이미지를 선택해주세요.`,
+      );
+    }
+  } catch (error) {
+    showShareStatus("공유 이미지를 준비하지 못했어요. 잠시 후 다시 시도해주세요.", "error");
+  }
+}
+
+function renderResult(correctionKey, contentKey, rawResultType = "direct") {
+  app.classList.remove("is-home");
+  const safeCorrection = validCorrectionKeys.includes(correctionKey) ? correctionKey : "empathy";
+  const safeContent = validContentKeys.includes(contentKey) ? contentKey : "water";
+  const correction = correctionLensData[safeCorrection];
+  const content = contentLensData[safeContent];
+  const copy = combinationCopy[safeCorrection][safeContent];
+
+  setDocumentTitle(`${correction.displayName} + ${content.displayName}`);
+
+  app.innerHTML = `
+    <article
+      class="result-screen"
+      data-screen="result"
+      data-correction="${safeCorrection}"
+      data-content="${safeContent}"
+      style="--correction: ${correction.accent}; --correction-soft: ${correction.soft};"
+    >
+      <header class="result-header">
+        <span class="completion-badge">AI 시력검사 완료!</span>
+        <h1 class="result-kicker">당신에게 필요한 렌즈는</h1>
+        <div class="lens-combination" aria-label="${correction.displayName} 더하기 ${content.displayName}">
+          <span class="correction-name">${correction.displayName}</span>
+          <span class="combination-plus" aria-hidden="true">+</span>
+          <span class="content-name">${content.displayName}</span>
+        </div>
+        <p class="combination-copy">${copy}</p>
+      </header>
+
+      <hr class="section-divider" />
+
+      <section class="result-section" aria-labelledby="diagnosis-title">
+        <h2 class="section-title" id="diagnosis-title">당신의 시야 진단</h2>
+        <div class="diagnosis-card">
+          <span class="label-chip">당신의 시야 진단</span>
+          <div class="diagnosis-summary">
+            <div
+              class="diagnosis-lens-media"
+              role="img"
+              aria-label="${correction.displayName} 안경"
+              style="background-image: url('${correction.image}')"
+            ></div>
+            <div>
+              <h3 class="diagnosis-name">${correction.displayName}</h3>
+              <p class="diagnosis-short">${correction.description}</p>
+            </div>
+          </div>
+          <div class="diagnosis-callout">
+            <p class="callout-label">진단 결과</p>
+            <p class="diagnosis-text">${correction.diagnosis}</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <section class="result-section" aria-labelledby="content-title">
+        <h2 class="section-title" id="content-title">이 렌즈로 무엇을 볼까요?</h2>
+        <div class="content-card">
+          <img
+            class="content-thumb"
+            src="${content.mainImage}"
+            alt="${content.field} 사례 미리보기"
+            width="1448"
+            height="1086"
+          />
+          <div>
+            <div class="content-card-top">
+              <h3 class="content-card-title">${content.displayName} (${content.field})</h3>
+              <span class="field-pill">선택 분야</span>
+            </div>
+            <p class="content-one-line">${content.oneLine}</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <section class="result-section" aria-labelledby="story-section-title">
+        <header class="story-header">
+          <h2 class="section-title" id="story-section-title">추천 이야기</h2>
+          <p class="scroll-guide">아래로 스크롤하면 이야기가 이어집니다 ↓</p>
+        </header>
+        <div class="story-card">
+          <div class="story-chips">
+            <span class="story-chip">${content.field}</span>
+            <span class="story-chip country-chip">${content.country}</span>
+          </div>
+          <h3 class="story-title">${content.title}</h3>
+          <img
+            class="story-image"
+            src="${content.mainImage}"
+            alt="${content.title} 메인 일러스트"
+            width="1448"
+            height="1086"
+          />
+          <p class="story-copy">${content.intro}</p>
+
+          <h4 class="story-subtitle">KOICA는 무엇을 지원했나요?</h4>
+          <p class="project-name">프로젝트 · ${content.project}</p>
+          <p class="story-copy">${content.support}</p>
+
+          <div class="change-callout">
+            <h4 class="story-subtitle">무엇이 달라졌을까요?</h4>
+            <p class="story-copy">${content.change}</p>
+          </div>
+
+          <img
+            class="story-image"
+            src="${content.subImage}"
+            alt="${content.field} 현장의 변화 일러스트"
+            width="1448"
+            height="1086"
+            loading="lazy"
+          />
+
+          <hr class="meaning-divider" />
+          <h4 class="story-subtitle meaning-title">그래서 이 이야기가 중요한 이유</h4>
+          <p class="story-copy">${content.meaning}</p>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <section class="share-section" aria-labelledby="share-title">
+        <span class="share-kicker">SHARE MY LENS</span>
+        <h2 class="section-title" id="share-title">내 결과를 친구에게 알려주세요</h2>
+        <p class="share-description">
+          나에게 나온 렌즈와 검사 링크를 보내고, 친구는 어떤 렌즈가 나오는지 함께 확인해보세요.
+        </p>
+        <div class="share-button-grid">
+          <button class="share-button share-button-copy" type="button" data-action="copy-result">
+            <span aria-hidden="true">🔗</span>
+            <span>결과 문구·링크 복사</span>
+          </button>
+          <button class="share-button share-button-native" type="button" data-action="share-result">
+            <span aria-hidden="true">💬</span>
+            <span>카톡·SNS로 공유</span>
+          </button>
+        </div>
+        <div class="instagram-share-card">
+          <div>
+            <p class="instagram-label">Instagram용 결과 카드</p>
+            <p class="instagram-note">모바일 공유 메뉴에서 Instagram을 선택하거나, 저장된 이미지를 올려주세요.</p>
+          </div>
+          <div class="instagram-buttons">
+            <button class="instagram-button" type="button" data-action="share-story">
+              <span class="instagram-ratio story-ratio" aria-hidden="true"></span>
+              스토리 9:16
+            </button>
+            <button class="instagram-button" type="button" data-action="share-feed">
+              <span class="instagram-ratio feed-ratio" aria-hidden="true"></span>
+              피드 1:1
+            </button>
+          </div>
+        </div>
+        <p class="share-status" data-share-status data-type="neutral" aria-live="polite"></p>
+      </section>
+
+      <hr class="section-divider" />
+
+      <footer class="result-actions">
+        <button class="primary-button" type="button" data-action="retake">다른 렌즈로 다시 검사하기</button>
+        <button class="text-button" type="button" data-action="home">홈으로 돌아가기</button>
+      </footer>
+    </article>
+  `;
+
+  const shareData = getResultShareData(safeCorrection, safeContent);
+  const shareText = `${shareData.text}\n${shareData.url}`;
+  const rememberCardError = (error) => {
+    console.error("weKO share card:", error);
+    return null;
+  };
+  const storyCardPromise = createResultShareCard(correction, content, copy, "story").catch(
+    rememberCardError,
+  );
+  const feedCardPromise = createResultShareCard(correction, content, copy, "feed").catch(
+    rememberCardError,
+  );
+
+  app.querySelector('[data-action="copy-result"]').addEventListener("click", async () => {
+    try {
+      await copyText(shareText);
+      showShareStatus("결과 소개 문구와 링크를 복사했어요. 카카오톡이나 SNS에 붙여넣어 주세요.");
+    } catch {
+      showShareStatus("복사하지 못했어요. 브라우저의 클립보드 권한을 확인해주세요.", "error");
+    }
+  });
+
+  app.querySelector('[data-action="share-result"]').addEventListener("click", async () => {
+    if (!navigator.share) {
+      await copyText(shareText);
+      showShareStatus("이 브라우저는 공유 메뉴를 지원하지 않아 문구와 링크를 대신 복사했어요.");
+      return;
+    }
+
+    try {
+      await navigator.share(shareData);
+      showShareStatus("공유 메뉴로 결과를 보냈어요.");
+    } catch (error) {
+      if (error?.name === "AbortError") {
+        showShareStatus("공유가 취소됐어요.", "neutral");
+        return;
+      }
+      await copyText(shareText);
+      showShareStatus("공유 메뉴를 열지 못해 문구와 링크를 대신 복사했어요.");
+    }
+  });
+
+  app.querySelector('[data-action="share-story"]').addEventListener("click", () => {
+    shareResultCard("story", storyCardPromise, shareData, safeCorrection, safeContent);
+  });
+
+  app.querySelector('[data-action="share-feed"]').addEventListener("click", () => {
+    shareResultCard("feed", feedCardPromise, shareData, safeCorrection, safeContent);
+  });
+
+  app.querySelector('[data-action="retake"]').addEventListener("click", () => {
+    state.answers = [];
+    state.field = null;
+    state.questionIndex = 0;
+    updateRoute({ view: "quiz", question: "1" });
+    renderQuestion(0);
+  });
+
+  app.querySelector('[data-action="home"]').addEventListener("click", () => {
+    updateRoute({});
+    renderHome();
+  });
+
+  window.dispatchEvent(
+    new CustomEvent("weko:result", {
+      detail: {
+        rawResultType,
+        correctionLens: safeCorrection,
+        contentLens: safeContent,
+      },
+    }),
+  );
+
+  scrollToTop();
+}
+
+function renderFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const view = params.get("view");
+
+  if (view === "result") {
+    renderResult(params.get("correction"), params.get("content"));
+    return;
+  }
+
+  if (view === "quiz") {
+    const questionNumber = Number(params.get("question") ?? 1);
+    renderQuestion(Number.isFinite(questionNumber) ? questionNumber - 1 : 0);
+    return;
+  }
+
+  renderHome();
+}
+
+window.addEventListener("popstate", renderFromUrl);
+renderFromUrl();

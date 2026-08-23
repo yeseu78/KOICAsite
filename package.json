@@ -1,0 +1,10 @@
+{
+  "name": "weko-lens-test",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "python -m http.server 4173",
+    "verify": "node --check app.js && node --check data.js && node verify.mjs"
+  }
+}

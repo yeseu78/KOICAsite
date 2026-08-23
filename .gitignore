@@ -1,0 +1,20 @@
+# Keep the repository focused on the deployable website.
+/*
+!/.gitignore
+!/index.html
+!/app.js
+!/data.js
+!/styles.css
+!/package.json
+!/verify.mjs
+!/browser-verify.mjs
+!/assets/
+!/assets/**
+
+# Local dependency/cache folders if they are created later.
+/node_modules/
+/.artifacts/
+/.cache/
+
+.DS_Store
+Thumbs.db
