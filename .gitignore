@@ -1,6 +1,7 @@
 # Keep the repository focused on the deployable website.
 /*
 !/.gitignore
+!/.nojekyll
 !/index.html
 !/app.js
 !/data.js
