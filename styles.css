@@ -283,7 +283,7 @@ img {
 
 .primary-button:hover {
   box-shadow: 0 10px 22px rgba(104, 18, 140, 0.24);
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.025);
 }
 
 .primary-button:active {
@@ -419,7 +419,7 @@ img {
 .option-button:hover {
   border-color: #9f64b7;
   background: #fdf8ff;
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.012);
 }
 
 .option-button.is-selected {
@@ -894,7 +894,7 @@ img {
 .instagram-button:hover {
   border-color: #a96bc1;
   box-shadow: 0 7px 16px rgba(104, 18, 140, 0.1);
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.025);
 }
 
 .share-button-native {
@@ -2526,8 +2526,7 @@ body:has(.app-shell.is-home) {
   content: "";
 }
 
-.figma-home-exact .home-hotspot::after,
-.figma-home-exact .home-hotspot:hover::after {
+.figma-home-exact .home-hotspot::after {
   background: transparent;
   box-shadow: none;
   transform: none;
@@ -2641,6 +2640,256 @@ body:has(.app-shell.is-home) {
   100% {
     left: 125%;
     opacity: 0;
+  }
+}
+
+/* Subtle interaction polish layered over the exact Figma artwork. */
+.figma-home-exact .home-start-hotspot,
+.figma-home-exact .home-bottom-start-hotspot,
+.figma-home-exact .home-profile-hotspot,
+.figma-home-exact .home-koica-hotspot {
+  transform-origin: center;
+  transition:
+    transform 0.24s cubic-bezier(0.2, 0.78, 0.24, 1),
+    filter 0.24s ease;
+  will-change: transform;
+}
+
+.figma-home-exact .home-start-hotspot {
+  --home-tile-size: 433.3333% auto;
+  --home-tile-x: 15.667%;
+  --home-tile-y: 15.654%;
+}
+
+.figma-home-exact .home-bottom-start-hotspot {
+  --home-tile-size: 397.9592% auto;
+  --home-tile-x: 50.286%;
+  --home-tile-y: 97.911%;
+}
+
+.figma-home-exact .home-koica-hotspot {
+  --home-tile-size: 371.4286% auto;
+  --home-tile-x: 14.737%;
+  --home-tile-y: 87.396%;
+}
+
+.figma-home-exact .profile-wenki {
+  --home-tile-size: 405.115% auto;
+  --home-tile-x: 9.497%;
+  --home-tile-y: 58.119%;
+}
+
+.figma-home-exact .profile-euiseong {
+  --home-tile-size: 417.794% auto;
+  --home-tile-x: 46.224%;
+  --home-tile-y: 50.821%;
+}
+
+.figma-home-exact .profile-yeseul {
+  --home-tile-size: 418.178% auto;
+  --home-tile-x: 75.824%;
+  --home-tile-y: 50.759%;
+}
+
+.figma-home-exact .profile-ain {
+  --home-tile-size: 412.607% auto;
+  --home-tile-x: 48.030%;
+  --home-tile-y: 62.770%;
+}
+
+.figma-home-exact .profile-sua {
+  --home-tile-size: 413.793% auto;
+  --home-tile-x: 77.380%;
+  --home-tile-y: 62.650%;
+}
+
+.figma-home-exact .home-start-hotspot::after,
+.figma-home-exact .home-bottom-start-hotspot::after,
+.figma-home-exact .home-profile-hotspot::after,
+.figma-home-exact .home-koica-hotspot::after {
+  background-image: url("./assets/figma/home-figma-4x.png");
+  background-position: var(--home-tile-x) var(--home-tile-y);
+  background-repeat: no-repeat;
+  background-size: var(--home-tile-size);
+  box-shadow: 0 12px 28px rgba(75, 28, 92, 0.18);
+  opacity: 0;
+  transition: opacity 0.18s ease, box-shadow 0.24s ease;
+}
+
+.figma-home-exact .home-start-hotspot::after,
+.figma-home-exact .home-bottom-start-hotspot::after {
+  border-radius: 999px;
+}
+
+.home-sparkle {
+  position: absolute;
+  width: 1.45%;
+  aspect-ratio: 1;
+  background: #8b35c1;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  filter: drop-shadow(0 0 4px rgba(139, 53, 193, 0.35));
+  opacity: 0;
+  animation: home-sparkle-pop 3.6s ease-in-out infinite;
+}
+
+.home-sparkle-one {
+  top: 8.6%;
+  left: 91%;
+}
+
+.home-sparkle-two {
+  top: 39.7%;
+  left: 6.5%;
+  width: 1.1%;
+  background: #ef8d2f;
+  animation-delay: 1.15s;
+}
+
+.home-sparkle-three {
+  top: 68.7%;
+  left: 89.5%;
+  width: 1.25%;
+  background: #6c24a0;
+  animation-delay: 2.15s;
+}
+
+.home-impact-aura {
+  position: absolute;
+  top: 79.2%;
+  left: 72.2%;
+  width: 24%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(116, 45, 164, 0.1);
+  border-radius: 50%;
+  box-shadow: 0 0 24px rgba(126, 62, 172, 0.08);
+  opacity: 0.45;
+  animation: home-impact-breathe 5.2s ease-in-out infinite;
+}
+
+.diagnosis-card,
+.content-card,
+.story-card,
+.instagram-share-card {
+  transition:
+    transform 0.24s cubic-bezier(0.2, 0.78, 0.24, 1),
+    box-shadow 0.24s ease,
+    border-color 0.24s ease;
+}
+
+.diagnosis-lens-media {
+  animation: result-lens-float 4.4s ease-in-out infinite;
+}
+
+.content-thumb,
+.story-image {
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.78, 0.24, 1),
+    filter 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.question-back-button,
+.text-button {
+  transition: transform 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .figma-home-exact .home-start-hotspot:hover,
+  .figma-home-exact .home-bottom-start-hotspot:hover {
+    z-index: 7;
+    filter: saturate(1.04);
+    transform: scale(1.07);
+  }
+
+  .figma-home-exact .home-profile-hotspot:hover {
+    z-index: 7;
+    filter: saturate(1.035);
+    transform: translateY(-3px) rotate(-0.35deg) scale(1.035);
+  }
+
+  .figma-home-exact .home-koica-hotspot:hover {
+    z-index: 7;
+    transform: translateY(-2px) scale(1.035);
+  }
+
+  .figma-home-exact .home-start-hotspot:hover::after,
+  .figma-home-exact .home-bottom-start-hotspot:hover::after,
+  .figma-home-exact .home-profile-hotspot:hover::after,
+  .figma-home-exact .home-koica-hotspot:hover::after {
+    opacity: 1;
+  }
+
+  .option-button.is-selected:hover {
+    transform: translateY(-2px) scale(1.012);
+  }
+
+  .question-back-button:hover,
+  .text-button:hover {
+    opacity: 0.82;
+    transform: scale(1.035);
+  }
+
+  .diagnosis-card:hover,
+  .content-card:hover,
+  .story-card:hover,
+  .instagram-share-card:hover {
+    box-shadow: 0 12px 30px rgba(69, 30, 84, 0.11);
+    transform: translateY(-3px);
+  }
+
+  .content-thumb:hover,
+  .story-image:hover {
+    filter: saturate(1.035) contrast(1.015);
+    box-shadow: 0 10px 24px rgba(50, 30, 57, 0.12);
+    transform: scale(1.018);
+  }
+}
+
+.figma-home-exact .home-start-hotspot:active,
+.figma-home-exact .home-bottom-start-hotspot:active,
+.share-button:active,
+.instagram-button:active,
+.question-back-button:active,
+.text-button:active {
+  transform: scale(0.97);
+}
+
+@keyframes home-sparkle-pop {
+  0%,
+  34%,
+  100% {
+    opacity: 0;
+    transform: rotate(0deg) scale(0.55);
+  }
+  46% {
+    opacity: 0.76;
+    transform: rotate(45deg) scale(1);
+  }
+  60% {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.72);
+  }
+}
+
+@keyframes home-impact-breathe {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.52;
+    transform: scale(1.035);
+  }
+}
+
+@keyframes result-lens-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-0.4deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(0.6deg);
   }
 }
 

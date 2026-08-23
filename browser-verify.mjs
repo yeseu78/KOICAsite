@@ -278,6 +278,26 @@ const narrowHome = await evaluate(`(() => ({
   })()
 }))()`);
 await screenshot("./.artifacts/home-phone-390.png");
+const topStartHoverBox = await evaluate(`(() => {
+  const rect = document.querySelector('.home-start-hotspot').getBoundingClientRect();
+  return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+})()`);
+await send("Input.dispatchMouseEvent", {
+  type: "mouseMoved",
+  x: topStartHoverBox.x,
+  y: topStartHoverBox.y
+});
+await new Promise((resolve) => setTimeout(resolve, 280));
+narrowHome.startHover = await evaluate(`(() => {
+  const button = document.querySelector('.home-start-hotspot');
+  const layer = getComputedStyle(button, '::after');
+  return {
+    transform: getComputedStyle(button).transform,
+    backgroundImage: layer.backgroundImage,
+    opacity: Number(layer.opacity)
+  };
+})()`);
+await screenshot("./.artifacts/home-start-hover.png");
 await evaluate(`document.querySelector('.home-koica-hotspot').scrollIntoView({ block: 'center', behavior: 'instant' })`);
 await new Promise((resolve) => setTimeout(resolve, 80));
 const koicaHoverBox = await evaluate(`(() => {
@@ -337,7 +357,7 @@ const passed =
   homeEffects.startHotspots === 2 &&
   homeEffects.profileLinks === 5 &&
   homeEffects.koicaLinks === 1 &&
-  homeEffects.polishElements === 5 &&
+  homeEffects.polishElements === 9 &&
   homeEffects.lensAnimation === "home-lens-shine" &&
   homeEffects.heroAsset.includes("home-figma-4x.png") &&
   homeEffects.heroNaturalWidth === 1560 &&
@@ -359,8 +379,11 @@ const passed =
   Math.abs(narrowHome.hotspots.koica.top - 850) <= 1 &&
   Math.abs(narrowHome.hotspots.bottomStart.left - 147) <= 1 &&
   Math.abs(narrowHome.hotspots.bottomStart.top - 952) <= 1 &&
+  narrowHome.startHover.transform !== "none" &&
+  narrowHome.startHover.backgroundImage.includes("home-figma-4x.png") &&
+  narrowHome.startHover.opacity > 0.9 &&
   narrowHome.hoverLayer.backgroundColor === "rgba(0, 0, 0, 0)" &&
-  narrowHome.hoverLayer.boxShadow === "none" &&
+  narrowHome.hoverLayer.boxShadow !== "none" &&
   narrowHome.heroWidth <= narrowHome.pageWidth + 24;
 
 console.log(JSON.stringify({ passed, checks }, null, 2));

@@ -221,6 +221,10 @@ function renderHome({ replace = false } = {}) {
           <span class="home-lens-glint lens-glint-participation"></span>
           <span class="home-lens-glint lens-glint-case"></span>
           <span class="home-lens-glint lens-glint-empathy"></span>
+          <span class="home-sparkle home-sparkle-one"></span>
+          <span class="home-sparkle home-sparkle-two"></span>
+          <span class="home-sparkle home-sparkle-three"></span>
+          <span class="home-impact-aura"></span>
         </div>
 
         <button class="home-hotspot home-start-hotspot" type="button" data-action="start" aria-label="시력 검사 시작하기"></button>
