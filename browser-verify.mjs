@@ -359,13 +359,13 @@ const passed =
   homeEffects.koicaLinks === 1 &&
   homeEffects.polishElements === 9 &&
   homeEffects.lensAnimation === "home-lens-shine" &&
-  homeEffects.heroAsset.includes("home-figma-4x.png") &&
-  homeEffects.heroNaturalWidth === 1560 &&
-  homeEffects.heroNaturalHeight === 3956 &&
+  homeEffects.heroAsset.includes("home-prototype.png") &&
+  homeEffects.heroNaturalWidth === 390 &&
+  homeEffects.heroNaturalHeight === 989 &&
       homeEffects.pageWidth >= 480 &&
   homeEffects.scrollHeight > homeEffects.viewportHeight &&
   homeEffects.animation !== "none" &&
-  desktopHome.image.includes("home-figma-4x.png") &&
+  desktopHome.image.includes("home-prototype.png") &&
   desktopHome.imageWidth >= 1400 &&
       desktopHome.pageWidth >= 1400 &&
   desktopHome.scrollHeight > desktopHome.viewportHeight &&
@@ -380,7 +380,7 @@ const passed =
   Math.abs(narrowHome.hotspots.bottomStart.left - 147) <= 1 &&
   Math.abs(narrowHome.hotspots.bottomStart.top - 952) <= 1 &&
   narrowHome.startHover.transform !== "none" &&
-  narrowHome.startHover.backgroundImage.includes("home-figma-4x.png") &&
+  narrowHome.startHover.backgroundImage.includes("home-prototype.png") &&
   narrowHome.startHover.opacity > 0.9 &&
   narrowHome.hoverLayer.backgroundColor === "rgba(0, 0, 0, 0)" &&
   narrowHome.hoverLayer.boxShadow !== "none" &&
