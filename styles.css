@@ -1401,16 +1401,39 @@ img {
 }
 
 .question-context {
-  max-height: 76px;
-  margin: 5px 0 0;
-  padding: 8px 10px;
-  overflow: auto;
-  border: 1px solid rgba(92, 17, 121, 0.34);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.78);
-  color: #5b535e;
+  margin: 8px 0 2px;
+  padding: 10px 12px 12px;
+  overflow: visible;
+  border: 2px solid rgba(92, 17, 121, 0.46);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(249, 239, 255, 0.96));
+  box-shadow: 0 6px 16px rgba(92, 17, 121, 0.12);
+  color: #3d2c41;
+}
+
+.question-context-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 23px;
+  margin: 0 0 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #68128c;
+  color: #fff;
   font-size: 10px;
-  line-height: 1.45;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.question-context-copy {
+  margin: 0;
+  color: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.55;
+  word-break: keep-all;
 }
 
 .question-body {

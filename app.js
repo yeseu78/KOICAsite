@@ -293,7 +293,14 @@ function renderQuestion(index) {
         <button class="question-back-button" type="button" data-action="back" aria-label="이전 화면으로">← 이전</button>
         <img class="question-plane" src="./assets/figma/quiz-plane.png" alt="" />
         <h1 class="question-title">${question.title}</h1>
-        ${question.context ? `<p class="question-context">${question.context}</p>` : ""}
+        ${
+          question.context
+            ? `<aside class="question-context" aria-label="사례 설명">
+                <span class="question-context-label"><span aria-hidden="true">✦</span> 사례</span>
+                <p class="question-context-copy">${question.context}</p>
+              </aside>`
+            : ""
+        }
       </header>
       <div class="question-body">
         <div class="option-list" role="group" aria-label="답변 선택">
