@@ -2730,7 +2730,7 @@ body:has(.app-shell.is-home) {
 .figma-home-exact .home-bottom-start-hotspot::after,
 .figma-home-exact .home-profile-hotspot::after,
 .figma-home-exact .home-koica-hotspot::after {
-  background-image: url("./assets/figma/home-prototype.png");
+  background-image: url("./assets/figma/home-figma-4x.png");
   background-position: var(--home-tile-x) var(--home-tile-y);
   background-repeat: no-repeat;
   background-size: var(--home-tile-size);

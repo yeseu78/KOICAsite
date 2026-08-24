@@ -207,9 +207,9 @@ function renderHome({ replace = false } = {}) {
       <div class="figma-home-artboard" aria-label="WE:NK AI 시력검사 홈">
         <img
           class="figma-home-image"
-          src="./assets/figma/home-prototype.png"
-          width="390"
-          height="989"
+          src="./assets/figma/home-figma-4x.png"
+          width="1560"
+          height="3956"
           decoding="sync"
           fetchpriority="high"
           alt="당신의 시선, 세상을 바꾸는 렌즈가 될 수 있어요. WE:NK 팀과 네 가지 렌즈, KOICA 개발협력 이야기를 소개합니다."
