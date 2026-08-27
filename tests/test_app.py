@@ -31,6 +31,22 @@ class FlaskAppTests(unittest.TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn("/admin", response.headers["Location"])
 
+    def test_github_pages_origin_can_preflight_analytics(self):
+        response = self.client.options(
+            "/api/analytics/events",
+            headers={
+                "Origin": "https://yeseu78.github.io",
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "content-type",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.headers["Access-Control-Allow-Origin"],
+            "https://yeseu78.github.io",
+        )
+        self.assertEqual(response.headers["Vary"], "Origin")
+
     def test_wrong_password_is_rejected_and_correct_password_logs_in(self):
         csrf = self.csrf_from_login()
         wrong = self.client.post(

@@ -69,6 +69,10 @@ const analyticsContext = {
   attribution: getAttribution(),
 };
 
+const analyticsEndpoint = window.location.hostname === "yeseu78.github.io"
+  ? "https://weko-traffic.onrender.com/api/analytics/events"
+  : "/api/analytics/events";
+
 function trackEvent(eventType, detail = {}) {
   const payload = {
     event_type: eventType,
@@ -76,7 +80,7 @@ function trackEvent(eventType, detail = {}) {
     visit_id: analyticsContext.visit_id,
     ...detail,
   };
-  fetch("/api/analytics/events", {
+  fetch(analyticsEndpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

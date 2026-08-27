@@ -61,6 +61,7 @@ _login_attempts: dict[str, deque[float]] = defaultdict(deque)
 _event_attempts: dict[str, deque[float]] = defaultdict(deque)
 _rate_lock = threading.Lock()
 _summary_cache: dict[str, tuple[float, dict[str, Any]]] = {}
+_analytics_origins = {"https://yeseu78.github.io"}
 
 
 def _rate_limited(bucket: dict[str, deque[float]], key: str, limit: int, window: int) -> bool:
@@ -105,6 +106,13 @@ def security_headers(response):
     response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
     if request.path.startswith("/admin"):
         response.headers["Cache-Control"] = "no-store"
+    if request.path == "/api/analytics/events":
+        origin = request.headers.get("Origin", "")
+        if origin in _analytics_origins:
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+            response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+            response.headers["Vary"] = "Origin"
     return response
 
 
