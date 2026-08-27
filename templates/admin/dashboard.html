@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>설문 통계 대시보드 | WENK ADMIN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/admin.css" />
+  </head>
+  <body class="admin-dashboard-page">
+    <header class="dashboard-header">
+      <div class="dashboard-container dashboard-header-inner">
+        <a class="admin-brand" href="/admin/dashboard" aria-label="WENK 관리자 홈">
+          <span class="admin-brand-mark">W</span>
+          <span><strong>WENK</strong><small>ADMIN</small></span>
+        </a>
+        <div class="dashboard-actions">
+          <span class="data-status" data-status><i></i> 데이터 확인 중</span>
+          <form method="post" action="/admin/logout">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <button class="logout-button" type="submit">로그아웃</button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <main class="dashboard-container dashboard-main">
+      <section class="dashboard-intro">
+        <div>
+          <p class="section-eyebrow">SURVEY OVERVIEW</p>
+          <h1>설문 통계 대시보드</h1>
+          <p>현재 WENK 설문 참여와 유입 현황입니다.</p>
+        </div>
+        <div class="period-control">
+          <label for="period">참여 추이 기간</label>
+          <select id="period" data-period>
+            <option value="7d">최근 7일</option>
+            <option value="14d">최근 14일</option>
+            <option value="all">전체 기간</option>
+          </select>
+          <button type="button" data-refresh aria-label="통계 새로고침">새로고침</button>
+        </div>
+      </section>
+
+      <div class="dashboard-message" data-message hidden></div>
+
+      <section class="metric-grid" aria-label="핵심 통계">
+        <article class="metric-card metric-card-primary">
+          <span>누적 참여자</span><strong data-metric="total_participants">—</strong><small>명</small>
+        </article>
+        <article class="metric-card">
+          <span>오늘 참여자</span><strong data-metric="today_participants">—</strong><small>명 · 한국시간</small>
+        </article>
+        <article class="metric-card">
+          <span>이번 주 참여자</span><strong data-metric="week_participants">—</strong><small>명 · 월요일부터</small>
+        </article>
+        <article class="metric-card">
+          <span>설문 완료율</span><strong data-metric="completion_rate">—</strong><small>%</small>
+        </article>
+        <article class="metric-card">
+          <span>총 공유</span><strong data-metric="share_clicks">—</strong><small>회</small>
+        </article>
+      </section>
+
+      <section class="panel panel-wide">
+        <div class="panel-heading">
+          <div><p class="section-eyebrow">PARTICIPATION</p><h2>날짜별 참여 추이</h2></div>
+          <span class="panel-note">Asia/Seoul 기준 · 중복 방문자 제외</span>
+        </div>
+        <div class="line-chart" data-trend-chart aria-label="날짜별 설문 참여자 선 그래프"></div>
+      </section>
+
+      <div class="dashboard-grid">
+        <section class="panel">
+          <div class="panel-heading">
+            <div><p class="section-eyebrow">ACQUISITION</p><h2>유입 경로</h2></div>
+            <strong class="panel-total"><span data-metric="total_visits">—</span><small> visits</small></strong>
+          </div>
+          <div class="donut-layout">
+            <div class="donut" data-traffic-donut><span>—<small>방문</small></span></div>
+            <div class="chart-legend" data-traffic-legend></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>유입 경로</th><th>방문</th><th>설문 완료</th><th>완료율</th></tr></thead>
+              <tbody data-traffic-table></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div><p class="section-eyebrow">RESULTS</p><h2>결과 유형 분포</h2></div>
+          </div>
+          <div class="donut-layout">
+            <div class="donut" data-result-donut><span>—<small>완료</small></span></div>
+            <div class="chart-legend" data-result-legend></div>
+          </div>
+          <article class="insight-card" data-result-insight>
+            <span>MOST COMMON RESULT</span>
+            <strong>아직 결과가 없습니다</strong>
+            <p>설문 완료 데이터가 쌓이면 자동으로 표시됩니다.</p>
+          </article>
+        </section>
+      </div>
+
+      <div class="dashboard-grid">
+        <section class="panel">
+          <div class="panel-heading">
+            <div><p class="section-eyebrow">FUNNEL</p><h2>설문 완료 현황</h2></div>
+          </div>
+          <div class="funnel-stats">
+            <div><span>설문 시작</span><strong data-metric="total_participants">—</strong><small>명</small></div>
+            <i aria-hidden="true">→</i>
+            <div><span>설문 완료</span><strong data-metric="completed_participants">—</strong><small>명</small></div>
+          </div>
+          <div class="completion-bar"><span data-completion-bar></span></div>
+          <div class="completion-meta">
+            <span>완료율 <strong data-completion-rate>—</strong></span>
+            <span>중도 이탈 <strong data-dropoffs>—</strong></span>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div><p class="section-eyebrow">SHARING</p><h2>공유 현황</h2></div>
+          </div>
+          <div class="share-summary">
+            <div><span>총 공유</span><strong data-metric="share_clicks">—</strong><small>회</small></div>
+            <div><span>공유 사용자</span><strong data-metric="share_users">—</strong><small>명</small></div>
+            <div><span>공유율</span><strong data-metric="share_rate">—</strong><small>%</small></div>
+          </div>
+          <div class="bar-list compact-bars" data-share-bars></div>
+        </section>
+      </div>
+
+      <section class="panel panel-wide">
+        <div class="panel-heading">
+          <div><p class="section-eyebrow">ANSWERS</p><h2>질문별 응답</h2></div>
+          <span class="panel-note">같은 방문자의 재선택은 마지막 응답만 반영</span>
+        </div>
+        <div class="question-list" data-question-list></div>
+      </section>
+
+      <section class="panel panel-wide">
+        <div class="panel-heading">
+          <div><p class="section-eyebrow">KPI</p><h2>목표 대비 진행률</h2></div>
+          <span class="panel-note">목표값은 Render 환경변수에서 관리합니다.</span>
+        </div>
+        <div class="kpi-list" data-kpi-list></div>
+      </section>
+    </main>
+
+    <script type="module" src="/static/admin-dashboard.js"></script>
+  </body>
+</html>

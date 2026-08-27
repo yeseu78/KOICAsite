@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>관리자 로그인 | WENK ADMIN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/admin.css" />
+  </head>
+  <body class="admin-login-page">
+    <main class="login-shell">
+      <section class="login-card" aria-labelledby="login-title">
+        <div class="admin-brand admin-brand-login">
+          <span class="admin-brand-mark">W</span>
+          <span><strong>WENK</strong><small>ADMIN</small></span>
+        </div>
+        <p class="login-eyebrow">PRIVATE ANALYTICS</p>
+        <h1 id="login-title">관리자 페이지</h1>
+        <p class="login-description">팀 공용 관리자 비밀번호를 입력해 주세요.</p>
+
+        {% if error %}
+          <p class="login-alert" role="alert">{{ error }}</p>
+        {% endif %}
+        {% if not configured and not error %}
+          <p class="login-notice">배포 환경에 ADMIN_PASSWORD와 SECRET_KEY를 먼저 설정해 주세요.</p>
+        {% endif %}
+
+        <form class="login-form" method="post" action="/admin">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <label for="password">관리자 비밀번호</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password"
+            required
+            autofocus
+          />
+          <button type="submit">접속하기 <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="login-footnote">인증 정보와 통계 원본은 브라우저에 노출되지 않습니다.</p>
+      </section>
+    </main>
+  </body>
+</html>

@@ -14,6 +14,87 @@ const state = {
   questionIndex: 0,
 };
 
+function makeAnonymousId() {
+  if (crypto.randomUUID) return crypto.randomUUID();
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
+
+function getStoredId(storage, key) {
+  try {
+    const current = storage.getItem(key);
+    if (current) return current;
+    const created = makeAnonymousId();
+    storage.setItem(key, created);
+    return created;
+  } catch {
+    return makeAnonymousId();
+  }
+}
+
+function getAttribution() {
+  const storageKey = "weko_attribution";
+  try {
+    const stored = sessionStorage.getItem(storageKey);
+    if (stored) return JSON.parse(stored);
+  } catch {
+    // Privacy-restricted browsers can continue without session storage.
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  let externalReferrer = "";
+  try {
+    externalReferrer = document.referrer && new URL(document.referrer).origin !== window.location.origin
+      ? new URL(document.referrer).origin
+      : "";
+  } catch {
+    externalReferrer = "";
+  }
+  const attribution = {
+    source: params.get("utm_source") || "",
+    medium: params.get("utm_medium") || "",
+    campaign: params.get("utm_campaign") || "",
+    referrer: externalReferrer,
+  };
+  try {
+    sessionStorage.setItem(storageKey, JSON.stringify(attribution));
+  } catch {
+    // Analytics must never block the survey experience.
+  }
+  return attribution;
+}
+
+const analyticsContext = {
+  visitor_id: getStoredId(localStorage, "weko_visitor_id"),
+  visit_id: getStoredId(sessionStorage, "weko_visit_id"),
+  attribution: getAttribution(),
+};
+
+function trackEvent(eventType, detail = {}) {
+  const payload = {
+    event_type: eventType,
+    visitor_id: analyticsContext.visitor_id,
+    visit_id: analyticsContext.visit_id,
+    ...detail,
+  };
+  fetch("/api/analytics/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    keepalive: true,
+  }).catch(() => {
+    // Tracking failures must not change the public survey flow.
+  });
+}
+
+function trackShare(channel) {
+  trackEvent("share", {
+    share_channel: channel,
+    event_id: makeAnonymousId(),
+  });
+}
+
+trackEvent("visit", analyticsContext.attribution);
+
 const validCorrectionKeys = Object.keys(correctionLensData);
 const validContentKeys = Object.keys(contentLensData);
 
@@ -173,6 +254,7 @@ function renderHomeReimagined({ replace = false } = {}) {
 
   app.querySelectorAll('[data-action="start"]').forEach((button) => {
     button.addEventListener("click", () => {
+      trackEvent("survey_start");
       state.answers = [];
       state.field = null;
       state.questionIndex = 0;
@@ -244,6 +326,7 @@ function renderHome({ replace = false } = {}) {
 
   app.querySelectorAll('[data-action="start"]').forEach((button) => {
     button.addEventListener("click", () => {
+      trackEvent("survey_start");
       state.answers = [];
       state.field = null;
       state.questionIndex = 0;
@@ -257,6 +340,7 @@ function renderHome({ replace = false } = {}) {
 
 function renderQuestion(index) {
   const safeIndex = Math.min(Math.max(index, 0), questions.length - 1);
+  if (safeIndex === 0) trackEvent("survey_start");
   const question = questions[safeIndex];
   const currentAnswer = state.answers[safeIndex] ?? null;
   const currentAnswerIndex = question.options.indexOf(currentAnswer);
@@ -338,9 +422,20 @@ function renderQuestion(index) {
 
   app.querySelectorAll("[data-option-index]").forEach((button) => {
     button.addEventListener("click", () => {
-      const selectedOption = question.options[Number(button.dataset.optionIndex)];
+      const selectedOptionIndex = Number(button.dataset.optionIndex);
+      const selectedOption = question.options[selectedOptionIndex];
       const shouldCancel = state.answers[safeIndex] === selectedOption;
       state.answers[safeIndex] = shouldCancel ? null : selectedOption;
+
+      trackEvent("answer", {
+        question_id: question.id,
+        answer_value: shouldCancel ? "" : String(selectedOptionIndex),
+        metadata: {
+          question_title: question.title,
+          answer_label: shouldCancel ? "" : selectedOption.label,
+          question_order: String(safeIndex + 1),
+        },
+      });
 
       if (question.type === "field") {
         state.field = shouldCancel ? null : selectedOption.value;
@@ -372,6 +467,13 @@ function renderQuestion(index) {
     }
 
     const result = calculateResult();
+    trackEvent("survey_complete", {
+      result_type: result.correctionLens,
+      metadata: {
+        raw_result_type: result.rawResultType,
+        content_lens: result.contentLens,
+      },
+    });
     updateRoute({
       view: "result",
       correction: result.correctionLens,
@@ -426,6 +528,9 @@ function getResultShareData(correctionKey, contentKey) {
     view: "result",
     correction: correctionKey,
     content: contentKey,
+    utm_source: "shared_link",
+    utm_medium: "share",
+    utm_campaign: "result_share",
   }).toString();
 
   return {
@@ -724,6 +829,7 @@ async function shareResultCard(format, cardPromise, shareData, correctionKey, co
           title: shareData.title,
           text: `${shareData.text}\n${shareData.url}`,
         });
+        trackShare(format === "story" ? "instagram_story" : "instagram_feed");
         showShareStatus(
           `${format === "story" ? "스토리" : "피드"}용 결과 이미지를 공유 메뉴로 보냈어요. Instagram을 선택해주세요.`,
         );
@@ -737,6 +843,7 @@ async function shareResultCard(format, cardPromise, shareData, correctionKey, co
     }
 
     downloadBlob(blob, file.name);
+    trackShare(format === "story" ? "instagram_story" : "instagram_feed");
     try {
       await copyText(`${shareData.text}\n${shareData.url}`);
       showShareStatus(
@@ -933,9 +1040,15 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
     rememberCardError,
   );
 
+  trackEvent("result_view", {
+    result_type: safeCorrection,
+    metadata: { content_lens: safeContent },
+  });
+
   app.querySelector('[data-action="copy-result"]').addEventListener("click", async () => {
     try {
       await copyText(shareText);
+      trackShare("link_copy");
       showShareStatus("결과 소개 문구와 링크를 복사했어요. 카카오톡이나 SNS에 붙여넣어 주세요.");
     } catch {
       showShareStatus("복사하지 못했어요. 브라우저의 클립보드 권한을 확인해주세요.", "error");
@@ -945,12 +1058,14 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
   app.querySelector('[data-action="share-result"]').addEventListener("click", async () => {
     if (!navigator.share) {
       await copyText(shareText);
+      trackShare("link_copy");
       showShareStatus("이 브라우저는 공유 메뉴를 지원하지 않아 문구와 링크를 대신 복사했어요.");
       return;
     }
 
     try {
       await navigator.share(shareData);
+      trackShare("native_share");
       showShareStatus("공유 메뉴로 결과를 보냈어요.");
     } catch (error) {
       if (error?.name === "AbortError") {
@@ -958,6 +1073,7 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
         return;
       }
       await copyText(shareText);
+      trackShare("link_copy");
       showShareStatus("공유 메뉴를 열지 못해 문구와 링크를 대신 복사했어요.");
     }
   });
@@ -971,6 +1087,7 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
   });
 
   app.querySelector('[data-action="retake"]').addEventListener("click", () => {
+    trackEvent("survey_start");
     state.answers = [];
     state.field = null;
     state.questionIndex = 0;

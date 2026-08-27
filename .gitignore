@@ -9,6 +9,19 @@
 !/package.json
 !/verify.mjs
 !/browser-verify.mjs
+!/ADMIN_SETUP.md
+!/app.py
+!/analytics.py
+!/requirements.txt
+!/render.yaml
+!/supabase/
+!/supabase/**
+!/templates/
+!/templates/**
+!/static/
+!/static/**
+!/tests/
+!/tests/**
 !/assets/
 !/assets/**
 
@@ -16,6 +29,10 @@
 /node_modules/
 /.artifacts/
 /.cache/
+/.env
+/.env.*
+**/__pycache__/
+*.py[cod]
 
 .DS_Store
 Thumbs.db

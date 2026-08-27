@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: weko-survey
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: SUPABASE_ANALYTICS_TABLE
+        value: weko_analytics_events
+      - key: KPI_SURVEY_TARGET
+        sync: false
+      - key: KPI_SHARE_TARGET
+        sync: false
+      - key: KPI_COMPLETION_RATE_TARGET
+        sync: false
+      - key: KPI_INSTAGRAM_TARGET
+        sync: false
