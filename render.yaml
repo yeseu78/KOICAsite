@@ -4,6 +4,9 @@ services:
     runtime: python
     plan: free
     region: singapore
+    repo: https://github.com/yeseu78/KOICAsite
+    branch: main
+    autoDeployTrigger: commit
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
     healthCheckPath: /health
