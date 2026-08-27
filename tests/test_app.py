@@ -1,6 +1,7 @@
 import os
 import re
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 os.environ.setdefault("ADMIN_PASSWORD", "test-admin-password")
@@ -46,6 +47,18 @@ class FlaskAppTests(unittest.TestCase):
             "https://yeseu78.github.io",
         )
         self.assertEqual(response.headers["Vary"], "Origin")
+
+    def test_shared_result_link_starts_the_first_question(self):
+        source = (Path(__file__).resolve().parents[1] / "app.js").read_text(encoding="utf-8")
+        share_function = re.search(
+            r"function getResultShareData\(.*?\n}\n",
+            source,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(share_function)
+        self.assertIn('view: "quiz"', share_function.group(0))
+        self.assertIn('question: "1"', share_function.group(0))
+        self.assertNotIn('view: "result"', share_function.group(0))
 
     def test_wrong_password_is_rejected_and_correct_password_logs_in(self):
         csrf = self.csrf_from_login()

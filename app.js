@@ -529,9 +529,8 @@ function getResultShareData(correctionKey, contentKey) {
   const content = contentLensData[contentKey];
   const url = new URL(window.location.href);
   url.search = new URLSearchParams({
-    view: "result",
-    correction: correctionKey,
-    content: contentKey,
+    view: "quiz",
+    question: "1",
     utm_source: "shared_link",
     utm_medium: "share",
     utm_campaign: "result_share",
