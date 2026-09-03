@@ -116,18 +116,60 @@ function updateRoute(params, { replace = false } = {}) {
   window.history[replace ? "replaceState" : "pushState"]({}, "", url);
 }
 
-function renderHomeReimagined({ replace = false } = {}) {
-  setDocumentTitle("홈");
-  if (replace) updateRoute({}, { replace: true });
-  app.classList.add("is-home");
+const homeProfileLinks = {
+  wenki:
+    "https://www.instagram.com/p/DcYq-UPlETM/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
+  euiseong:
+    "https://www.instagram.com/p/DbvUkT2lF6j/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+  yeseul:
+    "https://www.instagram.com/p/DbvQ3ctlDxC/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+  ain:
+    "https://www.instagram.com/p/DbvS2UClKLf/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+  sua:
+    "https://www.instagram.com/p/DbvQDjHlEBr/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+};
 
-  const homeLensOrder = ["cooperation", "participation", "case", "empathy"];
-  const homeLensCards = homeLensOrder
+const mobileProfiles = [
+  {
+    key: "wenki",
+    name: "WENKI",
+    image: "./assets/home/profile-wenki.png",
+    description: "다양한 시선을 모아 더 따뜻한 세상을 찾아가는 WE:NK의 마스코트",
+    featured: true,
+  },
+  {
+    key: "euiseong",
+    name: "EUISEONG",
+    image: "./assets/home/profile-euiseong.png",
+    description: "경험 속에서 답을 찾아가는 도전가",
+  },
+  {
+    key: "yeseul",
+    name: "YESEUL",
+    image: "./assets/home/profile-yeseul.png",
+    description: "새로운 질문으로 가능성을 발견하는 관찰자",
+  },
+  {
+    key: "ain",
+    name: "AIN",
+    image: "./assets/home/profile-ain.png",
+    description: "섬세한 시선으로 이야기를 잇는 기록가",
+  },
+  {
+    key: "sua",
+    name: "SUA",
+    image: "./assets/home/profile-sua.png",
+    description: "따뜻한 공감으로 함께할 길을 만드는 연결자",
+  },
+];
+
+function getMobileHomeMarkup() {
+  const homeLensCards = ["cooperation", "participation", "case", "empathy"]
     .map((key) => {
       const lens = correctionLensData[key];
       return `
-        <article class="landing-lens-card" style="--lens-accent: ${lens.accent}; --lens-soft: ${lens.soft}">
-          <img src="${lens.image}" alt="${lens.displayName} 안경" width="240" height="120" />
+        <article class="mobile-lens-card" style="--lens-accent: ${lens.accent}; --lens-soft: ${lens.soft}">
+          <img src="${lens.image}" alt="${lens.displayName} 안경" width="240" height="120" loading="lazy" />
           <h3>${lens.displayName}</h3>
           <p>${lens.shortCopy}</p>
         </article>
@@ -135,127 +177,160 @@ function renderHomeReimagined({ replace = false } = {}) {
     })
     .join("");
 
-  const profiles = [
-    {
-      name: "WENKI",
-      image: "./assets/home/profile-wenki.png",
-      link: "https://www.instagram.com/p/DcYq-UPlETM/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
-    },
-    {
-      name: "EUISEONG",
-      image: "./assets/home/profile-euiseong.png",
-      link: "https://www.instagram.com/p/DbvUkT2lF6j/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-    },
-    {
-      name: "YESEUL",
-      image: "./assets/home/profile-yeseul.png",
-      link: "https://www.instagram.com/p/DbvQ3ctlDxC/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-    },
-    {
-      name: "AIN",
-      image: "./assets/home/profile-ain.png",
-      link: "https://www.instagram.com/p/DbvS2UClKLf/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-    },
-    {
-      name: "SUA",
-      image: "./assets/home/profile-sua.png",
-      link: "https://www.instagram.com/p/DbvQDjHlEBr/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-    },
-  ];
-
-  const profileCards = profiles
+  const profileCards = mobileProfiles
     .map(
       (profile) => `
-        <a class="landing-profile-card" href="${profile.link}" target="_blank" rel="noreferrer">
-          <img src="${profile.image}" alt="${profile.name} 프로필" loading="lazy" />
-          <strong>${profile.name}</strong>
-          <span>click!</span>
+        <a
+          class="mobile-profile-card${profile.featured ? " is-featured" : ""}"
+          href="${homeProfileLinks[profile.key]}"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="${profile.name} 프로필 이야기 보기"
+        >
+          <span class="mobile-profile-photo">
+            <img src="${profile.image}" alt="${profile.name} 프로필" loading="lazy" />
+          </span>
+          <span class="mobile-profile-copy">
+            <strong>${profile.name}</strong>
+            <small>${profile.description}</small>
+          </span>
+          <span class="mobile-profile-sticker" aria-hidden="true">click!</span>
         </a>
       `,
     )
     .join("");
 
-  app.innerHTML = `
-    <div class="landing-home" data-screen="home">
-      <section class="landing-hero" aria-labelledby="home-page-title">
-        <div class="landing-container landing-hero-grid">
-          <div class="landing-hero-copy">
-            <p class="landing-kicker">협력의 시야를 맞추는 AI웹 안경점</p>
-            <h1 id="home-page-title">당신의 시선,<br />세상을 바꾸는<br /><em>렌즈</em>가 될 수 있어요.</h1>
-            <p class="landing-description">
-              KOICA와 함께 개발협력(ODA)에 대한 이해와 참여를 넓혀보세요.<br />
-              AI 시력검사로 당신의 시선을 진단하고 맞춤형 렌즈를 처방해 드립니다.
-            </p>
-            <button class="landing-cta" type="button" data-action="start">시력 검사 시작하기 <span>→</span></button>
-          </div>
-          <div class="landing-hero-visual">
+  return `
+    <div class="mobile-home" data-mobile-home>
+      <header class="mobile-header landing-container">
+        <a class="mobile-brand" href="#mobile-home-top" aria-label="ODA OPTICA by KOICA 홈으로 이동">
+          <span>ODA OPTICA</span>
+          <small>BY KOICA</small>
+        </a>
+        <button
+          class="mobile-menu-toggle"
+          type="button"
+          data-action="toggle-mobile-menu"
+          aria-expanded="false"
+          aria-controls="mobile-navigation"
+          aria-label="메뉴 열기"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="mobile-navigation" id="mobile-navigation" aria-label="모바일 메뉴">
+          <a href="#mobile-lenses">렌즈 소개</a>
+          <a href="#mobile-team">W&amp;NK Profile</a>
+          <a href="#mobile-impact">KOICA Impact</a>
+          <button type="button" data-action="start">시력 검사 시작하기</button>
+        </nav>
+      </header>
+
+      <section class="mobile-hero" id="mobile-home-top" aria-labelledby="mobile-home-title">
+        <div class="landing-container">
+          <p class="mobile-kicker">협력의 시야를 맞추는 AI웹 안경점</p>
+          <h1 id="mobile-home-title">당신의 시선,<br />세상을 바꾸는<br /><em>렌즈</em>가 될 수 있어요.</h1>
+          <div class="mobile-hero-visual">
             <img src="./assets/home/hero-collage.png" alt="WE:NK 팀과 안경, 지구가 함께 배치된 콜라주" width="1254" height="1254" />
           </div>
-        </div>
-
-        <div class="landing-container landing-process" aria-label="AI 시력검사 진행 방식">
-          <article><b>01</b><strong>AI 시력 검사</strong><p>정확한 진단으로<br />당신의 시력을 분석해요</p></article>
-          <article><b>02</b><strong>맞춤형 렌즈 처방</strong><p>라이프스타일에 맞는<br />렌즈를 추천해 드려요</p></article>
-          <article><b>03</b><strong>KOICA와 함께</strong><p>세상을 바꾸는 일에<br />당신의 시선이 더해져요</p></article>
-          <article><b>04</b><strong>더 나은 세상</strong><p>따뜻한 시선이 모여<br />변화를 만들어가요</p></article>
+          <p class="mobile-hero-description">
+            KOICA와 함께 개발협력(ODA)을 이해하고, 세상을 바라보는 새로운 시선을 만나보세요.
+            AI 시력검사로 당신의 시선을 진단하고 맞춤형 렌즈를 처방해 드립니다.
+          </p>
+          <button class="mobile-primary-cta" type="button" data-action="start">시력 검사 시작하기 <span>→</span></button>
         </div>
       </section>
 
-      <section class="landing-lenses" id="lenses" aria-labelledby="lenses-title">
+      <section class="mobile-features" aria-label="AI 시력검사 진행 방식">
+        <div class="landing-container mobile-feature-grid">
+          <article>
+            <span class="mobile-feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48"><path d="M5 24s7-11 19-11 19 11 19 11-7 11-19 11S5 24 5 24Z"/><circle cx="24" cy="24" r="5"/></svg>
+            </span>
+            <strong>시력 검사</strong>
+            <p>정확한 진단으로<br />당신의 시선을 분석해요</p>
+          </article>
+          <article>
+            <span class="mobile-feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48"><circle cx="15" cy="25" r="8"/><circle cx="33" cy="25" r="8"/><path d="M23 24h2M7 23l-3-3M41 23l3-3"/></svg>
+            </span>
+            <strong>맞춤형 렌즈 처방</strong>
+            <p>라이프스타일에 맞는<br />렌즈를 추천해 드려요</p>
+          </article>
+          <article>
+            <span class="mobile-feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48"><circle cx="24" cy="14" r="5"/><circle cx="12" cy="20" r="4"/><circle cx="36" cy="20" r="4"/><path d="M15 37v-4c0-6 4-10 9-10s9 4 9 10v4M4 37v-3c0-5 3-8 8-8M44 37v-3c0-5-3-8-8-8"/></svg>
+            </span>
+            <strong>KOICA와 함께</strong>
+            <p>세상을 바꾸는 일에<br />당신의 시선을 더해요</p>
+          </article>
+          <article>
+            <span class="mobile-feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17"/><path d="M7 24h34M24 7c5 5 7 11 7 17s-2 12-7 17M24 7c-5 5-7 11-7 17s2 12 7 17"/></svg>
+            </span>
+            <strong>더 나은 세상</strong>
+            <p>따뜻한 시선이 모여<br />변화를 만들어가요</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="mobile-lenses" id="mobile-lenses" aria-labelledby="mobile-lenses-title">
         <div class="landing-container">
-          <div class="landing-section-heading">
+          <header class="mobile-section-heading">
             <p>FIND YOUR LENS</p>
-            <h2 id="lenses-title">당신에게 필요한 <em>렌즈</em></h2>
+            <h2 id="mobile-lenses-title">당신에게 필요한 <em>렌즈</em></h2>
             <span>네 가지 렌즈로 세상을 바라보는 시선을 바꿔보세요.</span>
-          </div>
-          <div class="landing-lens-grid">${homeLensCards}</div>
+          </header>
+          <div class="mobile-lens-grid">${homeLensCards}</div>
         </div>
       </section>
 
-      <section class="landing-team" id="team" aria-labelledby="team-title">
+      <section class="mobile-team" id="mobile-team" aria-labelledby="mobile-team-title">
         <div class="landing-container">
-          <div class="landing-team-heading">
-            <p>WE:NK</p>
-            <h2 id="team-title">Profile</h2>
+          <header class="mobile-team-heading">
+            <p>W&amp;NK</p>
+            <h2 id="mobile-team-title">Profile</h2>
             <span>사진을 누르면 각 팀원의 이야기를 볼 수 있어요.</span>
-          </div>
-          <div class="landing-profile-grid">${profileCards}</div>
+          </header>
+          <div class="mobile-profile-grid">${profileCards}</div>
         </div>
       </section>
 
-      <section class="landing-impact" id="impact" aria-labelledby="impact-title">
-        <div class="landing-container landing-impact-grid">
-          <div class="landing-impact-copy">
-            <p>KOICA ODA IMPACT</p>
-            <h2 id="impact-title">한 번의 시선이,<br /><em>누군가의 내일을 바꿉니다.</em></h2>
-            <p>
-              KOICA가 만드는 변화는 한 번의 지원으로 끝나지 않습니다. 누군가가 스스로 삶을 바꾸고,
-              지역이 다시 성장하며, 그 변화가 다음 세대까지 이어질 수 있도록 지속가능한 기반을 함께 만들어갑니다.
-            </p>
-            <a href="https://www.koica.go.kr/sites/koica_kr/index.do" target="_blank" rel="noreferrer">KOICA 협력 더 알아보기 →</a>
-            <div class="landing-stats">
-              <span><strong>155개국+</strong>파트너 국가</span>
-              <span><strong>1,734개+</strong>사업 수행</span>
-              <span><strong>6,700만명+</strong>수혜자</span>
-            </div>
-          </div>
-          <div class="landing-impact-gallery">
+      <section class="mobile-impact" id="mobile-impact" aria-labelledby="mobile-impact-title">
+        <div class="landing-container">
+          <p class="mobile-impact-kicker">KOICA ODA IMPACT</p>
+          <h2 id="mobile-impact-title">한 번의 시선이,<br /><em>누군가의 내일을 바꿉니다.</em></h2>
+          <p class="mobile-impact-description">
+            KOICA가 만드는 변화는 한 번의 지원으로 끝나지 않습니다. 누군가가 스스로 삶을 바꾸고,
+            지역이 다시 성장하며 그 변화가 다음 세대까지 이어지도록 지속가능한 기반을 함께 만들어갑니다.
+          </p>
+          <div class="mobile-impact-gallery">
             <img src="./assets/home/impact-volunteer.jpg" alt="KOICA 해외봉사단 단체 사진" loading="lazy" />
             <img src="./assets/home/impact-koica.jpg" alt="KOICA 봉사활동 현장" loading="lazy" />
           </div>
+          <div class="mobile-stats" aria-label="KOICA ODA 주요 통계">
+            <span><strong>155개국+</strong>파트너 국가</span>
+            <span><strong>1,734개+</strong>사업 수행</span>
+            <span><strong>6,700만명+</strong>수혜자</span>
+          </div>
+          <a class="mobile-impact-link" href="https://www.koica.go.kr/sites/koica_kr/index.do" target="_blank" rel="noreferrer">
+            KOICA 협력 더 알아보기 <span>→</span>
+          </a>
         </div>
       </section>
 
-      <section class="landing-final-cta">
+      <section class="mobile-final-cta" aria-labelledby="mobile-final-title">
         <div class="landing-container">
-          <h2>지금 당신의 시선으로 세상을 바꿔보세요.</h2>
-          <p>AI 시력검사를 통해 나의 시력을 확인하고 세상에 선한 영향을 전하는 첫걸음을 함께해요.</p>
-          <button class="landing-cta" type="button" data-action="start">무료로 검사 시작하기 <span>→</span></button>
+          <span class="mobile-plane-doodle" aria-hidden="true">⌁ ✈</span>
+          <h2 id="mobile-final-title">지금 당신의 시선으로<br /><em>세상을 바꿔보세요.</em></h2>
+          <p>나의 시선을 확인하고 세상에 선한 영향을 전하는 첫걸음을 함께해요.</p>
+          <button class="mobile-primary-cta" type="button" data-action="start">무료로 검사 시작하기 <span>→</span></button>
         </div>
       </section>
     </div>
   `;
+}
 
+function bindHomeInteractions() {
   app.querySelectorAll('[data-action="start"]').forEach((button) => {
     button.addEventListener("click", () => {
       trackEvent("survey_start");
@@ -267,7 +342,26 @@ function renderHomeReimagined({ replace = false } = {}) {
     });
   });
 
-  scrollToTop();
+  const mobileHome = app.querySelector("[data-mobile-home]");
+  const menuToggle = app.querySelector('[data-action="toggle-mobile-menu"]');
+  const navigation = app.querySelector("#mobile-navigation");
+  if (!mobileHome || !menuToggle || !navigation) return;
+
+  const setMenuOpen = (isOpen) => {
+    mobileHome.classList.toggle("is-menu-open", isOpen);
+    menuToggle.setAttribute("aria-expanded", String(isOpen));
+    menuToggle.setAttribute("aria-label", isOpen ? "메뉴 닫기" : "메뉴 열기");
+  };
+
+  menuToggle.addEventListener("click", () => {
+    setMenuOpen(menuToggle.getAttribute("aria-expanded") !== "true");
+  });
+  navigation.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => setMenuOpen(false));
+  });
+  mobileHome.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setMenuOpen(false);
+  });
 }
 
 function renderHome({ replace = false } = {}) {
@@ -275,21 +369,8 @@ function renderHome({ replace = false } = {}) {
   if (replace) updateRoute({}, { replace: true });
   app.classList.add("is-home");
 
-  const profileLinks = {
-    wenki:
-      "https://www.instagram.com/p/DcYq-UPlETM/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA==",
-    euiseong:
-      "https://www.instagram.com/p/DbvUkT2lF6j/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-    yeseul:
-      "https://www.instagram.com/p/DbvQ3ctlDxC/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-    ain:
-      "https://www.instagram.com/p/DbvS2UClKLf/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-    sua:
-      "https://www.instagram.com/p/DbvQDjHlEBr/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
-  };
-
   app.innerHTML = `
-    <main class="home-screen figma-home-exact" data-screen="home">
+    <div class="home-screen figma-home-exact" data-screen="home">
       <div class="figma-home-artboard" aria-label="WE:NK AI 시력검사 홈">
         <img
           class="figma-home-image"
@@ -316,28 +397,20 @@ function renderHome({ replace = false } = {}) {
         <button class="home-hotspot home-start-hotspot" type="button" data-action="start" aria-label="시력 검사 시작하기"></button>
         <span class="home-shimmer" aria-hidden="true"></span>
 
-        <a class="home-hotspot home-profile-hotspot profile-wenki" href="${profileLinks.wenki}" target="_blank" rel="noreferrer" aria-label="WENKI 프로필 보기"></a>
-        <a class="home-hotspot home-profile-hotspot profile-euiseong" href="${profileLinks.euiseong}" target="_blank" rel="noreferrer" aria-label="EUISEONG 프로필 보기"></a>
-        <a class="home-hotspot home-profile-hotspot profile-yeseul" href="${profileLinks.yeseul}" target="_blank" rel="noreferrer" aria-label="YESEUL 프로필 보기"></a>
-        <a class="home-hotspot home-profile-hotspot profile-ain" href="${profileLinks.ain}" target="_blank" rel="noreferrer" aria-label="AIN 프로필 보기"></a>
-        <a class="home-hotspot home-profile-hotspot profile-sua" href="${profileLinks.sua}" target="_blank" rel="noreferrer" aria-label="SUA 프로필 보기"></a>
+        <a class="home-hotspot home-profile-hotspot profile-wenki" href="${homeProfileLinks.wenki}" target="_blank" rel="noreferrer" aria-label="WENKI 프로필 보기"></a>
+        <a class="home-hotspot home-profile-hotspot profile-euiseong" href="${homeProfileLinks.euiseong}" target="_blank" rel="noreferrer" aria-label="EUISEONG 프로필 보기"></a>
+        <a class="home-hotspot home-profile-hotspot profile-yeseul" href="${homeProfileLinks.yeseul}" target="_blank" rel="noreferrer" aria-label="YESEUL 프로필 보기"></a>
+        <a class="home-hotspot home-profile-hotspot profile-ain" href="${homeProfileLinks.ain}" target="_blank" rel="noreferrer" aria-label="AIN 프로필 보기"></a>
+        <a class="home-hotspot home-profile-hotspot profile-sua" href="${homeProfileLinks.sua}" target="_blank" rel="noreferrer" aria-label="SUA 프로필 보기"></a>
 
         <a class="home-hotspot home-koica-hotspot" href="https://www.koica.go.kr/sites/koica_kr/index.do" target="_blank" rel="noreferrer" aria-label="KOICA 협력 더 알아보기"></a>
         <button class="home-hotspot home-bottom-start-hotspot" type="button" data-action="start" aria-label="무료로 검사 시작하기"></button>
       </div>
-    </main>
+    </div>
+    ${getMobileHomeMarkup()}
   `;
 
-  app.querySelectorAll('[data-action="start"]').forEach((button) => {
-    button.addEventListener("click", () => {
-      trackEvent("survey_start");
-      state.answers = [];
-      state.field = null;
-      state.questionIndex = 0;
-      updateRoute({ view: "quiz", question: "1" });
-      renderQuestion(0);
-    });
-  });
+  bindHomeInteractions();
 
   scrollToTop();
 }

@@ -2,7 +2,9 @@ import fs from "node:fs/promises";
 
 const endpoint = "http://127.0.0.1:9223";
 const targets = await fetch(`${endpoint}/json/list`).then((response) => response.json());
-const pageTarget = targets.find((target) => target.type === "page");
+const pageTarget = targets.find(
+  (target) => target.type === "page" && !target.url.startsWith("edge://"),
+);
 if (!pageTarget) throw new Error("테스트 브라우저 페이지를 찾지 못했습니다.");
 
 const socket = new WebSocket(pageTarget.webSocketDebuggerUrl);
@@ -215,13 +217,18 @@ const homeEffects = await evaluate(`(() => ({
   heroAsset: document.querySelector('.figma-home-image')?.currentSrc,
   heroNaturalWidth: document.querySelector('.figma-home-image')?.naturalWidth,
   heroNaturalHeight: document.querySelector('.figma-home-image')?.naturalHeight,
-  startHotspots: document.querySelectorAll('[data-action="start"]').length,
+  mobileVisible: getComputedStyle(document.querySelector('.mobile-home')).display !== 'none',
+  desktopVisible: getComputedStyle(document.querySelector('.figma-home-exact')).display !== 'none',
+  startButtons: document.querySelectorAll('[data-action="start"]').length,
+  featureCards: document.querySelectorAll('.mobile-feature-grid article').length,
+  lensCards: document.querySelectorAll('.mobile-lens-card').length,
+  mobileProfiles: document.querySelectorAll('.mobile-profile-card').length,
+  stats: document.querySelectorAll('.mobile-stats span').length,
   profileLinks: document.querySelectorAll('.home-profile-hotspot').length,
   koicaLinks: document.querySelectorAll('.home-koica-hotspot').length,
   polishElements: document.querySelectorAll('.home-polish-layer > span').length,
-  lensAnimation: getComputedStyle(document.querySelector('.home-lens-glint'), '::after').animationName,
-  animation: getComputedStyle(document.querySelector('.figma-home-image')).animationName,
   pageWidth: Math.round(document.querySelector('.app-shell.is-home').getBoundingClientRect().width),
+  horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
   scrollHeight: document.documentElement.scrollHeight,
   viewportHeight: window.innerHeight
 }))()`);
@@ -237,6 +244,8 @@ await navigate("http://127.0.0.1:4173/");
 const desktopHome = await evaluate(`(() => ({
   image: document.querySelector('.figma-home-image')?.currentSrc,
   imageWidth: Math.round(document.querySelector('.figma-home-image')?.getBoundingClientRect().width || 0),
+  desktopVisible: getComputedStyle(document.querySelector('.figma-home-exact')).display !== 'none',
+  mobileVisible: getComputedStyle(document.querySelector('.mobile-home')).display !== 'none',
   pageWidth: Math.round(document.querySelector('.app-shell.is-home')?.getBoundingClientRect().width || 0),
   scrollHeight: document.documentElement.scrollHeight,
   viewportHeight: window.innerHeight
@@ -257,64 +266,103 @@ const narrowHome = await evaluate(`(() => ({
   viewportWidth: window.innerWidth,
   pageWidth: Math.round(document.querySelector('.app-shell.is-home')?.getBoundingClientRect().width || 0),
   horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-  heroWidth: Math.round(document.querySelector('.figma-home-image')?.getBoundingClientRect().width || 0),
+  mobileVisible: getComputedStyle(document.querySelector('.mobile-home')).display !== 'none',
+  desktopVisible: getComputedStyle(document.querySelector('.figma-home-exact')).display !== 'none',
+  titleFontSize: parseFloat(getComputedStyle(document.querySelector('.mobile-hero h1')).fontSize),
+  descriptionFontSize: parseFloat(getComputedStyle(document.querySelector('.mobile-hero-description')).fontSize),
+  primaryCtaHeight: Math.round(document.querySelector('.mobile-primary-cta').getBoundingClientRect().height),
+  menuButtonSize: (() => {
+    const rect = document.querySelector('.mobile-menu-toggle').getBoundingClientRect();
+    return { width: Math.round(rect.width), height: Math.round(rect.height) };
+  })(),
+  featureColumns: getComputedStyle(document.querySelector('.mobile-feature-grid')).gridTemplateColumns.split(' ').length,
+  lensColumns: getComputedStyle(document.querySelector('.mobile-lens-grid')).gridTemplateColumns.split(' ').length,
+  profileColumns: getComputedStyle(document.querySelector('.mobile-profile-grid')).gridTemplateColumns.split(' ').length,
+  featuredProfileWidth: Math.round(document.querySelector('.mobile-profile-card.is-featured').getBoundingClientRect().width),
+  profileGridWidth: Math.round(document.querySelector('.mobile-profile-grid').getBoundingClientRect().width),
   scrollHeight: document.documentElement.scrollHeight,
-  hotspots: (() => {
-    const artboard = document.querySelector('.figma-home-artboard').getBoundingClientRect();
-    const measure = (selector) => {
-      const rect = document.querySelector(selector).getBoundingClientRect();
-      return {
-        left: Math.round(rect.left - artboard.left),
-        top: Math.round(rect.top - artboard.top),
-        width: Math.round(rect.width),
-        height: Math.round(rect.height)
-      };
-    };
-    return {
-      topStart: measure('.home-start-hotspot'),
-      koica: measure('.home-koica-hotspot'),
-      bottomStart: measure('.home-bottom-start-hotspot')
-    };
-  })()
+  viewportHeight: window.innerHeight
 }))()`);
 await screenshot("./.artifacts/home-phone-390.png");
-const topStartHoverBox = await evaluate(`(() => {
-  const rect = document.querySelector('.home-start-hotspot').getBoundingClientRect();
-  return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
-})()`);
-await send("Input.dispatchMouseEvent", {
-  type: "mouseMoved",
-  x: topStartHoverBox.x,
-  y: topStartHoverBox.y
-});
-await new Promise((resolve) => setTimeout(resolve, 280));
-narrowHome.startHover = await evaluate(`(() => {
-  const button = document.querySelector('.home-start-hotspot');
-  const layer = getComputedStyle(button, '::after');
-  return {
-    transform: getComputedStyle(button).transform,
-    backgroundImage: layer.backgroundImage,
-    opacity: Number(layer.opacity)
-  };
-})()`);
-await screenshot("./.artifacts/home-start-hover.png");
-await evaluate(`document.querySelector('.home-koica-hotspot').scrollIntoView({ block: 'center', behavior: 'instant' })`);
+await evaluate(`document.querySelector('[data-action="toggle-mobile-menu"]').click()`);
+await new Promise((resolve) => setTimeout(resolve, 240));
+narrowHome.menu = await evaluate(`(() => ({
+  expanded: document.querySelector('[data-action="toggle-mobile-menu"]').getAttribute('aria-expanded'),
+  label: document.querySelector('[data-action="toggle-mobile-menu"]').getAttribute('aria-label'),
+  navigationVisible: getComputedStyle(document.querySelector('.mobile-navigation')).visibility === 'visible'
+}))()`);
+await screenshot("./.artifacts/home-phone-390-menu.png");
+await evaluate(`document.querySelector('[data-action="toggle-mobile-menu"]').click()`);
+await evaluate(`document.querySelector('.mobile-features').scrollIntoView({ block: 'start', behavior: 'instant' })`);
 await new Promise((resolve) => setTimeout(resolve, 80));
-const koicaHoverBox = await evaluate(`(() => {
-  const rect = document.querySelector('.home-koica-hotspot').getBoundingClientRect();
-  return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
-})()`);
-await send("Input.dispatchMouseEvent", {
-  type: "mouseMoved",
-  x: koicaHoverBox.x,
-  y: koicaHoverBox.y
+await screenshot("./.artifacts/home-mobile-features.png");
+await evaluate(`document.querySelector('.mobile-lenses').scrollIntoView({ block: 'start', behavior: 'instant' })`);
+await new Promise((resolve) => setTimeout(resolve, 80));
+await screenshot("./.artifacts/home-mobile-lenses.png");
+await evaluate(`document.querySelector('.mobile-team').scrollIntoView({ block: 'start', behavior: 'instant' })`);
+await new Promise((resolve) => setTimeout(resolve, 80));
+await screenshot("./.artifacts/home-mobile-team.png");
+await evaluate(`document.querySelector('.mobile-impact').scrollIntoView({ block: 'start', behavior: 'instant' })`);
+await new Promise((resolve) => setTimeout(resolve, 80));
+await screenshot("./.artifacts/home-mobile-impact.png");
+await evaluate(`document.querySelector('.mobile-final-cta').scrollIntoView({ block: 'start', behavior: 'instant' })`);
+await new Promise((resolve) => setTimeout(resolve, 80));
+await screenshot("./.artifacts/home-mobile-final-cta.png");
+
+await send("Emulation.setDeviceMetricsOverride", {
+  width: 320,
+  height: 740,
+  deviceScaleFactor: 1,
+  mobile: true,
 });
-await new Promise((resolve) => setTimeout(resolve, 120));
-narrowHome.hoverLayer = await evaluate(`(() => {
-  const style = getComputedStyle(document.querySelector('.home-koica-hotspot'), '::after');
-  return { backgroundColor: style.backgroundColor, boxShadow: style.boxShadow };
-})()`);
-await screenshot("./.artifacts/home-button-hover.png");
+await navigate("http://127.0.0.1:4173/");
+const smallHome = await evaluate(`(() => ({
+  viewportWidth: window.innerWidth,
+  horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+  titleFontSize: parseFloat(getComputedStyle(document.querySelector('.mobile-hero h1')).fontSize),
+  primaryCtaHeight: Math.round(document.querySelector('.mobile-primary-cta').getBoundingClientRect().height),
+  stats: [...document.querySelectorAll('.mobile-stats strong')].map((item) => ({
+    fontSize: parseFloat(getComputedStyle(item).fontSize),
+    width: Math.round(item.getBoundingClientRect().width)
+  })),
+  featureWidths: [...document.querySelectorAll('.mobile-feature-grid article')].map((item) => Math.round(item.getBoundingClientRect().width)),
+  lensWidths: [...document.querySelectorAll('.mobile-lens-card')].map((item) => Math.round(item.getBoundingClientRect().width))
+}))()`);
+await screenshot("./.artifacts/home-phone-320.png");
+
+await send("Emulation.setDeviceMetricsOverride", {
+  width: 768,
+  height: 900,
+  deviceScaleFactor: 1,
+  mobile: true,
+});
+await navigate("http://127.0.0.1:4173/");
+const breakpointHome = await evaluate(`(() => ({
+  viewportWidth: window.innerWidth,
+  mobileVisible: getComputedStyle(document.querySelector('.mobile-home')).display !== 'none',
+  desktopVisible: getComputedStyle(document.querySelector('.figma-home-exact')).display !== 'none',
+  contentWidth: Math.round(document.querySelector('.mobile-hero .landing-container').getBoundingClientRect().width),
+  horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
+}))()`);
+await evaluate(`document.querySelector('.mobile-hero [data-action="start"]').click()`);
+await new Promise((resolve) => setTimeout(resolve, 100));
+breakpointHome.startedScreen = await evaluate(`document.querySelector('[data-screen]')?.dataset.screen`);
+
+await send("Emulation.setDeviceMetricsOverride", {
+  width: 1024,
+  height: 900,
+  deviceScaleFactor: 1,
+  mobile: false,
+});
+await navigate("http://127.0.0.1:4173/");
+const desktopBreakpointHome = await evaluate(`(() => ({
+  viewportWidth: window.innerWidth,
+  mobileVisible: getComputedStyle(document.querySelector('.mobile-home')).display !== 'none',
+  desktopVisible: getComputedStyle(document.querySelector('.figma-home-exact')).display !== 'none',
+  imageWidth: Math.round(document.querySelector('.figma-home-image').getBoundingClientRect().width),
+  horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
+}))()`);
+await screenshot("./.artifacts/home-desktop-1024.png");
 
 const checks = {
   initial,
@@ -327,6 +375,9 @@ const checks = {
   homeEffects,
   desktopHome,
   narrowHome,
+  smallHome,
+  breakpointHome,
+  desktopBreakpointHome,
 };
 
 const passed =
@@ -354,37 +405,64 @@ const passed =
   storyMedia.images.every((img) => img.height <= 360) &&
   storyMedia.images.every((img) => img.objectFit === "contain") &&
   !shareUi.feedStatus.includes("준비하지 못했어요") &&
-  homeEffects.startHotspots === 2 &&
+  homeEffects.mobileVisible === true &&
+  homeEffects.desktopVisible === false &&
+  homeEffects.startButtons === 5 &&
+  homeEffects.featureCards === 4 &&
+  homeEffects.lensCards === 4 &&
+  homeEffects.mobileProfiles === 5 &&
+  homeEffects.stats === 3 &&
   homeEffects.profileLinks === 5 &&
   homeEffects.koicaLinks === 1 &&
   homeEffects.polishElements === 9 &&
-  homeEffects.lensAnimation === "home-lens-shine" &&
   homeEffects.heroAsset.includes("home-figma-4x.png") &&
   homeEffects.heroNaturalWidth === 1560 &&
   homeEffects.heroNaturalHeight === 3956 &&
-      homeEffects.pageWidth >= 480 &&
+  homeEffects.pageWidth >= 480 &&
+  homeEffects.horizontalOverflow === false &&
   homeEffects.scrollHeight > homeEffects.viewportHeight &&
-  homeEffects.animation !== "none" &&
   desktopHome.image.includes("home-figma-4x.png") &&
   desktopHome.imageWidth >= 1400 &&
-      desktopHome.pageWidth >= 1400 &&
+  desktopHome.pageWidth >= 1400 &&
+  desktopHome.desktopVisible === true &&
+  desktopHome.mobileVisible === false &&
   desktopHome.scrollHeight > desktopHome.viewportHeight &&
   desktopHome.startedScreen === "question" &&
   narrowHome.viewportWidth === 390 &&
   narrowHome.pageWidth >= 375 &&
   narrowHome.horizontalOverflow === false &&
-  Math.abs(narrowHome.hotspots.topStart.left - 47) <= 1 &&
-  Math.abs(narrowHome.hotspots.topStart.top - 152) <= 1 &&
-  Math.abs(narrowHome.hotspots.koica.left - 42) <= 1 &&
-  Math.abs(narrowHome.hotspots.koica.top - 850) <= 1 &&
-  Math.abs(narrowHome.hotspots.bottomStart.left - 147) <= 1 &&
-  Math.abs(narrowHome.hotspots.bottomStart.top - 952) <= 1 &&
-  narrowHome.startHover.transform !== "none" &&
-  narrowHome.startHover.backgroundImage.includes("home-figma-4x.png") &&
-  narrowHome.startHover.opacity > 0.9 &&
-  narrowHome.hoverLayer.backgroundColor === "rgba(0, 0, 0, 0)" &&
-  narrowHome.hoverLayer.boxShadow !== "none" &&
-  narrowHome.heroWidth <= narrowHome.pageWidth + 24;
+  narrowHome.mobileVisible === true &&
+  narrowHome.desktopVisible === false &&
+  narrowHome.titleFontSize >= 35 &&
+  narrowHome.descriptionFontSize >= 15 &&
+  narrowHome.primaryCtaHeight >= 48 &&
+  narrowHome.menuButtonSize.width >= 44 &&
+  narrowHome.menuButtonSize.height >= 44 &&
+  narrowHome.featureColumns === 2 &&
+  narrowHome.lensColumns === 2 &&
+  narrowHome.profileColumns === 2 &&
+  Math.abs(narrowHome.featuredProfileWidth - narrowHome.profileGridWidth) <= 4 &&
+  narrowHome.menu.expanded === "true" &&
+  narrowHome.menu.label === "메뉴 닫기" &&
+  narrowHome.menu.navigationVisible === true &&
+  smallHome.viewportWidth === 320 &&
+  smallHome.horizontalOverflow === false &&
+  smallHome.titleFontSize >= 34 &&
+  smallHome.primaryCtaHeight >= 48 &&
+  smallHome.stats.every((item) => item.fontSize >= 15 && item.width > 45) &&
+  smallHome.featureWidths.every((width) => width >= 130) &&
+  smallHome.lensWidths.every((width) => width >= 130) &&
+  breakpointHome.viewportWidth === 768 &&
+  breakpointHome.mobileVisible === true &&
+  breakpointHome.desktopVisible === false &&
+  breakpointHome.contentWidth === 430 &&
+  breakpointHome.horizontalOverflow === false &&
+  breakpointHome.startedScreen === "question" &&
+  desktopBreakpointHome.viewportWidth === 1024 &&
+  desktopBreakpointHome.mobileVisible === false &&
+  desktopBreakpointHome.desktopVisible === true &&
+  desktopBreakpointHome.imageWidth >= 1000 &&
+  desktopBreakpointHome.horizontalOverflow === false;
 
 console.log(JSON.stringify({ passed, checks }, null, 2));
 socket.close();
