@@ -344,7 +344,7 @@ function getMobileFigmaHomeMarkup() {
         <picture class="mobile-figma-picture">
           <source
             type="image/svg+xml"
-            srcset="./assets/figma/home-mobile-figma-vector.svg"
+            srcset="./assets/figma/home-mobile-figma-vector.svg?v=wenki-original"
           />
           <img
             class="mobile-figma-image"
