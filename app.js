@@ -1201,7 +1201,14 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
   const correction = correctionLensData[safeCorrection];
   const content = contentLensData[safeContent];
   const copy = combinationCopy[safeCorrection][safeContent];
-  const { cooperationDegree, empathyAngle } = correction.diagnostics;
+  const {
+    cooperationDegree,
+    cooperationLevel,
+    cooperationProgress,
+    empathyAngle,
+    empathyRange,
+    empathyProgress,
+  } = correction.diagnostics;
   const { sensitivityLabel, sensitivity } = content.matching;
   const combinationInterpretation = `${correction.interpretation} 현재 공감 시야각은 ${empathyAngle}°이며, ${content.field} 분야에는 ${sensitivity}%의 높은 감도를 보여 추천 콘텐츠와 잘 맞습니다.`;
 
@@ -1225,6 +1232,15 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
         </div>
         <p class="combination-copy">${copy}</p>
 
+        <aside class="result-at-a-glance" aria-labelledby="easy-result-title">
+          <p class="easy-result-label" id="easy-result-title">이 결과를 쉽게 말하면</p>
+          <p class="easy-result-summary">${correction.interpretation}</p>
+          <div class="easy-lens-roles">
+            <p><span>교정렌즈</span>지금 ODA를 바라보는 방식을 보완하기 위해 <strong>${correction.displayName}가</strong> 처방됐어요.</p>
+            <p><span>콘텐츠 렌즈</span>내가 선택한 ${content.field} 분야의 사례를 보기 위해 <strong>${content.displayName}가</strong> 연결됐어요.</p>
+          </div>
+        </aside>
+
         <section class="result-prescription" aria-labelledby="prescription-metrics-title">
           <h2 class="prescription-title" id="prescription-metrics-title">렌즈 진단표</h2>
           <div class="result-metric-group correction-metric-group">
@@ -1233,12 +1249,20 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
               <article class="result-metric-card" data-metric="cooperation-degree">
                 <span>협력도</span>
                 <strong>${cooperationDegree}</strong>
-                <small>ODA 인식 교정 도수</small>
+                <em>${cooperationLevel}</em>
+                <div class="metric-scale" role="img" aria-label="협력도 교정 필요 범위 중 ${cooperationProgress}%">
+                  <span style="--metric-progress: ${cooperationProgress}%"></span>
+                </div>
+                <small class="metric-range"><span>+0.5 적게</span><span>+2.0 많이</span></small>
               </article>
               <article class="result-metric-card" data-metric="empathy-angle">
                 <span>공감 시야각</span>
                 <strong>${empathyAngle}°</strong>
-                <small>협력을 바라보는 범위</small>
+                <em>${empathyRange}</em>
+                <div class="metric-scale" role="img" aria-label="공감 시야각 전체 범위 중 ${empathyProgress}%">
+                  <span style="--metric-progress: ${empathyProgress}%"></span>
+                </div>
+                <small class="metric-range"><span>60° 좁게</span><span>180° 넓게</span></small>
               </article>
             </div>
           </div>
@@ -1247,15 +1271,17 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
             <article class="result-metric-card content-sensitivity-card" data-metric="content-sensitivity">
               <span>${sensitivityLabel} 감도</span>
               <strong>${sensitivity}%</strong>
-              <small>${content.field} 관심 분야와 추천 콘텐츠 매칭</small>
+              <em>추천 분야 일치</em>
+              <small>${content.field}을 관심 분야로 직접 선택했기 때문에 ${content.displayName} 콘텐츠가 연결됐어요. 정답률이 아니라 선택 분야와 추천 콘텐츠가 정확히 일치한다는 뜻이에요.</small>
             </article>
           </div>
           <div class="result-metric-help">
+            <p class="metric-help-title">숫자는 이렇게 읽으면 쉬워요</p>
             <p>협력도와 공감 시야각은 현재 ODA 인식을 분석한 교정렌즈 진단 결과예요. 콘텐츠 감도는 내가 관심 있게 바라보는 분야를 분석한 콘텐츠 렌즈 매칭 결과예요.</p>
             <dl>
-              <div><dt><span aria-hidden="true">i</span> 협력도</dt><dd>수치가 높을수록 더 많은 인식 교정이 필요해요.</dd></div>
-              <div><dt><span aria-hidden="true">i</span> 공감 시야각</dt><dd>각도가 넓을수록 협력의 연결 관계를 폭넓게 바라보고 있어요.</dd></div>
-              <div><dt><span aria-hidden="true">i</span> 콘텐츠 감도</dt><dd>선택한 관심 분야와 추천 콘텐츠의 매칭 정도예요.</dd></div>
+              <div><dt><span aria-hidden="true">i</span> 협력도</dt><dd>안경 도수처럼 ODA 인식을 얼마나 교정해야 하는지 보여줘요. 수치가 높을수록 더 많은 인식 교정이 필요해요.</dd></div>
+              <div><dt><span aria-hidden="true">i</span> 공감 시야각</dt><dd>국제협력을 나와 연결해 바라보는 범위예요. 각도가 넓을수록 협력의 연결 관계를 폭넓게 바라보고 있어요.</dd></div>
+              <div><dt><span aria-hidden="true">i</span> 콘텐츠 감도</dt><dd>시험 점수가 아니라, 선택한 관심 분야와 추천 콘텐츠의 매칭 정도예요.</dd></div>
             </dl>
           </div>
         </section>
@@ -1286,6 +1312,11 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
           <div class="combination-interpretation">
             <p class="callout-label">렌즈 조합 해석</p>
             <p class="diagnosis-text">${combinationInterpretation}</p>
+            <div class="result-next-focus">
+              <span>이제 무엇을 보면 좋을까요?</span>
+              <p>${correction.nextFocus}</p>
+              <p><strong>추천 사례 · ${content.field} / ${content.country}</strong>${content.oneLine}</p>
+            </div>
           </div>
         </div>
       </section>

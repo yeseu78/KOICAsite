@@ -3,10 +3,16 @@ export const correctionLensData = {
     displayName: "협력렌즈",
     diagnostics: {
       cooperationDegree: "+2.0",
+      cooperationLevel: "교정 필요 높음",
+      cooperationProgress: 100,
       empathyAngle: 60,
+      empathyRange: "시야 범위 좁음",
+      empathyProgress: 33,
     },
     interpretation:
       "ODA를 일방적인 도움이나 기부로 바라보는 경향이 있어, 국가와 지역이 함께 문제를 해결하는 협력 과정을 살펴볼 필요가 있어요.",
+    nextFocus:
+      "지원 금액보다 주민·기관·정부가 어떻게 함께 결정하고 운영하는지를 확인해보세요.",
     shortCopy: "혼자 끙끙대지 말고, 같이 보면 답이 커져요.",
     description: "혼자 해결하는 문제가 아니라, 여러 사람이 함께 만드는 변화를 보는 렌즈",
     diagnosis:
@@ -19,10 +25,16 @@ export const correctionLensData = {
     displayName: "참여렌즈",
     diagnostics: {
       cooperationDegree: "+0.5",
+      cooperationLevel: "교정 필요 낮음",
+      cooperationProgress: 25,
       empathyAngle: 180,
+      empathyRange: "시야 범위 매우 넓음",
+      empathyProgress: 100,
     },
     interpretation:
       "ODA와 나의 연결 관계를 폭넓게 이해하고 있어요. 이제 관심을 작은 실천으로 이어갈 준비가 되어 있어요.",
+    nextFocus:
+      "추천 사례를 읽고 주변에 공유하거나, 직접 참여할 수 있는 활동을 하나 찾아보세요.",
     shortCopy: "구경만 하기엔 아깝잖아요. 이번엔 직접 끼어들어봐요.",
     description: "알고 있던 문제를 나의 작은 행동과 연결해보는 렌즈",
     diagnosis:
@@ -35,10 +47,16 @@ export const correctionLensData = {
     displayName: "사례렌즈",
     diagnostics: {
       cooperationDegree: "+1.5",
+      cooperationLevel: "교정 필요 다소 높음",
+      cooperationProgress: 75,
       empathyAngle: 120,
+      empathyRange: "시야 범위 넓음",
+      empathyProgress: 67,
     },
     interpretation:
       "ODA의 개념이 아직 다소 흐릿해, 실제 현장에서 어떤 변화가 만들어지는지 구체적인 사례로 확인해볼 필요가 있어요.",
+    nextFocus:
+      "사업 전후의 변화와 현지 주민이 스스로 운영할 수 있게 된 부분을 확인해보세요.",
     shortCopy: "말로만 듣던 변화, 진짜 있었는지 확인해봐요.",
     description: "막연했던 개발협력을 실제 현장의 변화로 확인하는 렌즈",
     diagnosis:
@@ -51,10 +69,16 @@ export const correctionLensData = {
     displayName: "공감렌즈",
     diagnostics: {
       cooperationDegree: "+1.0",
+      cooperationLevel: "교정 필요 보통",
+      cooperationProgress: 50,
       empathyAngle: 90,
+      empathyRange: "시야 범위 보통",
+      empathyProgress: 50,
     },
     interpretation:
       "국제협력의 중요성은 알고 있지만 나와의 연결이 아직 멀게 느껴져, 한 사람의 삶과 변화를 가까이 바라볼 필요가 있어요.",
+    nextFocus:
+      "통계나 사업 규모보다 한 사람의 하루가 실제로 어떻게 달라졌는지를 먼저 살펴보세요.",
     shortCopy: "남의 일 같던 이야기도 렌즈를 바꾸면 꽤 가까워져요.",
     description: "먼 나라의 이야기를 ‘나와 연결된 변화’로 느끼게 하는 렌즈",
     diagnosis:
