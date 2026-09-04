@@ -293,21 +293,37 @@ narrowHome.menu = await evaluate(`(() => ({
 }))()`);
 await screenshot("./.artifacts/home-phone-390-menu.png");
 await evaluate(`document.querySelector('[data-action="toggle-mobile-menu"]').click()`);
-await evaluate(`document.querySelector('.mobile-features').scrollIntoView({ block: 'start', behavior: 'instant' })`);
+await evaluate(`window.scrollTo({ top: 600, behavior: 'instant' })`);
 await new Promise((resolve) => setTimeout(resolve, 80));
 await screenshot("./.artifacts/home-mobile-features.png");
-await evaluate(`document.querySelector('.mobile-lenses').scrollIntoView({ block: 'start', behavior: 'instant' })`);
+await evaluate(`document.querySelector('.anchor-lenses').scrollIntoView({ block: 'start', behavior: 'instant' })`);
 await new Promise((resolve) => setTimeout(resolve, 80));
 await screenshot("./.artifacts/home-mobile-lenses.png");
-await evaluate(`document.querySelector('.mobile-team').scrollIntoView({ block: 'start', behavior: 'instant' })`);
+await evaluate(`document.querySelector('.anchor-team').scrollIntoView({ block: 'start', behavior: 'instant' })`);
 await new Promise((resolve) => setTimeout(resolve, 80));
 await screenshot("./.artifacts/home-mobile-team.png");
-await evaluate(`document.querySelector('.mobile-impact').scrollIntoView({ block: 'start', behavior: 'instant' })`);
+await evaluate(`document.querySelector('.anchor-impact').scrollIntoView({ block: 'start', behavior: 'instant' })`);
 await new Promise((resolve) => setTimeout(resolve, 80));
 await screenshot("./.artifacts/home-mobile-impact.png");
-await evaluate(`document.querySelector('.mobile-final-cta').scrollIntoView({ block: 'start', behavior: 'instant' })`);
+await evaluate(`document.querySelector('.mobile-bottom-start').scrollIntoView({ block: 'center', behavior: 'instant' })`);
 await new Promise((resolve) => setTimeout(resolve, 80));
 await screenshot("./.artifacts/home-mobile-final-cta.png");
+
+await send("Emulation.setDeviceMetricsOverride", {
+  width: 390,
+  height: 844,
+  deviceScaleFactor: 3,
+  mobile: true,
+});
+await navigate("http://127.0.0.1:4173/");
+const highDpiMobile = await evaluate(`(() => ({
+  dpr: window.devicePixelRatio,
+  image: document.querySelector('.mobile-figma-image')?.currentSrc,
+  imageWidth: Math.round(document.querySelector('.mobile-figma-image')?.getBoundingClientRect().width || 0),
+  imageHeight: Math.round(document.querySelector('.mobile-figma-image')?.getBoundingClientRect().height || 0),
+  horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
+}))()`);
+await screenshot("./.artifacts/home-phone-390-dpr3.png");
 
 await send("Emulation.setDeviceMetricsOverride", {
   width: 320,
@@ -371,6 +387,7 @@ const checks = {
   homeEffects,
   desktopHome,
   narrowHome,
+  highDpiMobile,
   smallHome,
   breakpointHome,
   desktopBreakpointHome,
@@ -406,7 +423,7 @@ const passed =
   homeEffects.startButtons === 5 &&
   homeEffects.mobileHotspots === 8 &&
   homeEffects.mobileProfileLinks === 5 &&
-  homeEffects.mobileAsset.includes("home-mobile-responsive-hd.png") &&
+  homeEffects.mobileAsset.includes("home-mobile-figma-original-1x.png") &&
   homeEffects.mobileNaturalWidth === 390 &&
   homeEffects.mobileNaturalHeight === 2136 &&
   homeEffects.profileLinks === 5 &&
@@ -442,6 +459,11 @@ const passed =
   narrowHome.menu.expanded === "true" &&
   narrowHome.menu.label === "메뉴 닫기" &&
   narrowHome.menu.navigationVisible === true &&
+  highDpiMobile.dpr === 3 &&
+  highDpiMobile.image.includes("home-mobile-figma-original-4x.png") &&
+  highDpiMobile.imageWidth === 390 &&
+  highDpiMobile.imageHeight === 2136 &&
+  highDpiMobile.horizontalOverflow === false &&
   smallHome.viewportWidth === 320 &&
   smallHome.horizontalOverflow === false &&
   smallHome.artboardWidth === 320 &&
