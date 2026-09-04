@@ -358,6 +358,25 @@ function getMobileFigmaHomeMarkup() {
           />
         </picture>
 
+        <img
+          class="mobile-profile-logo-overlay mobile-profile-wenk-logo-overlay"
+          src="./assets/figma/profile-wenk-logo.svg?v=profile-vector-2"
+          width="155"
+          height="61"
+          decoding="sync"
+          alt=""
+          aria-hidden="true"
+        />
+        <img
+          class="mobile-profile-logo-overlay mobile-profile-label-overlay"
+          src="./assets/figma/profile-label.svg?v=profile-vector-2"
+          width="51"
+          height="18"
+          decoding="sync"
+          alt=""
+          aria-hidden="true"
+        />
+
         <button
           class="mobile-menu-toggle mobile-figma-menu-toggle"
           type="button"
