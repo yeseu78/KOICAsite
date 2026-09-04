@@ -359,6 +359,49 @@ function getMobileFigmaHomeMarkup() {
           />
         </picture>
 
+        <span class="mobile-header-koica-correction" aria-hidden="true">KOICA안경소</span>
+
+        <div class="mobile-source-asset mobile-globe-sticker-source" aria-hidden="true">
+          <div class="mobile-globe-sticker-flip">
+            <img class="mobile-globe-base" src="./assets/figma/mobile-globe-base.png?v=source-original-1" width="1024" height="1024" decoding="async" alt="" />
+            <span class="mobile-globe-tape-frame">
+              <img class="mobile-globe-tape" src="./assets/figma/mobile-globe-tape.png?v=source-original-1" width="1536" height="1024" decoding="async" alt="" />
+            </span>
+          </div>
+        </div>
+
+        <div class="mobile-source-asset mobile-lens-source mobile-lens-cooperation-icon" aria-hidden="true">
+          <img src="./assets/figma/mobile-lens-cooperation-icon.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
+        </div>
+        <div class="mobile-source-asset mobile-lens-source mobile-lens-participation-icon" aria-hidden="true">
+          <img src="./assets/figma/mobile-lens-participation-icon.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
+        </div>
+        <div class="mobile-source-asset mobile-lens-source mobile-lens-case-icon" aria-hidden="true">
+          <img src="./assets/figma/mobile-lens-case-icon.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
+        </div>
+        <div class="mobile-source-asset mobile-lens-source mobile-lens-empathy-icon" aria-hidden="true">
+          <img src="./assets/figma/mobile-lens-empathy-icon.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
+        </div>
+        <div class="mobile-source-asset mobile-lens-source mobile-lens-glasses mobile-lens-cooperation-glasses" aria-hidden="true">
+          <img src="./assets/figma/mobile-lens-cooperation.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
+        </div>
+        <div class="mobile-source-asset mobile-lens-source mobile-lens-glasses mobile-lens-participation-glasses" aria-hidden="true">
+          <img src="./assets/figma/mobile-lens-participation.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
+        </div>
+        <div class="mobile-source-asset mobile-lens-source mobile-lens-glasses mobile-lens-case-glasses" aria-hidden="true">
+          <img src="./assets/figma/mobile-lens-case.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
+        </div>
+        <div class="mobile-source-asset mobile-lens-source mobile-lens-glasses mobile-lens-empathy-glasses" aria-hidden="true">
+          <img src="./assets/figma/mobile-lens-empathy.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
+        </div>
+
+        <span class="mobile-source-asset mobile-profile-clip mobile-profile-clip-back" aria-hidden="true">
+          <img src="./assets/figma/mobile-profile-clip-back.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
+        </span>
+        <span class="mobile-source-asset mobile-profile-clip mobile-profile-clip-front" aria-hidden="true">
+          <img src="./assets/figma/mobile-profile-clip-back.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
+        </span>
+
         <div
           class="mobile-profile-logo-overlay mobile-profile-wenk-logo-overlay mobile-inline-vector"
           data-inline-svg="./assets/figma/profile-wenk-logo.svg?v=profile-vector-4"
@@ -399,7 +442,6 @@ function getMobileFigmaHomeMarkup() {
           <span class="mobile-lens-glow mobile-lens-glow-two" data-mobile-animate="glow"></span>
           <span class="mobile-lens-glow mobile-lens-glow-three" data-mobile-animate="glow"></span>
           <span class="mobile-lens-glow mobile-lens-glow-four" data-mobile-animate="glow"></span>
-          <span class="mobile-impact-pulse" data-mobile-animate="pulse"></span>
         </div>
 
         <button
@@ -481,11 +523,9 @@ function bindMobileAnimations(mobileHome) {
 
   const heroCta = mobileHome.querySelector(".mobile-hero-start");
   const bottomCta = mobileHome.querySelector(".mobile-bottom-start");
-  const impactLink = mobileHome.querySelector(".mobile-koica-link");
   [heroCta, bottomCta].forEach((element) => {
     if (element) element.dataset.mobileAnimate = "cta";
   });
-  if (impactLink) impactLink.dataset.mobileAnimate = "impact-link";
 
   const elements = [...mobileHome.querySelectorAll("[data-mobile-animate]")];
   if (!elements.length) return;
