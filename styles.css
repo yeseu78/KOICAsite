@@ -3837,6 +3837,180 @@ body:has(.app-shell.is-home) {
     width: 100%;
   }
 
+  .mobile-header-koica-correction {
+    position: absolute;
+    z-index: 20;
+    top: 1.8258%;
+    left: 3.8462%;
+    display: block;
+    padding: 0 2px 1px 0;
+    background: #fbf4ec;
+    box-shadow: -1px -1px 0 1px #fbf4ec;
+    color: #000;
+    font-family: "Abhaya Libre", Georgia, serif;
+    font-size: clamp(5.333px, 1.6667vw, 6.5px);
+    font-weight: 400;
+    line-height: clamp(6.667px, 2.0833vw, 8.125px);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .mobile-source-asset {
+    position: absolute;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .mobile-source-asset img {
+    display: block;
+    max-width: none;
+  }
+
+  .mobile-globe-sticker-source {
+    top: 15.7303%;
+    left: 10.2564%;
+    width: 12.0513%;
+    height: 2.2004%;
+  }
+
+  .mobile-globe-sticker-flip {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform: scaleX(-1);
+  }
+
+  .mobile-globe-base {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: bottom;
+    filter: drop-shadow(0 1.083px 1.083px rgba(0, 0, 0, 0.25));
+    transform: scaleX(-1);
+  }
+
+  .mobile-globe-tape-frame {
+    position: absolute;
+    top: -10.6383%;
+    left: 10.1489%;
+    display: flex;
+    width: 91.9872%;
+    height: 68.6447%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-globe-tape {
+    width: 91.5752%;
+    height: 81.812%;
+    object-fit: cover;
+    opacity: 0.9;
+    transform: rotate(-171deg) scaleY(-1);
+  }
+
+  .mobile-lens-source > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: rotate(180deg) scaleY(-1);
+  }
+
+  .mobile-lens-cooperation-icon {
+    top: 41.1049%;
+    left: 6.6667%;
+    width: 16.1538%;
+    height: 2.9494%;
+  }
+
+  .mobile-lens-participation-icon {
+    top: 41.1049%;
+    left: 54.359%;
+    width: 16.1538%;
+    height: 2.9494%;
+  }
+
+  .mobile-lens-case-icon {
+    top: 46.6292%;
+    left: 6.6667%;
+    width: 16.1538%;
+    height: 2.9494%;
+  }
+
+  .mobile-lens-empathy-icon {
+    top: 46.6292%;
+    left: 53.5897%;
+    width: 16.1538%;
+    height: 2.9494%;
+  }
+
+  .mobile-lens-glasses > img {
+    opacity: 0.9;
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+  }
+
+  .mobile-lens-cooperation-glasses {
+    top: 43.1648%;
+    left: 6.6667%;
+    width: 15.641%;
+    height: 2.2004%;
+  }
+
+  .mobile-lens-participation-glasses {
+    top: 43.1648%;
+    left: 54.6154%;
+    width: 15.641%;
+    height: 2.2004%;
+  }
+
+  .mobile-lens-case-glasses {
+    top: 48.6891%;
+    left: 7.1795%;
+    width: 15.3846%;
+    height: 2.1536%;
+  }
+
+  .mobile-lens-empathy-glasses {
+    top: 48.6891%;
+    left: 54.359%;
+    width: 15.3846%;
+    height: 2.1536%;
+  }
+
+  .mobile-profile-clip-back {
+    top: 59.5037%;
+    left: -3.0769%;
+    width: 10.355%;
+    height: 1.8908%;
+  }
+
+  .mobile-profile-clip-back > img {
+    width: 78.019%;
+    height: 78.019%;
+    object-fit: cover;
+    transform: rotate(20deg) scaleY(-1);
+  }
+
+  .mobile-profile-clip-front {
+    top: 59.691%;
+    left: -0.5128%;
+    width: 9.6674%;
+    height: 1.7651%;
+  }
+
+  .mobile-profile-clip-front > img {
+    width: 81.650%;
+    height: 81.650%;
+    object-fit: cover;
+    transform: rotate(-15deg) scaleY(-1);
+  }
+
   .mobile-profile-logo-overlay {
     position: absolute;
     z-index: 7;
@@ -4044,19 +4218,6 @@ body:has(.app-shell.is-home) {
     animation-delay: 1080ms !important;
   }
 
-  .mobile-impact-pulse {
-    position: absolute;
-    top: 76.35%;
-    left: 3.85%;
-    width: 52%;
-    height: 2.2%;
-    border-radius: 10px;
-    opacity: 0;
-  }
-
-  .mobile-impact-pulse.is-in-view {
-    animation: mobile-impact-breathe 3.8s ease-in-out infinite;
-  }
   }
 
   .mobile-figma-menu-toggle {
@@ -4256,23 +4417,6 @@ body:has(.app-shell.is-home) {
     animation: mobile-card-sheen 5.8s calc(650ms + var(--motion-delay, 0ms)) ease-in-out infinite;
   }
 
-  .mobile-koica-link[data-mobile-animate="impact-link"]::after {
-    position: absolute;
-    right: 0;
-    bottom: 4px;
-    left: 0;
-    height: 2px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, transparent, rgba(104, 18, 140, 0.82), transparent);
-    background-size: 220% 100%;
-    content: "";
-    opacity: 0;
-  }
-
-  .mobile-koica-link[data-mobile-animate="impact-link"].is-in-view::after {
-    animation: mobile-link-flow 3.2s ease-in-out infinite;
-  }
-
   .mobile-figma-hotspot:active {
     filter: brightness(1.08);
   }
@@ -4328,18 +4472,6 @@ body:has(.app-shell.is-home) {
     }
   }
 
-  @keyframes mobile-impact-breathe {
-    0%,
-    100% {
-      opacity: 0;
-      box-shadow: 0 0 0 0 rgba(104, 18, 140, 0);
-    }
-    50% {
-      opacity: 0.62;
-      box-shadow: 0 0 18px 3px rgba(104, 18, 140, 0.2);
-    }
-  }
-
   @keyframes mobile-button-pulse {
     0%,
     100% {
@@ -4384,15 +4516,4 @@ body:has(.app-shell.is-home) {
     }
   }
 
-  @keyframes mobile-link-flow {
-    0%,
-    100% {
-      opacity: 0.18;
-      background-position: 150% 0;
-    }
-    50% {
-      opacity: 0.82;
-      background-position: -50% 0;
-    }
-  }
 }

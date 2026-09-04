@@ -344,6 +344,46 @@ const highDpiMobile = await evaluate(`(() => ({
   profileCard: document.querySelector('.mobile-profile-wenki-card-overlay')?.currentSrc,
   profileCardNaturalWidth: document.querySelector('.mobile-profile-wenki-card-overlay')?.naturalWidth,
   profileCardWidth: Math.round(document.querySelector('.mobile-profile-wenki-card-overlay')?.getBoundingClientRect().width || 0),
+  correctedBrand: document.querySelector('.mobile-header-koica-correction')?.textContent.trim(),
+  sourceAssetCount: document.querySelectorAll('.mobile-source-asset').length,
+  sourceAssetNaturalWidths: [...document.querySelectorAll('.mobile-source-asset img')].map((img) => img.naturalWidth),
+  globeAsset: document.querySelector('.mobile-globe-base')?.currentSrc,
+  globeBox: (() => {
+    const artboard = document.querySelector('.mobile-figma-artboard').getBoundingClientRect();
+    const asset = document.querySelector('.mobile-globe-sticker-source').getBoundingClientRect();
+    return {
+      left: Math.round(asset.left - artboard.left),
+      top: Math.round(asset.top - artboard.top),
+      width: Math.round(asset.width),
+      height: Math.round(asset.height)
+    };
+  })(),
+  firstLensBox: (() => {
+    const artboard = document.querySelector('.mobile-figma-artboard').getBoundingClientRect();
+    const asset = document.querySelector('.mobile-lens-cooperation-icon').getBoundingClientRect();
+    return {
+      left: Math.round(asset.left - artboard.left),
+      top: Math.round(asset.top - artboard.top),
+      width: Math.round(asset.width),
+      height: Math.round(asset.height)
+    };
+  })(),
+  clipBackBox: (() => {
+    const artboard = document.querySelector('.mobile-figma-artboard').getBoundingClientRect();
+    const asset = document.querySelector('.mobile-profile-clip-back').getBoundingClientRect();
+    return {
+      left: Math.round(asset.left - artboard.left),
+      top: Math.round(asset.top - artboard.top)
+    };
+  })(),
+  impactAnimation: (() => {
+    const link = document.querySelector('.mobile-koica-link');
+    return {
+      animateAttribute: link?.dataset.mobileAnimate || null,
+      pseudoAnimation: getComputedStyle(link, '::after').animationName,
+      pulseExists: Boolean(document.querySelector('.mobile-impact-pulse'))
+    };
+  })(),
   motionElements: document.querySelectorAll('[data-mobile-animate]').length,
   horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
 }))()`);
@@ -507,7 +547,25 @@ const passed =
   highDpiMobile.profileCard.includes("profile-wenki-card.svg") &&
   highDpiMobile.profileCardNaturalWidth === 132 &&
   highDpiMobile.profileCardWidth === 132 &&
-  highDpiMobile.motionElements >= 20 &&
+  highDpiMobile.correctedBrand === "KOICA안경소" &&
+  highDpiMobile.sourceAssetCount === 11 &&
+  highDpiMobile.sourceAssetNaturalWidths.length === 12 &&
+  highDpiMobile.sourceAssetNaturalWidths.every((width) => width >= 1024) &&
+  highDpiMobile.globeAsset.includes("mobile-globe-base.png") &&
+  highDpiMobile.globeBox.left === 40 &&
+  highDpiMobile.globeBox.top === 336 &&
+  highDpiMobile.globeBox.width === 47 &&
+  highDpiMobile.globeBox.height === 47 &&
+  highDpiMobile.firstLensBox.left === 26 &&
+  highDpiMobile.firstLensBox.top === 878 &&
+  highDpiMobile.firstLensBox.width === 63 &&
+  highDpiMobile.firstLensBox.height === 63 &&
+  highDpiMobile.clipBackBox.left === -12 &&
+  highDpiMobile.clipBackBox.top === 1271 &&
+  highDpiMobile.impactAnimation.animateAttribute === null &&
+  highDpiMobile.impactAnimation.pseudoAnimation === "none" &&
+  highDpiMobile.impactAnimation.pulseExists === false &&
+  highDpiMobile.motionElements === 22 &&
   highDpiMobile.teamMotion.logoVisible === true &&
   highDpiMobile.teamMotion.cardVisible === true &&
   highDpiMobile.teamMotion.activeElements >= 8 &&
