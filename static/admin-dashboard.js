@@ -135,17 +135,20 @@ function renderQuestions(questions) {
   const container = document.querySelector("[data-question-list]");
   container.innerHTML = questions.length
     ? questions
-        .map(
-          (question, questionIndex) => `
+        .map((question, questionIndex) => {
+          const questionNumber = Number.isInteger(question.order) && question.order > 0 && question.order < 999
+            ? question.order
+            : questionIndex + 1;
+          return `
             <article class="question-stat">
-              <div class="question-stat-heading"><span>Q${questionIndex + 1}</span><div><h3>${escapeHtml(question.title)}</h3><p>${formatNumber(question.total)}명 응답</p></div></div>
+              <div class="question-stat-heading"><span>Q${questionNumber}</span><div><h3>${escapeHtml(question.title)}</h3><p>${formatNumber(question.total)}명 응답</p></div></div>
               <div class="bar-list">${question.options
                 .map(
                   (option) => `<div class="bar-row"><div><span>${escapeHtml(option.label)}</span><strong>${formatNumber(option.count)}명 · ${Number(option.rate).toFixed(1)}%</strong></div><div class="bar-track"><span style="width:${Math.min(option.rate, 100)}%"></span></div></div>`,
                 )
                 .join("")}</div>
-            </article>`,
-        )
+            </article>`;
+        })
         .join("")
     : '<p class="empty-state empty-state-large">응답 데이터가 쌓이면 질문별 분포가 표시됩니다.</p>';
 }

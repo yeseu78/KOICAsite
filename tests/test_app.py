@@ -2,11 +2,12 @@ import os
 import re
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 os.environ.setdefault("ADMIN_PASSWORD", "test-admin-password")
 os.environ.setdefault("SECRET_KEY", "test-secret-key")
 
+from analytics import SupabaseError
 from app import app
 
 
@@ -26,6 +27,42 @@ class FlaskAppTests(unittest.TestCase):
             response = self.client.get(path)
             self.assertEqual(response.status_code, 200)
             response.close()
+
+    def test_survey_start_event_has_one_emission_point(self):
+        source = (Path(__file__).resolve().parents[1] / "app.js").read_text(encoding="utf-8")
+        self.assertEqual(source.count('trackEvent("survey_start")'), 1)
+
+    def test_dashboard_uses_original_question_order(self):
+        source = (
+            Path(__file__).resolve().parents[1] / "static" / "admin-dashboard.js"
+        ).read_text(encoding="utf-8")
+        self.assertIn("question.order", source)
+        self.assertIn("Q${questionNumber}", source)
+
+    @patch("app.SupabaseEventStore.from_environment")
+    def test_readiness_checks_supabase_connection(self, from_environment):
+        store = Mock()
+        from_environment.return_value = store
+        response = self.client.get("/ready")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), {"status": "ready", "analytics": "connected"})
+        store.check_connection.assert_called_once_with()
+
+    @patch("app.SupabaseEventStore.from_environment", return_value=None)
+    def test_readiness_fails_when_supabase_is_not_configured(self, _from_environment):
+        response = self.client.get("/ready")
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.get_json()["analytics"], "not_configured")
+
+    @patch("app.SupabaseEventStore.from_environment")
+    def test_readiness_fails_when_supabase_is_unavailable(self, from_environment):
+        store = Mock()
+        store.check_connection.side_effect = SupabaseError("unavailable")
+        from_environment.return_value = store
+        with self.assertLogs(app.logger.name, level="ERROR"):
+            response = self.client.get("/ready")
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.get_json()["analytics"], "unavailable")
 
     def test_dashboard_requires_login(self):
         response = self.client.get("/admin/dashboard")

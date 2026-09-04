@@ -54,6 +54,15 @@ Start Command: gunicorn app:app
 Health Check: /health
 ```
 
+배포 후에는 아래 두 주소로 상태를 구분해 확인할 수 있습니다.
+
+```text
+/health  : Flask 프로세스 실행 및 분석 환경변수 설정 여부
+/ready   : Supabase 통계 테이블에 실제로 연결 가능한지 확인
+```
+
+`/health`는 Render의 짧고 안정적인 배포 상태 확인에 사용하고, `/ready`는 운영 점검 시 Supabase 연결까지 확인할 때 사용합니다. 정상 상태의 `/ready` 응답은 `{"status":"ready","analytics":"connected"}`입니다.
+
 기존 Render 서비스를 직접 설정하는 경우에도 위 명령과 환경변수를 동일하게 사용합니다.
 
 ## 4. 관리자 주소
