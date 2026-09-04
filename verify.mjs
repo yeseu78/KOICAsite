@@ -40,8 +40,8 @@ for (const feature of [
   'data-action="share-story"',
   'data-action="share-feed"',
   "createResultShareCard",
-  "home-mobile-responsive-hd-2x.jpg 2x",
-  "home-mobile-responsive-hd-4x.jpg 4x",
+  "home-mobile-figma-original-2x.png 2x",
+  "home-mobile-figma-original-4x.png 4x",
 ]) {
   if (!appSource.includes(feature)) errors.push(`기능 코드 누락: ${feature}`);
 }
