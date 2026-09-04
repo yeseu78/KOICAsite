@@ -52,7 +52,7 @@
 
       <section class="metric-grid" aria-label="핵심 통계">
         <article class="metric-card metric-card-primary">
-          <span>누적 참여자</span><strong data-metric="total_participants">—</strong><small>명</small>
+          <span>누적 참여자</span><strong data-metric="total_participants">—</strong><small>명 · 중복 제외</small>
         </article>
         <article class="metric-card">
           <span>오늘 참여자</span><strong data-metric="today_participants">—</strong><small>명 · 한국시간</small>
@@ -64,7 +64,7 @@
           <span>설문 완료율</span><strong data-metric="completion_rate">—</strong><small>%</small>
         </article>
         <article class="metric-card">
-          <span>총 공유</span><strong data-metric="share_clicks">—</strong><small>회</small>
+          <span>총 공유</span><strong data-metric="share_clicks">—</strong><small>회 · 성공 클릭</small>
         </article>
       </section>
 
@@ -123,7 +123,7 @@
           <div class="completion-bar"><span data-completion-bar></span></div>
           <div class="completion-meta">
             <span>완료율 <strong data-completion-rate>—</strong></span>
-            <span>중도 이탈 <strong data-dropoffs>—</strong></span>
+            <span title="설문을 시작했지만 한 번도 완료하지 않은 고유 방문자">중도 이탈 <strong data-dropoffs>—</strong></span>
           </div>
         </section>
 
@@ -132,9 +132,9 @@
             <div><p class="section-eyebrow">SHARING</p><h2>공유 현황</h2></div>
           </div>
           <div class="share-summary">
-            <div><span>총 공유</span><strong data-metric="share_clicks">—</strong><small>회</small></div>
+            <div><span>총 공유</span><strong data-metric="share_clicks">—</strong><small>회 · 반복 포함</small></div>
             <div><span>공유 사용자</span><strong data-metric="share_users">—</strong><small>명</small></div>
-            <div><span>공유율</span><strong data-metric="share_rate">—</strong><small>%</small></div>
+            <div><span>공유율</span><strong data-metric="share_rate">—</strong><small>% · 결과 조회자 기준</small></div>
           </div>
           <div class="bar-list compact-bars" data-share-bars></div>
         </section>

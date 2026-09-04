@@ -50,8 +50,19 @@ function getAttribution() {
   } catch {
     externalReferrer = "";
   }
+  const campaignSource = params.get("utm_source") || "";
+  const userAgent = navigator.userAgent.toLowerCase();
+  const inAppSource = userAgent.includes("instagram")
+    ? "instagram_in_app"
+    : userAgent.includes("kakaotalk")
+      ? "kakao_in_app"
+      : "";
   const attribution = {
-    source: params.get("utm_source") || "",
+    // Generic shared links opened inside Instagram/KakaoTalk are attributed to
+    // the actual in-app browser; medium/campaign still identify them as shares.
+    source: campaignSource === "shared_link" && inAppSource
+      ? inAppSource
+      : campaignSource || inAppSource,
     medium: params.get("utm_medium") || "",
     campaign: params.get("utm_campaign") || "",
     referrer: externalReferrer,
@@ -74,6 +85,76 @@ const analyticsEndpoint = window.location.hostname === "yeseu78.github.io"
   ? "https://weko-traffic.onrender.com/api/analytics/events"
   : "/api/analytics/events";
 
+const analyticsQueueKey = "weko_analytics_queue_v1";
+let analyticsFlushPromise = null;
+
+function readAnalyticsQueue() {
+  try {
+    const queue = JSON.parse(localStorage.getItem(analyticsQueueKey) || "[]");
+    return Array.isArray(queue) ? queue : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeAnalyticsQueue(queue) {
+  try {
+    localStorage.setItem(analyticsQueueKey, JSON.stringify(queue.slice(-120)));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function analyticsEventKey(payload) {
+  if (payload.event_type === "answer") {
+    return `answer:${payload.visit_id}:${payload.question_id}`;
+  }
+  if (payload.event_type === "share") {
+    return `share:${payload.visit_id}:${payload.event_id}`;
+  }
+  return `${payload.event_type}:${payload.visit_id}`;
+}
+
+function queueAnalyticsPayload(payload) {
+  const eventKey = analyticsEventKey(payload);
+  const pending = readAnalyticsQueue().filter((entry) => entry.event_key !== eventKey);
+  pending.push({ queue_id: makeAnonymousId(), event_key: eventKey, payload });
+  return writeAnalyticsQueue(pending);
+}
+
+async function postAnalyticsPayload(payload) {
+  const response = await fetch(analyticsEndpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    keepalive: true,
+  });
+  if (!response.ok) throw new Error(`Analytics request failed (${response.status})`);
+}
+
+function flushAnalyticsQueue() {
+  if (analyticsFlushPromise) return analyticsFlushPromise;
+  analyticsFlushPromise = (async () => {
+    while (true) {
+      const entry = readAnalyticsQueue()[0];
+      if (!entry) break;
+      try {
+        await postAnalyticsPayload(entry.payload);
+      } catch {
+        break;
+      }
+      const remaining = readAnalyticsQueue().filter(
+        (candidate) => candidate.queue_id !== entry.queue_id,
+      );
+      writeAnalyticsQueue(remaining);
+    }
+  })().finally(() => {
+    analyticsFlushPromise = null;
+  });
+  return analyticsFlushPromise;
+}
+
 function trackEvent(eventType, detail = {}) {
   const payload = {
     event_type: eventType,
@@ -81,12 +162,11 @@ function trackEvent(eventType, detail = {}) {
     visit_id: analyticsContext.visit_id,
     ...detail,
   };
-  fetch(analyticsEndpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-    keepalive: true,
-  }).catch(() => {
+  if (queueAnalyticsPayload(payload)) {
+    flushAnalyticsQueue();
+    return;
+  }
+  postAnalyticsPayload(payload).catch(() => {
     // Tracking failures must not change the public survey flow.
   });
 }
@@ -99,6 +179,10 @@ function trackShare(channel) {
 }
 
 trackEvent("visit", analyticsContext.attribution);
+window.addEventListener("online", flushAnalyticsQueue);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") flushAnalyticsQueue();
+});
 
 const validCorrectionKeys = Object.keys(correctionLensData);
 const validContentKeys = Object.keys(contentLensData);
