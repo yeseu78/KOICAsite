@@ -7,6 +7,7 @@ import {
 } from "./data.js";
 
 const app = document.querySelector("#app");
+let mobileMotionObserver = null;
 
 const state = {
   answers: [],
@@ -358,33 +359,48 @@ function getMobileFigmaHomeMarkup() {
           />
         </picture>
 
-        <img
-          class="mobile-profile-logo-overlay mobile-profile-wenk-logo-overlay"
-          src="./assets/figma/profile-wenk-logo.svg?v=profile-vector-3"
-          width="155"
-          height="61"
-          decoding="sync"
-          alt=""
+        <div
+          class="mobile-profile-logo-overlay mobile-profile-wenk-logo-overlay mobile-inline-vector"
+          data-inline-svg="./assets/figma/profile-wenk-logo.svg?v=profile-vector-4"
+          data-mobile-animate="vector"
           aria-hidden="true"
-        />
-        <img
-          class="mobile-profile-logo-overlay mobile-profile-label-overlay"
-          src="./assets/figma/profile-label.svg?v=profile-vector-3"
-          width="51"
-          height="18"
-          decoding="sync"
-          alt=""
+        >
+          <img class="mobile-inline-vector-fallback" src="./assets/figma/profile-wenk-logo.svg?v=profile-vector-4" width="155" height="61" alt="" />
+        </div>
+        <div
+          class="mobile-profile-logo-overlay mobile-profile-label-overlay mobile-inline-vector"
+          data-inline-svg="./assets/figma/profile-label.svg?v=profile-vector-4"
+          data-mobile-animate="vector"
           aria-hidden="true"
-        />
+        >
+          <img class="mobile-inline-vector-fallback" src="./assets/figma/profile-label.svg?v=profile-vector-4" width="51" height="18" alt="" />
+        </div>
         <img
           class="mobile-profile-logo-overlay mobile-profile-wenki-card-overlay"
-          src="./assets/figma/profile-wenki-card.svg?v=profile-vector-3"
+          src="./assets/figma/profile-wenki-card.svg?v=profile-vector-4"
           width="132"
           height="198"
           decoding="sync"
+          data-mobile-animate="card"
           alt=""
           aria-hidden="true"
         />
+
+        <div class="mobile-motion-layer" aria-hidden="true">
+          <span class="mobile-profile-logo-glint" data-mobile-animate="glint"></span>
+          <span class="mobile-motion-spark mobile-motion-spark-one" data-mobile-animate="spark"></span>
+          <span class="mobile-motion-spark mobile-motion-spark-two" data-mobile-animate="spark"></span>
+          <span class="mobile-motion-spark mobile-motion-spark-three" data-mobile-animate="spark"></span>
+          <span class="mobile-motion-spark mobile-motion-spark-four" data-mobile-animate="spark"></span>
+          <span class="mobile-motion-spark mobile-motion-spark-five" data-mobile-animate="spark"></span>
+          <span class="mobile-motion-spark mobile-motion-spark-six" data-mobile-animate="spark"></span>
+          <span class="mobile-motion-spark mobile-motion-spark-seven" data-mobile-animate="spark"></span>
+          <span class="mobile-lens-glow mobile-lens-glow-one" data-mobile-animate="glow"></span>
+          <span class="mobile-lens-glow mobile-lens-glow-two" data-mobile-animate="glow"></span>
+          <span class="mobile-lens-glow mobile-lens-glow-three" data-mobile-animate="glow"></span>
+          <span class="mobile-lens-glow mobile-lens-glow-four" data-mobile-animate="glow"></span>
+          <span class="mobile-impact-pulse" data-mobile-animate="pulse"></span>
+        </div>
 
         <button
           class="mobile-menu-toggle mobile-figma-menu-toggle"
@@ -430,6 +446,67 @@ function getMobileFigmaHomeMarkup() {
   `;
 }
 
+async function hydrateInlineSvg(host) {
+  const source = host.dataset.inlineSvg;
+  if (!source) return;
+
+  try {
+    const response = await fetch(source, { cache: "force-cache" });
+    if (!response.ok) throw new Error(`SVG request failed: ${response.status}`);
+    const documentNode = new DOMParser().parseFromString(await response.text(), "image/svg+xml");
+    if (documentNode.querySelector("parsererror")) throw new Error("Invalid SVG response");
+
+    const svg = documentNode.documentElement;
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
+    host.replaceChildren(document.importNode(svg, true));
+    host.classList.add("is-vector-ready");
+  } catch (error) {
+    console.warn("WE:NK inline vector fallback:", error);
+    host.classList.add("is-vector-fallback");
+  }
+}
+
+function bindMobileAnimations(mobileHome) {
+  mobileMotionObserver?.disconnect();
+
+  const profileLinks = [...mobileHome.querySelectorAll('.mobile-figma-hotspot[class*="mobile-profile-"]')];
+  profileLinks.forEach((link, index) => {
+    link.dataset.mobileAnimate = "card-link";
+    link.style.setProperty("--motion-delay", `${index * 90}ms`);
+  });
+
+  const heroCta = mobileHome.querySelector(".mobile-hero-start");
+  const bottomCta = mobileHome.querySelector(".mobile-bottom-start");
+  const impactLink = mobileHome.querySelector(".mobile-koica-link");
+  [heroCta, bottomCta].forEach((element) => {
+    if (element) element.dataset.mobileAnimate = "cta";
+  });
+  if (impactLink) impactLink.dataset.mobileAnimate = "impact-link";
+
+  const elements = [...mobileHome.querySelectorAll("[data-mobile-animate]")];
+  if (!elements.length) return;
+
+  const show = (element) => element.classList.add("is-in-view");
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+    elements.forEach(show);
+    return;
+  }
+
+  mobileMotionObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        show(entry.target);
+        mobileMotionObserver?.unobserve(entry.target);
+      });
+    },
+    { rootMargin: "8% 0px -8%", threshold: 0.12 },
+  );
+  elements.forEach((element) => mobileMotionObserver.observe(element));
+}
+
 function bindHomeInteractions() {
   app.querySelectorAll('[data-action="start"]').forEach((button) => {
     button.addEventListener("click", () => {
@@ -446,6 +523,11 @@ function bindHomeInteractions() {
   const menuToggle = app.querySelector('[data-action="toggle-mobile-menu"]');
   const navigation = app.querySelector("#mobile-navigation");
   if (!mobileHome || !menuToggle || !navigation) return;
+
+  mobileHome.querySelectorAll("[data-inline-svg]").forEach((host) => {
+    void hydrateInlineSvg(host);
+  });
+  bindMobileAnimations(mobileHome);
 
   const setMenuOpen = (isOpen) => {
     mobileHome.classList.toggle("is-menu-open", isOpen);
