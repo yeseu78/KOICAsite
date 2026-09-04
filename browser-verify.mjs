@@ -139,8 +139,52 @@ for (const optionIndex of [2, 2, 1, 1]) {
 const fullFlowResult = await evaluate(`(() => ({
   screen: document.querySelector('[data-screen]')?.dataset.screen,
   correction: document.querySelector('[data-screen="result"]')?.dataset.correction,
-  content: document.querySelector('[data-screen="result"]')?.dataset.content
+  content: document.querySelector('[data-screen="result"]')?.dataset.content,
+  metricValues: [...document.querySelectorAll('.result-metric-card > strong')].map((item) => item.textContent.trim()),
+  metricCount: document.querySelectorAll('.result-metric-card').length
 }))()`);
+await screenshot("./.artifacts/result-metrics-desktop.png");
+
+await send("Emulation.setDeviceMetricsOverride", {
+  width: 390,
+  height: 844,
+  deviceScaleFactor: 3,
+  mobile: true,
+});
+await navigate(
+  "http://127.0.0.1:4173/?view=result&correction=cooperation&content=ict",
+);
+const mobileResultMetrics = await evaluate(`(() => {
+  const cards = [...document.querySelectorAll('.result-metric-card')];
+  const boxes = cards.map((card) => {
+    const rect = card.getBoundingClientRect();
+    return {
+      left: Math.round(rect.left),
+      top: Math.round(rect.top),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+      clipped: card.scrollWidth > card.clientWidth || card.scrollHeight > card.clientHeight
+    };
+  });
+  return {
+    combination: document.querySelector('.lens-combination').textContent.trim().replace(/\\s+/g, ' '),
+    values: cards.map((card) => card.querySelector('strong').textContent.trim()),
+    labels: cards.map((card) => card.querySelector('span').textContent.trim()),
+    groups: [...document.querySelectorAll('.metric-group-title > span')].map((item) => item.textContent.trim()),
+    guidance: document.querySelector('.result-metric-help').textContent.replace(/\\s+/g, ' ').trim(),
+    interpretation: document.querySelector('.combination-interpretation .diagnosis-text').textContent.trim(),
+    boxes,
+    horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
+  };
+})()`);
+await screenshot("./.artifacts/result-metrics-mobile-390-dpr3.png");
+
+await send("Emulation.setDeviceMetricsOverride", {
+  width: 500,
+  height: 1100,
+  deviceScaleFactor: 1,
+  mobile: false,
+});
 
 await navigate(
   "http://127.0.0.1:4173/?view=result&correction=cooperation&content=peace",
@@ -476,6 +520,7 @@ const checks = {
   secondClick,
   switchSelection,
   fullFlowResult,
+  mobileResultMetrics,
   shareUi,
   storyMedia,
   homeEffects,
@@ -502,6 +547,25 @@ const passed =
   fullFlowResult.screen === "result" &&
   fullFlowResult.correction === "participation" &&
   fullFlowResult.content === "water" &&
+  fullFlowResult.metricCount === 3 &&
+  JSON.stringify(fullFlowResult.metricValues) === JSON.stringify(["+0.5", "180°", "100%"]) &&
+  mobileResultMetrics.combination === "협력렌즈 × 테크렌즈" &&
+  JSON.stringify(mobileResultMetrics.values) === JSON.stringify(["+2.0", "60°", "100%"]) &&
+  JSON.stringify(mobileResultMetrics.labels) === JSON.stringify(["협력도", "공감 시야각", "테크 감도"]) &&
+  JSON.stringify(mobileResultMetrics.groups) === JSON.stringify(["교정렌즈 진단", "콘텐츠 렌즈 매칭"]) &&
+  mobileResultMetrics.guidance.includes("협력도와 공감 시야각은 현재 ODA 인식을 분석한 교정렌즈 진단 결과예요") &&
+  mobileResultMetrics.guidance.includes("수치가 높을수록 더 많은 인식 교정이 필요해요") &&
+  mobileResultMetrics.guidance.includes("각도가 넓을수록 협력의 연결 관계를 폭넓게 바라보고 있어요") &&
+  mobileResultMetrics.guidance.includes("선택한 관심 분야와 추천 콘텐츠의 매칭 정도예요") &&
+  mobileResultMetrics.interpretation.includes("공감 시야각은 60°") &&
+  mobileResultMetrics.interpretation.includes("ICT 분야에는 100%") &&
+  mobileResultMetrics.boxes[0].top === mobileResultMetrics.boxes[1].top &&
+  mobileResultMetrics.boxes[0].width >= 140 &&
+  mobileResultMetrics.boxes[1].width >= 140 &&
+  mobileResultMetrics.boxes[2].top > mobileResultMetrics.boxes[1].top + mobileResultMetrics.boxes[1].height &&
+  mobileResultMetrics.boxes[2].width > mobileResultMetrics.boxes[0].width * 1.8 &&
+  mobileResultMetrics.boxes.every((box) => box.clipped === false) &&
+  mobileResultMetrics.horizontalOverflow === false &&
   shareUi.shareButtons === 4 &&
   shareUi.copyStatus.includes("복사") &&
   !shareUi.copyStatus.includes("복사하지 못했어요") &&
