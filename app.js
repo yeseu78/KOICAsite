@@ -420,19 +420,6 @@ function getMobileFigmaHomeMarkup() {
           <img src="./assets/figma/mobile-lens-empathy.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
         </div>
 
-        <span class="mobile-source-asset mobile-profile-photo-source mobile-profile-photo-euiseong" aria-hidden="true">
-          <img src="./assets/figma/mobile-profile-euiseong.png?v=source-original-2" width="1080" height="1350" loading="lazy" decoding="async" alt="" />
-        </span>
-        <span class="mobile-source-asset mobile-profile-photo-source mobile-profile-photo-yeseul" aria-hidden="true">
-          <img src="./assets/figma/mobile-profile-yeseul.png?v=source-original-2" width="1080" height="1350" loading="lazy" decoding="async" alt="" />
-        </span>
-        <span class="mobile-source-asset mobile-profile-photo-source mobile-profile-photo-ain" aria-hidden="true">
-          <img src="./assets/figma/mobile-profile-ain.png?v=source-original-2" width="1080" height="1350" loading="lazy" decoding="async" alt="" />
-        </span>
-        <span class="mobile-source-asset mobile-profile-photo-source mobile-profile-photo-sua" aria-hidden="true">
-          <img src="./assets/figma/mobile-profile-sua.png?v=source-original-2" width="1080" height="1350" loading="lazy" decoding="async" alt="" />
-        </span>
-
         <span class="mobile-source-asset mobile-profile-clip mobile-profile-clip-back" aria-hidden="true">
           <img src="./assets/figma/mobile-profile-clip-back.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
         </span>
@@ -449,15 +436,6 @@ function getMobileFigmaHomeMarkup() {
         <span class="mobile-source-asset mobile-impact-megaphone-source" aria-hidden="true">
           <img src="./assets/figma/mobile-impact-megaphone.png?v=source-original-2" width="1536" height="1024" loading="lazy" decoding="async" alt="" />
         </span>
-        <span class="mobile-source-asset mobile-impact-photo-source mobile-impact-photo-community" aria-hidden="true">
-          <img src="./assets/figma/mobile-impact-photo-community.png?v=source-original-2" width="998" height="661" loading="lazy" decoding="async" alt="" />
-        </span>
-        <span class="mobile-source-asset mobile-impact-photo-source mobile-impact-photo-koica" aria-hidden="true">
-          <span class="mobile-impact-photo-koica-mask">
-            <img src="./assets/figma/mobile-impact-photo-koica.png?v=source-original-2" width="205" height="153" loading="lazy" decoding="async" alt="" />
-          </span>
-        </span>
-
         <div
           class="mobile-profile-logo-overlay mobile-profile-wenk-logo-overlay mobile-inline-vector"
           data-inline-svg="./assets/figma/profile-wenk-logo.svg?v=profile-vector-4"
