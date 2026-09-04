@@ -11,10 +11,10 @@ const styleSource = fs.readFileSync("./styles.css", "utf8");
 const correctionKeys = Object.keys(correctionLensData);
 const contentKeys = Object.keys(contentLensData);
 const expectedCorrectionDiagnostics = {
-  cooperation: { cooperationDegree: "+2.0", empathyAngle: 60 },
-  case: { cooperationDegree: "+1.5", empathyAngle: 120 },
-  empathy: { cooperationDegree: "+1.0", empathyAngle: 90 },
-  participation: { cooperationDegree: "+0.5", empathyAngle: 180 },
+  cooperation: { cooperationDegree: "+2.0", cooperationProgress: 100, empathyAngle: 60, empathyProgress: 33 },
+  case: { cooperationDegree: "+1.5", cooperationProgress: 75, empathyAngle: 120, empathyProgress: 67 },
+  empathy: { cooperationDegree: "+1.0", cooperationProgress: 50, empathyAngle: 90, empathyProgress: 50 },
+  participation: { cooperationDegree: "+0.5", cooperationProgress: 25, empathyAngle: 180, empathyProgress: 100 },
 };
 const expectedContentMatching = {
   education: { displayName: "배움렌즈", sensitivityLabel: "배움" },
@@ -33,8 +33,13 @@ for (const correctionKey of correctionKeys) {
   if (
     !expected ||
     actual?.cooperationDegree !== expected.cooperationDegree ||
+    actual?.cooperationProgress !== expected.cooperationProgress ||
     actual?.empathyAngle !== expected.empathyAngle ||
-    !correctionLensData[correctionKey].interpretation
+    actual?.empathyProgress !== expected.empathyProgress ||
+    !actual?.cooperationLevel ||
+    !actual?.empathyRange ||
+    !correctionLensData[correctionKey].interpretation ||
+    !correctionLensData[correctionKey].nextFocus
   ) {
     errors.push(`교정렌즈 진단값 오류: ${correctionKey}`);
   }
@@ -87,6 +92,9 @@ for (const feature of [
   'data-metric="empathy-angle"',
   'data-metric="content-sensitivity"',
   "협력도와 공감 시야각은 현재 ODA 인식을 분석한 교정렌즈 진단 결과예요.",
+  "이 결과를 쉽게 말하면",
+  "정답률이 아니라 선택 분야와 추천 콘텐츠가 정확히 일치한다는 뜻이에요.",
+  "이제 무엇을 보면 좋을까요?",
   "home-mobile-figma-vector.svg",
   "home-mobile-figma-original-2x.png 2x",
   "home-mobile-figma-original-4x.png 4x",
@@ -100,6 +108,9 @@ for (const feature of [
   ".share-section",
   ".result-metric-grid",
   ".result-metric-help",
+  ".result-at-a-glance",
+  ".metric-scale",
+  ".result-next-focus",
 ]) {
   if (!styleSource.includes(feature)) errors.push(`스타일 누락: ${feature}`);
 }

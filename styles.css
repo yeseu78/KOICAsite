@@ -580,6 +580,68 @@ img {
   line-height: 1.55;
 }
 
+.result-at-a-glance {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px;
+  border: 1px solid #dfcbea;
+  border-left: 4px solid var(--correction);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.82);
+  text-align: left;
+}
+
+.easy-result-label {
+  margin: 0 0 7px;
+  color: var(--correction);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.easy-result-summary {
+  margin: 0;
+  color: #332c35;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.65;
+  word-break: keep-all;
+}
+
+.easy-lens-roles {
+  display: grid;
+  gap: 6px;
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px dashed #ddcfe4;
+}
+
+.easy-lens-roles p {
+  margin: 0;
+  color: #625866;
+  font-size: 10.5px;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.easy-lens-roles p > span {
+  display: inline-block;
+  min-width: 68px;
+  margin-right: 5px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.easy-lens-roles p:last-child > span,
+.easy-lens-roles p:last-child > strong {
+  color: var(--blue);
+}
+
+.easy-lens-roles strong {
+  margin-right: 3px;
+  color: var(--correction);
+}
+
 .result-prescription {
   width: 100%;
   margin-top: 8px;
@@ -651,7 +713,7 @@ img {
 .result-metric-card {
   display: grid;
   min-width: 0;
-  min-height: 104px;
+  min-height: 148px;
   align-content: center;
   padding: 12px;
   border: 1px solid rgba(104, 18, 140, 0.1);
@@ -675,6 +737,36 @@ img {
   letter-spacing: -0.035em;
 }
 
+.result-metric-card > em {
+  justify-self: start;
+  margin-top: 5px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: var(--correction-soft);
+  color: var(--correction);
+  font-size: 8.5px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.metric-scale {
+  width: 100%;
+  height: 5px;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ece5ef;
+}
+
+.metric-scale > span {
+  display: block;
+  width: var(--metric-progress);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #b98bd0, var(--correction));
+}
+
 .result-metric-card > small {
   margin-top: 5px;
   color: #746b77;
@@ -683,12 +775,27 @@ img {
   word-break: keep-all;
 }
 
+.result-metric-card > .metric-range {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  margin-top: 4px;
+  color: #877d89;
+  font-size: 7.5px;
+  white-space: nowrap;
+}
+
 .content-sensitivity-card {
-  min-height: 96px;
+  min-height: 132px;
   border-color: rgba(63, 114, 232, 0.14);
 }
 
 .content-sensitivity-card > strong {
+  color: var(--blue);
+}
+
+.content-sensitivity-card > em {
+  background: var(--blue-soft);
   color: var(--blue);
 }
 
@@ -707,6 +814,12 @@ img {
   font-weight: 700;
   line-height: 1.62;
   word-break: keep-all;
+}
+
+.result-metric-help > .metric-help-title {
+  margin-bottom: 6px;
+  color: var(--purple);
+  font-size: 12px;
 }
 
 .result-metric-help dl {
@@ -853,6 +966,42 @@ img {
   border: 1px dashed color-mix(in srgb, var(--correction) 36%, white);
   border-radius: 12px;
   background: #fff;
+}
+
+.result-next-focus {
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px dashed #ddcfe4;
+}
+
+.result-next-focus > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--correction);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.result-next-focus > p {
+  margin: 0;
+  color: #5b515e;
+  font-size: 11px;
+  line-height: 1.58;
+  word-break: keep-all;
+}
+
+.result-next-focus > p + p {
+  margin-top: 8px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  background: var(--correction-soft);
+}
+
+.result-next-focus strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--correction);
+  font-size: 10px;
 }
 
 .content-card {

@@ -171,6 +171,9 @@ const mobileResultMetrics = await evaluate(`(() => {
     values: cards.map((card) => card.querySelector('strong').textContent.trim()),
     labels: cards.map((card) => card.querySelector('span').textContent.trim()),
     groups: [...document.querySelectorAll('.metric-group-title > span')].map((item) => item.textContent.trim()),
+    statuses: [...document.querySelectorAll('.result-metric-card > em')].map((item) => item.textContent.trim()),
+    scaleWidths: [...document.querySelectorAll('.metric-scale > span')].map((item) => Math.round(item.getBoundingClientRect().width)),
+    easySummary: document.querySelector('.result-at-a-glance').textContent.replace(/\\s+/g, ' ').trim(),
     guidance: document.querySelector('.result-metric-help').textContent.replace(/\\s+/g, ' ').trim(),
     interpretation: document.querySelector('.combination-interpretation .diagnosis-text').textContent.trim(),
     boxes,
@@ -553,10 +556,16 @@ const passed =
   JSON.stringify(mobileResultMetrics.values) === JSON.stringify(["+2.0", "60°", "100%"]) &&
   JSON.stringify(mobileResultMetrics.labels) === JSON.stringify(["협력도", "공감 시야각", "테크 감도"]) &&
   JSON.stringify(mobileResultMetrics.groups) === JSON.stringify(["교정렌즈 진단", "콘텐츠 렌즈 매칭"]) &&
+  JSON.stringify(mobileResultMetrics.statuses) === JSON.stringify(["교정 필요 높음", "시야 범위 좁음", "추천 분야 일치"]) &&
+  mobileResultMetrics.scaleWidths[0] > mobileResultMetrics.scaleWidths[1] * 2.5 &&
+  mobileResultMetrics.easySummary.includes("이 결과를 쉽게 말하면") &&
+  mobileResultMetrics.easySummary.includes("지금 ODA를 바라보는 방식을 보완하기 위해 협력렌즈가 처방됐어요") &&
+  mobileResultMetrics.easySummary.includes("내가 선택한 ICT 분야의 사례를 보기 위해 테크렌즈가 연결됐어요") &&
   mobileResultMetrics.guidance.includes("협력도와 공감 시야각은 현재 ODA 인식을 분석한 교정렌즈 진단 결과예요") &&
   mobileResultMetrics.guidance.includes("수치가 높을수록 더 많은 인식 교정이 필요해요") &&
   mobileResultMetrics.guidance.includes("각도가 넓을수록 협력의 연결 관계를 폭넓게 바라보고 있어요") &&
   mobileResultMetrics.guidance.includes("선택한 관심 분야와 추천 콘텐츠의 매칭 정도예요") &&
+  mobileResultMetrics.guidance.includes("시험 점수가 아니라") &&
   mobileResultMetrics.interpretation.includes("공감 시야각은 60°") &&
   mobileResultMetrics.interpretation.includes("ICT 분야에는 100%") &&
   mobileResultMetrics.boxes[0].top === mobileResultMetrics.boxes[1].top &&
