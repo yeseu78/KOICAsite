@@ -3871,48 +3871,97 @@ body:has(.app-shell.is-home) {
     max-width: none;
   }
 
-  .mobile-globe-sticker-source {
-    top: 15.7303%;
-    left: 10.2564%;
-    width: 12.0513%;
-    height: 2.2004%;
+  .mobile-header-logo-source {
+    z-index: 20;
+    top: 0.1404%;
+    left: 4.8718%;
+    width: 6.4103%;
+    height: 1.1704%;
   }
 
-  .mobile-globe-sticker-flip {
+  .mobile-header-logo-source > img,
+  .mobile-hero-collage-original {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-hero-collage-original {
+    z-index: 6;
+    top: 10.206%;
+    left: 6.1538%;
+    width: 83.5897%;
+    height: 11.6573%;
+    transform: scale(1.07);
+    transform-origin: center;
+  }
+
+  .mobile-hero-copy-mask {
+    position: absolute;
+    z-index: 7;
+    top: 22.2846%;
+    left: 0;
+    width: 100%;
+    height: 2.294%;
+    background: #fbf4ec;
+  }
+
+  .mobile-hero-copy-original {
+    position: absolute;
+    z-index: 8;
+    top: 20.8333%;
+    left: 11.0256%;
+    width: 75.8974%;
+    color: #000;
+    font-family: "Abel", "Noto Sans KR", sans-serif;
+    font-size: clamp(10.831px, 3.3846vw, 13.2px);
+    font-weight: 400;
+    line-height: clamp(15.59px, 4.8718vw, 19px);
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .mobile-hero-copy-original p {
+    margin: 0;
+  }
+
+  .mobile-feature-source {
+    width: 19.7436%;
+    height: 2.3876%;
+    overflow: hidden;
+  }
+
+  .mobile-feature-source > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: rotate(180deg) scaleY(-1);
+  }
+
+  .mobile-feature-eye-test {
+    top: 29.7285%;
+    left: 3.3333%;
+  }
+
+  .mobile-feature-prescription {
+    top: 29.7285%;
+    left: 45.8974%;
+  }
+
+  .mobile-feature-prescription > img {
     position: relative;
-    width: 100%;
-    height: 100%;
-    transform: scaleX(-1);
+    top: 0.94%;
+    left: -5.87%;
   }
 
-  .mobile-globe-base {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: bottom;
-    filter: drop-shadow(0 1.083px 1.083px rgba(0, 0, 0, 0.25));
-    transform: scaleX(-1);
+  .mobile-feature-koica {
+    top: 32.9588%;
+    left: 3.3333%;
   }
 
-  .mobile-globe-tape-frame {
-    position: absolute;
-    top: -10.6383%;
-    left: 10.1489%;
-    display: flex;
-    width: 91.9872%;
-    height: 68.6447%;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .mobile-globe-tape {
-    width: 91.5752%;
-    height: 81.812%;
-    object-fit: cover;
-    opacity: 0.9;
-    transform: rotate(-171deg) scaleY(-1);
+  .mobile-feature-world {
+    top: 32.9588%;
+    left: 47.4359%;
   }
 
   .mobile-lens-source > img {
@@ -3983,6 +4032,55 @@ body:has(.app-shell.is-home) {
     height: 2.1536%;
   }
 
+  .mobile-profile-photo-source {
+    z-index: 7;
+    overflow: hidden;
+  }
+
+  .mobile-profile-photo-source > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-profile-photo-euiseong {
+    top: 54.1199%;
+    left: 40.7692%;
+    width: 21.4831%;
+    height: 4.9022%;
+  }
+
+  .mobile-profile-photo-yeseul {
+    top: 54.1199%;
+    left: 64.359%;
+    width: 21.8739%;
+    height: 4.954%;
+  }
+
+  .mobile-profile-photo-yeseul > img {
+    transform: rotate(-1deg) scale(1.01);
+  }
+
+  .mobile-profile-photo-ain {
+    top: 59.6273%;
+    left: 42.2059%;
+    width: 21.5223%;
+    height: 4.8381%;
+  }
+
+  .mobile-profile-photo-ain > img {
+    width: 95.876%;
+    height: 97.341%;
+    transform: rotate(2deg);
+  }
+
+  .mobile-profile-photo-sua {
+    top: 59.8783%;
+    left: 64.6154%;
+    width: 20.5128%;
+    height: 4.6816%;
+  }
+
   .mobile-profile-clip-back {
     top: 59.5037%;
     left: -3.0769%;
@@ -4009,6 +4107,95 @@ body:has(.app-shell.is-home) {
     height: 81.650%;
     object-fit: cover;
     transform: rotate(-15deg) scaleY(-1);
+  }
+
+  .mobile-profile-camera-source {
+    z-index: 7;
+    top: 63.6704%;
+    left: 84.8718%;
+    width: 14.7223%;
+    height: 4.0321%;
+  }
+
+  .mobile-profile-camera-source > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-impact-globe-source {
+    z-index: 6;
+    top: 69.4288%;
+    left: 44.6154%;
+    width: 55.3846%;
+    height: 11.985%;
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+
+  .mobile-impact-globe-source > img {
+    width: 118.5185%;
+    height: 100%;
+    object-fit: cover;
+    object-position: bottom left;
+    filter: drop-shadow(0 1.083px 1.083px rgba(0, 0, 0, 0.25));
+  }
+
+  .mobile-impact-megaphone-source {
+    z-index: 7;
+    top: 77.6685%;
+    left: -6.6667%;
+    width: 35.1282%;
+    height: 4.2603%;
+  }
+
+  .mobile-impact-megaphone-source > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: rotate(180deg) scaleY(-1);
+  }
+
+  .mobile-impact-photo-source {
+    z-index: 7;
+  }
+
+  .mobile-impact-photo-community {
+    top: 70.279%;
+    right: 0;
+    width: 26.4385%;
+    height: 3.787%;
+    overflow: hidden;
+  }
+
+  .mobile-impact-photo-community > img {
+    width: 93.674%;
+    height: 80.48%;
+    object-fit: cover;
+    transform: rotate(10deg);
+  }
+
+  .mobile-impact-photo-koica {
+    top: 71.4424%;
+    left: 56.5218%;
+    width: 29.1982%;
+    height: 4.355%;
+  }
+
+  .mobile-impact-photo-koica-mask {
+    display: block;
+    width: 89.703%;
+    height: 82.18%;
+    overflow: hidden;
+    -webkit-mask: url("./assets/figma/mobile-impact-photo-mask.svg") center / 100% 100% no-repeat;
+    mask: url("./assets/figma/mobile-impact-photo-mask.svg") center / 100% 100% no-repeat;
+    transform: rotate(-10deg);
+  }
+
+  .mobile-impact-photo-koica-mask > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .mobile-profile-logo-overlay {
@@ -4218,6 +4405,70 @@ body:has(.app-shell.is-home) {
     animation-delay: 1080ms !important;
   }
 
+  .mobile-profile-photo-shine {
+    position: absolute;
+    overflow: hidden;
+    border-radius: 2px;
+    opacity: 0;
+  }
+
+  .mobile-profile-photo-shine::after {
+    position: absolute;
+    top: -18%;
+    bottom: -18%;
+    left: -62%;
+    width: 34%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.58), transparent);
+    content: "";
+    transform: skewX(-16deg);
+  }
+
+  .mobile-profile-photo-shine.is-in-view {
+    opacity: 1;
+  }
+
+  .mobile-profile-photo-shine.is-in-view::after {
+    animation: mobile-profile-photo-sheen 5.8s calc(650ms + var(--motion-delay, 0ms)) ease-in-out infinite;
+  }
+
+  .mobile-profile-shine-wenki {
+    top: 55.8511%;
+    left: 7.4359%;
+    width: 30.0115%;
+    height: 6.6809%;
+    transform: rotate(-4deg);
+  }
+
+  .mobile-profile-shine-euiseong {
+    top: 54.1199%;
+    left: 40.7692%;
+    width: 21.4831%;
+    height: 4.9022%;
+  }
+
+  .mobile-profile-shine-yeseul {
+    top: 54.1199%;
+    left: 64.359%;
+    width: 21.8739%;
+    height: 4.954%;
+    transform: rotate(-1deg);
+  }
+
+  .mobile-profile-shine-ain {
+    top: 59.6273%;
+    left: 42.2059%;
+    width: 21.5223%;
+    height: 4.8381%;
+    transform: rotate(2deg);
+  }
+
+  .mobile-profile-shine-sua {
+    top: 59.8783%;
+    left: 64.6154%;
+    width: 20.5128%;
+    height: 4.6816%;
+  }
+
   }
 
   .mobile-figma-menu-toggle {
@@ -4313,38 +4564,38 @@ body:has(.app-shell.is-home) {
   }
 
   .mobile-profile-wenki {
-    top: 56.09%;
-    left: 5.13%;
-    width: 33.85%;
-    height: 8.9%;
+    top: 55.5243%;
+    left: 6.1538%;
+    width: 33.8462%;
+    height: 8.8951%;
   }
 
   .mobile-profile-euiseong {
-    top: 55.9%;
-    left: 42.56%;
-    width: 25.38%;
-    height: 6.93%;
+    top: 53.5581%;
+    left: 38.9744%;
+    width: 25.3846%;
+    height: 6.9288%;
   }
 
   .mobile-profile-yeseul {
-    top: 55.9%;
-    left: 69.74%;
-    width: 25.38%;
-    height: 6.93%;
+    top: 53.5581%;
+    left: 62.8205%;
+    width: 25.3846%;
+    height: 6.9288%;
   }
 
   .mobile-profile-ain {
-    top: 63.11%;
-    left: 42.56%;
-    width: 25.38%;
-    height: 6.7%;
+    top: 59.1292%;
+    left: 39.4872%;
+    width: 26.6667%;
+    height: 6.8352%;
   }
 
   .mobile-profile-sua {
-    top: 63.11%;
-    left: 69.74%;
-    width: 25.38%;
-    height: 6.7%;
+    top: 59.2697%;
+    left: 61.5385%;
+    width: 26.6667%;
+    height: 6.6948%;
   }
 
   .mobile-koica-link {
@@ -4364,8 +4615,7 @@ body:has(.app-shell.is-home) {
   }
 
   .mobile-hero-start,
-  .mobile-bottom-start,
-  .mobile-figma-hotspot[data-mobile-animate="card-link"] {
+  .mobile-bottom-start {
     overflow: hidden;
     isolation: isolate;
   }
@@ -4382,8 +4632,7 @@ body:has(.app-shell.is-home) {
   }
 
   .mobile-hero-start .mobile-cta-motion::after,
-  .mobile-bottom-start::after,
-  .mobile-figma-hotspot[data-mobile-animate="card-link"]::after {
+  .mobile-bottom-start::after {
     position: absolute;
     top: -25%;
     bottom: -25%;
@@ -4406,15 +4655,6 @@ body:has(.app-shell.is-home) {
 
   .mobile-bottom-start.is-in-view::after {
     animation-delay: 1350ms;
-  }
-
-  .mobile-figma-hotspot[data-mobile-animate="card-link"]::after {
-    width: 44%;
-    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.42), transparent);
-  }
-
-  .mobile-figma-hotspot[data-mobile-animate="card-link"].is-in-view::after {
-    animation: mobile-card-sheen 5.8s calc(650ms + var(--motion-delay, 0ms)) ease-in-out infinite;
   }
 
   .mobile-figma-hotspot:active {
@@ -4500,7 +4740,7 @@ body:has(.app-shell.is-home) {
     }
   }
 
-  @keyframes mobile-card-sheen {
+  @keyframes mobile-profile-photo-sheen {
     0%,
     58% {
       left: -60%;

@@ -361,13 +361,38 @@ function getMobileFigmaHomeMarkup() {
 
         <span class="mobile-header-koica-correction" aria-hidden="true">KOICA안경소</span>
 
-        <div class="mobile-source-asset mobile-globe-sticker-source" aria-hidden="true">
-          <div class="mobile-globe-sticker-flip">
-            <img class="mobile-globe-base" src="./assets/figma/mobile-globe-base.png?v=source-original-1" width="1024" height="1024" decoding="async" alt="" />
-            <span class="mobile-globe-tape-frame">
-              <img class="mobile-globe-tape" src="./assets/figma/mobile-globe-tape.png?v=source-original-1" width="1536" height="1024" decoding="async" alt="" />
-            </span>
-          </div>
+        <div class="mobile-source-asset mobile-header-logo-source" aria-hidden="true">
+          <img src="./assets/figma/mobile-header-logo.png?v=source-original-2" width="512" height="512" decoding="async" alt="" />
+        </div>
+        <img
+          class="mobile-source-asset mobile-hero-collage-original"
+          src="./assets/figma/mobile-hero-collage-figma-4x.png?v=source-original-2"
+          width="1304"
+          height="996"
+          decoding="sync"
+          fetchpriority="high"
+          alt=""
+          aria-hidden="true"
+        />
+        <div class="mobile-hero-copy-mask" aria-hidden="true"></div>
+        <div class="mobile-hero-copy-original" aria-hidden="true">
+          <p>KOICA와 함께 개발협력과 ODA를 이해하고,</p>
+          <p>세상을 바라보는 새로운 시선을 만나보세요.</p>
+          <p>마법처럼 당신의 시선을 진단하고,</p>
+          <p>맞춤형 렌즈를 처방해드립니다.</p>
+        </div>
+
+        <div class="mobile-source-asset mobile-feature-source mobile-feature-eye-test" aria-hidden="true">
+          <img src="./assets/figma/mobile-feature-eye-test.png?v=source-original-2" width="1536" height="1024" decoding="async" alt="" />
+        </div>
+        <div class="mobile-source-asset mobile-feature-source mobile-feature-prescription" aria-hidden="true">
+          <img src="./assets/figma/mobile-feature-prescription.png?v=source-original-2" width="1536" height="1024" decoding="async" alt="" />
+        </div>
+        <div class="mobile-source-asset mobile-feature-source mobile-feature-koica" aria-hidden="true">
+          <img src="./assets/figma/mobile-feature-koica.png?v=source-original-2" width="1536" height="1024" decoding="async" alt="" />
+        </div>
+        <div class="mobile-source-asset mobile-feature-source mobile-feature-world" aria-hidden="true">
+          <img src="./assets/figma/mobile-feature-world.png?v=source-original-2" width="1536" height="1024" decoding="async" alt="" />
         </div>
 
         <div class="mobile-source-asset mobile-lens-source mobile-lens-cooperation-icon" aria-hidden="true">
@@ -395,11 +420,42 @@ function getMobileFigmaHomeMarkup() {
           <img src="./assets/figma/mobile-lens-empathy.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
         </div>
 
+        <span class="mobile-source-asset mobile-profile-photo-source mobile-profile-photo-euiseong" aria-hidden="true">
+          <img src="./assets/figma/mobile-profile-euiseong.png?v=source-original-2" width="1080" height="1350" loading="lazy" decoding="async" alt="" />
+        </span>
+        <span class="mobile-source-asset mobile-profile-photo-source mobile-profile-photo-yeseul" aria-hidden="true">
+          <img src="./assets/figma/mobile-profile-yeseul.png?v=source-original-2" width="1080" height="1350" loading="lazy" decoding="async" alt="" />
+        </span>
+        <span class="mobile-source-asset mobile-profile-photo-source mobile-profile-photo-ain" aria-hidden="true">
+          <img src="./assets/figma/mobile-profile-ain.png?v=source-original-2" width="1080" height="1350" loading="lazy" decoding="async" alt="" />
+        </span>
+        <span class="mobile-source-asset mobile-profile-photo-source mobile-profile-photo-sua" aria-hidden="true">
+          <img src="./assets/figma/mobile-profile-sua.png?v=source-original-2" width="1080" height="1350" loading="lazy" decoding="async" alt="" />
+        </span>
+
         <span class="mobile-source-asset mobile-profile-clip mobile-profile-clip-back" aria-hidden="true">
           <img src="./assets/figma/mobile-profile-clip-back.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
         </span>
         <span class="mobile-source-asset mobile-profile-clip mobile-profile-clip-front" aria-hidden="true">
           <img src="./assets/figma/mobile-profile-clip-back.png?v=source-original-1" width="1254" height="1254" decoding="async" alt="" />
+        </span>
+
+        <span class="mobile-source-asset mobile-profile-camera-source" aria-hidden="true">
+          <img src="./assets/figma/mobile-profile-camera.png?v=source-original-2" width="683" height="1024" loading="lazy" decoding="async" alt="" />
+        </span>
+        <span class="mobile-source-asset mobile-impact-globe-source" aria-hidden="true">
+          <img src="./assets/figma/mobile-globe-base.png?v=source-original-2" width="1024" height="1024" loading="lazy" decoding="async" alt="" />
+        </span>
+        <span class="mobile-source-asset mobile-impact-megaphone-source" aria-hidden="true">
+          <img src="./assets/figma/mobile-impact-megaphone.png?v=source-original-2" width="1536" height="1024" loading="lazy" decoding="async" alt="" />
+        </span>
+        <span class="mobile-source-asset mobile-impact-photo-source mobile-impact-photo-community" aria-hidden="true">
+          <img src="./assets/figma/mobile-impact-photo-community.png?v=source-original-2" width="998" height="661" loading="lazy" decoding="async" alt="" />
+        </span>
+        <span class="mobile-source-asset mobile-impact-photo-source mobile-impact-photo-koica" aria-hidden="true">
+          <span class="mobile-impact-photo-koica-mask">
+            <img src="./assets/figma/mobile-impact-photo-koica.png?v=source-original-2" width="205" height="153" loading="lazy" decoding="async" alt="" />
+          </span>
         </span>
 
         <div
@@ -442,6 +498,11 @@ function getMobileFigmaHomeMarkup() {
           <span class="mobile-lens-glow mobile-lens-glow-two" data-mobile-animate="glow"></span>
           <span class="mobile-lens-glow mobile-lens-glow-three" data-mobile-animate="glow"></span>
           <span class="mobile-lens-glow mobile-lens-glow-four" data-mobile-animate="glow"></span>
+          <span class="mobile-profile-photo-shine mobile-profile-shine-wenki" data-mobile-animate="profile-photo" style="--motion-delay: 0ms"></span>
+          <span class="mobile-profile-photo-shine mobile-profile-shine-euiseong" data-mobile-animate="profile-photo" style="--motion-delay: 180ms"></span>
+          <span class="mobile-profile-photo-shine mobile-profile-shine-yeseul" data-mobile-animate="profile-photo" style="--motion-delay: 360ms"></span>
+          <span class="mobile-profile-photo-shine mobile-profile-shine-ain" data-mobile-animate="profile-photo" style="--motion-delay: 540ms"></span>
+          <span class="mobile-profile-photo-shine mobile-profile-shine-sua" data-mobile-animate="profile-photo" style="--motion-delay: 720ms"></span>
         </div>
 
         <button
@@ -514,12 +575,6 @@ async function hydrateInlineSvg(host) {
 
 function bindMobileAnimations(mobileHome) {
   mobileMotionObserver?.disconnect();
-
-  const profileLinks = [...mobileHome.querySelectorAll('.mobile-figma-hotspot[class*="mobile-profile-"]')];
-  profileLinks.forEach((link, index) => {
-    link.dataset.mobileAnimate = "card-link";
-    link.style.setProperty("--motion-delay", `${index * 90}ms`);
-  });
 
   const heroCta = mobileHome.querySelector(".mobile-hero-start");
   const bottomCta = mobileHome.querySelector(".mobile-bottom-start");
