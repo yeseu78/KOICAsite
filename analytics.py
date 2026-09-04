@@ -29,11 +29,22 @@ RESULT_LABELS = {
     "case": "사례 렌즈",
     "empathy": "공감 렌즈",
 }
-SOURCE_ORDER = ["Instagram", "Kakao", "Direct", "Other"]
+SOURCE_ORDER = ["Instagram", "Kakao", "Shared Link", "Direct", "Other"]
+SOURCE_LABELS = {
+    "Instagram": "Instagram",
+    "Kakao": "KakaoTalk",
+    "Shared Link": "공유 링크",
+    "Direct": "직접 접속",
+    "Other": "기타",
+}
+# The existing Supabase table constrains this denormalized column to these values.
+# Shared-link visits remain stored as Other and are classified from their raw UTM
+# source when summaries are built, so this change is backward-compatible.
+STORED_SOURCE_VALUES = {"Instagram", "Kakao", "Direct", "Other"}
 SHARE_LABELS = {
     "kakao": "카카오톡",
     "link_copy": "링크 복사",
-    "native_share": "기기 공유",
+    "native_share": "기기 공유(카톡·SNS)",
     "instagram_story": "인스타그램 스토리",
     "instagram_feed": "인스타그램 피드",
     "other": "기타",
@@ -70,6 +81,8 @@ def classify_source(source: Any, referrer: Any = "") -> str:
         return "Instagram"
     if any(token in combined for token in ("kakao", "talk.kakao", "story.kakao")):
         return "Kakao"
+    if source_text in {"shared_link", "shared-link", "share", "shared"}:
+        return "Shared Link"
     if not source_text and not referrer_text:
         return "Direct"
     if source_text in {"direct", "(direct)"}:
@@ -117,6 +130,7 @@ def normalize_event(payload: dict[str, Any]) -> dict[str, Any]:
     if referrer:
         safe_metadata["referrer"] = referrer
 
+    classified_source = classify_source(source, referrer)
     normalized = {
         "event_type": event_type,
         "visitor_id": visitor_id,
@@ -128,7 +142,11 @@ def normalize_event(payload: dict[str, Any]) -> dict[str, Any]:
         "source": source,
         "medium": _clean_text(payload.get("medium"), 120) or None,
         "campaign": _clean_text(payload.get("campaign"), 120) or None,
-        "traffic_source": classify_source(source, referrer) if event_type == "visit" else None,
+        "traffic_source": (
+            classified_source if classified_source in STORED_SOURCE_VALUES else "Other"
+        )
+        if event_type == "visit"
+        else None,
         "metadata": safe_metadata,
     }
     if event_type in {"answer", "survey_complete", "result_view"}:
@@ -307,8 +325,17 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
     answers = [event for event in events if event.get("event_type") == "answer"]
 
     latest_start_visitors = _latest_by(starts, lambda event: event.get("visitor_id"))
-    latest_completion_visitors = _latest_by(completions, lambda event: event.get("visitor_id"))
-    latest_results = _latest_by(completions, lambda event: event.get("visitor_id"))
+    participant_ids = {
+        event.get("visitor_id")
+        for event in latest_start_visitors
+        if event.get("visitor_id")
+    }
+    latest_completion_visitors = [
+        event
+        for event in _latest_by(completions, lambda event: event.get("visitor_id"))
+        if event.get("visitor_id") in participant_ids
+    ]
+    latest_results = latest_completion_visitors
     latest_answers = _latest_by(
         answers,
         lambda event: (event.get("visitor_id"), event.get("question_id")),
@@ -385,10 +412,15 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
         )
     question_stats.sort(key=lambda item: (item["order"], item["id"]))
 
-    share_users = len({event.get("visitor_id") for event in shares if event.get("visitor_id")})
-    result_view_users = len(
-        {event.get("visitor_id") for event in result_views if event.get("visitor_id")}
-    )
+    share_user_ids = {
+        event.get("visitor_id") for event in shares if event.get("visitor_id")
+    }
+    result_view_user_ids = {
+        event.get("visitor_id") for event in result_views if event.get("visitor_id")
+    }
+    share_users = len(share_user_ids)
+    result_view_users = len(result_view_user_ids)
+    converted_share_users = len(share_user_ids & result_view_user_ids)
     share_counts = Counter(event.get("share_channel") or "other" for event in shares)
     share_channels = [
         {
@@ -400,14 +432,19 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
         for channel, count in share_counts.most_common()
     ]
 
+    def event_source(event: dict[str, Any]) -> str:
+        metadata = event.get("metadata") if isinstance(event.get("metadata"), dict) else {}
+        raw_source = event.get("source")
+        referrer = metadata.get("referrer", "")
+        if _clean_text(raw_source, 120) or _clean_text(referrer, 500):
+            return classify_source(raw_source, referrer)
+        stored_source = event.get("traffic_source")
+        return stored_source if stored_source in SOURCE_ORDER else "Other"
+
     visit_source_by_id = {
-        event.get("visit_id"): event.get("traffic_source") or classify_source(
-            event.get("source"),
-            (event.get("metadata") or {}).get("referrer", "")
-            if isinstance(event.get("metadata"), dict)
-            else "",
-        )
+        event.get("visit_id"): event_source(event)
         for event in unique_visits
+        if event.get("visit_id")
     }
     traffic_counts = Counter(visit_source_by_id.values())
     completion_visit_ids = {
@@ -424,6 +461,7 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
         traffic.append(
             {
                 "source": source_name,
+                "label": SOURCE_LABELS[source_name],
                 "visits": count,
                 "rate": _percentage(count, len(unique_visits)),
                 "completed": completed,
@@ -476,7 +514,7 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
             "dropoffs": dropoffs,
             "share_clicks": len(shares),
             "share_users": share_users,
-            "share_rate": _percentage(share_users, result_view_users),
+            "share_rate": _percentage(converted_share_users, result_view_users),
             "result_view_users": result_view_users,
             "total_visits": len(unique_visits),
         },

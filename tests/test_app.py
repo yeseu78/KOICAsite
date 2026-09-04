@@ -32,6 +32,17 @@ class FlaskAppTests(unittest.TestCase):
         source = (Path(__file__).resolve().parents[1] / "app.js").read_text(encoding="utf-8")
         self.assertEqual(source.count('trackEvent("survey_start")'), 1)
 
+    def test_failed_analytics_events_are_queued_and_retried(self):
+        source = (Path(__file__).resolve().parents[1] / "app.js").read_text(encoding="utf-8")
+        self.assertIn("queueAnalyticsPayload(payload)", source)
+        self.assertIn("if (!response.ok)", source)
+        self.assertIn('window.addEventListener("online", flushAnalyticsQueue)', source)
+
+    def test_instagram_and_kakao_in_app_browsers_are_detected(self):
+        source = (Path(__file__).resolve().parents[1] / "app.js").read_text(encoding="utf-8")
+        self.assertIn('userAgent.includes("instagram")', source)
+        self.assertIn('userAgent.includes("kakaotalk")', source)
+
     def test_dashboard_uses_original_question_order(self):
         source = (
             Path(__file__).resolve().parents[1] / "static" / "admin-dashboard.js"

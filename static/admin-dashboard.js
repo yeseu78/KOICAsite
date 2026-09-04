@@ -3,6 +3,7 @@ const colors = ["#6f35a5", "#f1973f", "#46a778", "#e85f8e", "#4e78c4", "#9d72bf"
 const trafficColors = {
   Instagram: "#7d3eb1",
   Kakao: "#f1b72c",
+  "Shared Link": "#4e78c4",
   Direct: "#4d9c78",
   Other: "#a7a1ab",
 };
@@ -101,11 +102,11 @@ function renderTraffic(items, total) {
   const donut = document.querySelector("[data-traffic-donut]");
   donut.style.background = donutBackground(items.map((item) => ({ ...item, count: item.visits })), (item) => trafficColors[item.source]);
   donut.innerHTML = `<span>${formatNumber(total)}<small>방문</small></span>`;
-  const legendItems = items.map((item) => ({ ...item, count: item.visits, label: item.source }));
+  const legendItems = items.map((item) => ({ ...item, count: item.visits }));
   renderLegend(document.querySelector("[data-traffic-legend]"), legendItems, (item) => trafficColors[item.source]);
   document.querySelector("[data-traffic-table]").innerHTML = items
     .map(
-      (item) => `<tr><td><i style="--legend-color:${trafficColors[item.source]}"></i>${escapeHtml(item.source)}</td><td>${formatNumber(item.visits)}</td><td>${formatNumber(item.completed)}</td><td><strong>${Number(item.completion_rate).toFixed(1)}%</strong></td></tr>`,
+      (item) => `<tr><td><i style="--legend-color:${trafficColors[item.source]}"></i>${escapeHtml(item.label || item.source)}</td><td>${formatNumber(item.visits)}</td><td>${formatNumber(item.completed)}</td><td><strong>${Number(item.completion_rate).toFixed(1)}%</strong></td></tr>`,
     )
     .join("");
 }
