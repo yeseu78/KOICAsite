@@ -40,6 +40,7 @@ for (const feature of [
   'data-action="share-story"',
   'data-action="share-feed"',
   "createResultShareCard",
+  "home-mobile-figma-vector.svg",
   "home-mobile-figma-original-2x.png 2x",
   "home-mobile-figma-original-4x.png 4x",
 ]) {

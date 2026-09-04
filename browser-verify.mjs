@@ -460,7 +460,7 @@ const passed =
   narrowHome.menu.label === "메뉴 닫기" &&
   narrowHome.menu.navigationVisible === true &&
   highDpiMobile.dpr === 3 &&
-  highDpiMobile.image.includes("home-mobile-figma-original-4x.png") &&
+  highDpiMobile.image.includes("home-mobile-figma-vector.svg") &&
   highDpiMobile.imageWidth === 390 &&
   highDpiMobile.imageHeight === 2136 &&
   highDpiMobile.horizontalOverflow === false &&
