@@ -217,13 +217,14 @@ const homeEffects = await evaluate(`(() => ({
   heroAsset: document.querySelector('.figma-home-image')?.currentSrc,
   heroNaturalWidth: document.querySelector('.figma-home-image')?.naturalWidth,
   heroNaturalHeight: document.querySelector('.figma-home-image')?.naturalHeight,
+  mobileAsset: document.querySelector('.mobile-figma-image')?.currentSrc,
+  mobileNaturalWidth: document.querySelector('.mobile-figma-image')?.naturalWidth,
+  mobileNaturalHeight: document.querySelector('.mobile-figma-image')?.naturalHeight,
   mobileVisible: getComputedStyle(document.querySelector('.mobile-home')).display !== 'none',
   desktopVisible: getComputedStyle(document.querySelector('.figma-home-exact')).display !== 'none',
   startButtons: document.querySelectorAll('[data-action="start"]').length,
-  featureCards: document.querySelectorAll('.mobile-feature-grid article').length,
-  lensCards: document.querySelectorAll('.mobile-lens-card').length,
-  mobileProfiles: document.querySelectorAll('.mobile-profile-card').length,
-  stats: document.querySelectorAll('.mobile-stats span').length,
+  mobileHotspots: document.querySelectorAll('.mobile-figma-hotspot').length,
+  mobileProfileLinks: document.querySelectorAll('[class*="mobile-profile-"]').length,
   profileLinks: document.querySelectorAll('.home-profile-hotspot').length,
   koicaLinks: document.querySelectorAll('.home-koica-hotspot').length,
   polishElements: document.querySelectorAll('.home-polish-layer > span').length,
@@ -268,18 +269,17 @@ const narrowHome = await evaluate(`(() => ({
   horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
   mobileVisible: getComputedStyle(document.querySelector('.mobile-home')).display !== 'none',
   desktopVisible: getComputedStyle(document.querySelector('.figma-home-exact')).display !== 'none',
-  titleFontSize: parseFloat(getComputedStyle(document.querySelector('.mobile-hero h1')).fontSize),
-  descriptionFontSize: parseFloat(getComputedStyle(document.querySelector('.mobile-hero-description')).fontSize),
-  primaryCtaHeight: Math.round(document.querySelector('.mobile-primary-cta').getBoundingClientRect().height),
+  artboardWidth: Math.round(document.querySelector('.mobile-figma-artboard').getBoundingClientRect().width),
+  imageWidth: Math.round(document.querySelector('.mobile-figma-image').getBoundingClientRect().width),
+  imageHeight: Math.round(document.querySelector('.mobile-figma-image').getBoundingClientRect().height),
+  heroCtaHeight: Math.round(document.querySelector('.mobile-hero-start').getBoundingClientRect().height),
+  bottomCtaHeight: Math.round(document.querySelector('.mobile-bottom-start').getBoundingClientRect().height),
   menuButtonSize: (() => {
     const rect = document.querySelector('.mobile-menu-toggle').getBoundingClientRect();
     return { width: Math.round(rect.width), height: Math.round(rect.height) };
   })(),
-  featureColumns: getComputedStyle(document.querySelector('.mobile-feature-grid')).gridTemplateColumns.split(' ').length,
-  lensColumns: getComputedStyle(document.querySelector('.mobile-lens-grid')).gridTemplateColumns.split(' ').length,
-  profileColumns: getComputedStyle(document.querySelector('.mobile-profile-grid')).gridTemplateColumns.split(' ').length,
-  featuredProfileWidth: Math.round(document.querySelector('.mobile-profile-card.is-featured').getBoundingClientRect().width),
-  profileGridWidth: Math.round(document.querySelector('.mobile-profile-grid').getBoundingClientRect().width),
+  hotspotCount: document.querySelectorAll('.mobile-figma-hotspot').length,
+  profileLinkCount: document.querySelectorAll('[class*="mobile-profile-"]').length,
   scrollHeight: document.documentElement.scrollHeight,
   viewportHeight: window.innerHeight
 }))()`);
@@ -319,14 +319,10 @@ await navigate("http://127.0.0.1:4173/");
 const smallHome = await evaluate(`(() => ({
   viewportWidth: window.innerWidth,
   horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-  titleFontSize: parseFloat(getComputedStyle(document.querySelector('.mobile-hero h1')).fontSize),
-  primaryCtaHeight: Math.round(document.querySelector('.mobile-primary-cta').getBoundingClientRect().height),
-  stats: [...document.querySelectorAll('.mobile-stats strong')].map((item) => ({
-    fontSize: parseFloat(getComputedStyle(item).fontSize),
-    width: Math.round(item.getBoundingClientRect().width)
-  })),
-  featureWidths: [...document.querySelectorAll('.mobile-feature-grid article')].map((item) => Math.round(item.getBoundingClientRect().width)),
-  lensWidths: [...document.querySelectorAll('.mobile-lens-card')].map((item) => Math.round(item.getBoundingClientRect().width))
+  artboardWidth: Math.round(document.querySelector('.mobile-figma-artboard').getBoundingClientRect().width),
+  imageWidth: Math.round(document.querySelector('.mobile-figma-image').getBoundingClientRect().width),
+  heroCtaHeight: Math.round(document.querySelector('.mobile-hero-start').getBoundingClientRect().height),
+  bottomCtaHeight: Math.round(document.querySelector('.mobile-bottom-start').getBoundingClientRect().height)
 }))()`);
 await screenshot("./.artifacts/home-phone-320.png");
 
@@ -341,10 +337,10 @@ const breakpointHome = await evaluate(`(() => ({
   viewportWidth: window.innerWidth,
   mobileVisible: getComputedStyle(document.querySelector('.mobile-home')).display !== 'none',
   desktopVisible: getComputedStyle(document.querySelector('.figma-home-exact')).display !== 'none',
-  contentWidth: Math.round(document.querySelector('.mobile-hero .landing-container').getBoundingClientRect().width),
+  contentWidth: Math.round(document.querySelector('.mobile-figma-artboard').getBoundingClientRect().width),
   horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
 }))()`);
-await evaluate(`document.querySelector('.mobile-hero [data-action="start"]').click()`);
+await evaluate(`document.querySelector('.mobile-hero-start').click()`);
 await new Promise((resolve) => setTimeout(resolve, 100));
 breakpointHome.startedScreen = await evaluate(`document.querySelector('[data-screen]')?.dataset.screen`);
 
@@ -408,10 +404,11 @@ const passed =
   homeEffects.mobileVisible === true &&
   homeEffects.desktopVisible === false &&
   homeEffects.startButtons === 5 &&
-  homeEffects.featureCards === 4 &&
-  homeEffects.lensCards === 4 &&
-  homeEffects.mobileProfiles === 5 &&
-  homeEffects.stats === 3 &&
+  homeEffects.mobileHotspots === 8 &&
+  homeEffects.mobileProfileLinks === 5 &&
+  homeEffects.mobileAsset.includes("home-mobile-responsive.png") &&
+  homeEffects.mobileNaturalWidth === 390 &&
+  homeEffects.mobileNaturalHeight === 2136 &&
   homeEffects.profileLinks === 5 &&
   homeEffects.koicaLinks === 1 &&
   homeEffects.polishElements === 9 &&
@@ -433,29 +430,28 @@ const passed =
   narrowHome.horizontalOverflow === false &&
   narrowHome.mobileVisible === true &&
   narrowHome.desktopVisible === false &&
-  narrowHome.titleFontSize >= 35 &&
-  narrowHome.descriptionFontSize >= 15 &&
-  narrowHome.primaryCtaHeight >= 48 &&
+  narrowHome.artboardWidth === 390 &&
+  narrowHome.imageWidth === 390 &&
+  narrowHome.imageHeight === 2136 &&
+  narrowHome.heroCtaHeight >= 48 &&
+  narrowHome.bottomCtaHeight >= 48 &&
   narrowHome.menuButtonSize.width >= 44 &&
   narrowHome.menuButtonSize.height >= 44 &&
-  narrowHome.featureColumns === 2 &&
-  narrowHome.lensColumns === 2 &&
-  narrowHome.profileColumns === 2 &&
-  Math.abs(narrowHome.featuredProfileWidth - narrowHome.profileGridWidth) <= 4 &&
+  narrowHome.hotspotCount === 8 &&
+  narrowHome.profileLinkCount === 5 &&
   narrowHome.menu.expanded === "true" &&
   narrowHome.menu.label === "메뉴 닫기" &&
   narrowHome.menu.navigationVisible === true &&
   smallHome.viewportWidth === 320 &&
   smallHome.horizontalOverflow === false &&
-  smallHome.titleFontSize >= 34 &&
-  smallHome.primaryCtaHeight >= 48 &&
-  smallHome.stats.every((item) => item.fontSize >= 15 && item.width > 45) &&
-  smallHome.featureWidths.every((width) => width >= 130) &&
-  smallHome.lensWidths.every((width) => width >= 130) &&
+  smallHome.artboardWidth === 320 &&
+  smallHome.imageWidth === 320 &&
+  smallHome.heroCtaHeight >= 48 &&
+  smallHome.bottomCtaHeight >= 48 &&
   breakpointHome.viewportWidth === 768 &&
   breakpointHome.mobileVisible === true &&
   breakpointHome.desktopVisible === false &&
-  breakpointHome.contentWidth === 430 &&
+  breakpointHome.contentWidth === 390 &&
   breakpointHome.horizontalOverflow === false &&
   breakpointHome.startedScreen === "question" &&
   desktopBreakpointHome.viewportWidth === 1024 &&

@@ -164,11 +164,18 @@ const mobileProfiles = [
 ];
 
 function getMobileHomeMarkup() {
+  const lensSymbols = {
+    cooperation: `<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="13" r="4"/><circle cx="13" cy="20" r="3.5"/><circle cx="35" cy="20" r="3.5"/><path d="M17 37v-4c0-5 3-9 7-9s7 4 7 9v4M5 37v-3c0-5 3-8 8-8M43 37v-3c0-5-3-8-8-8"/><path d="M19 17l5 4 5-4"/></svg>`,
+    participation: `<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="18" r="9"/><circle cx="24" cy="18" r="4"/><path d="M24 3v5M9 18H4M44 18h-5M13 7l4 4M35 7l-4 4"/><circle cx="12" cy="34" r="5"/><circle cx="24" cy="35" r="5"/><circle cx="36" cy="34" r="5"/></svg>`,
+    case: `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 24V12M24 17c-7 0-10-4-10-9 7 0 10 4 10 9ZM24 14c6 0 9-3 9-8-6 0-9 3-9 8Z"/><path d="M5 31c6-2 10-1 14 2l5 3 8-5c4-2 8 0 10 3L26 44 8 39Z"/></svg>`,
+    empathy: `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M18 17l-5-5c-3-3-8 2-5 5l6 6c2 2 5 2 7 0l6-6c2-2 5-2 7 0l6 6c3 3-2 8-5 5l-5-5"/><path d="M17 31l5 5c3 3 8-2 5-5l-6-6M31 17l-5-5c-3-3-8 2-5 5"/></svg>`,
+  };
   const homeLensCards = ["cooperation", "participation", "case", "empathy"]
     .map((key) => {
       const lens = correctionLensData[key];
       return `
         <article class="mobile-lens-card" style="--lens-accent: ${lens.accent}; --lens-soft: ${lens.soft}">
+          <span class="mobile-lens-symbol">${lensSymbols[key]}</span>
           <img src="${lens.image}" alt="${lens.displayName} 안경" width="240" height="120" loading="lazy" />
           <h3>${lens.displayName}</h3>
           <p>${lens.shortCopy}</p>
@@ -330,6 +337,64 @@ function getMobileHomeMarkup() {
   `;
 }
 
+function getMobileFigmaHomeMarkup() {
+  return `
+    <div class="mobile-home mobile-home-figma" data-mobile-home>
+      <div class="mobile-figma-artboard" aria-label="ODA OPTICA by KOICA 모바일 홈">
+        <img
+          class="mobile-figma-image"
+          src="./assets/figma/home-mobile-responsive.png"
+          width="390"
+          height="2136"
+          decoding="sync"
+          fetchpriority="high"
+          alt="당신의 시선, 세상을 바꾸는 렌즈가 될 수 있어요. WE:NK 팀과 네 가지 렌즈, KOICA 개발협력 이야기를 소개합니다."
+        />
+
+        <button
+          class="mobile-menu-toggle mobile-figma-menu-toggle"
+          type="button"
+          data-action="toggle-mobile-menu"
+          aria-expanded="false"
+          aria-controls="mobile-navigation"
+          aria-label="메뉴 열기"
+        >
+          <span></span><span></span><span></span>
+        </button>
+
+        <nav class="mobile-navigation mobile-figma-navigation" id="mobile-navigation" aria-label="모바일 메뉴">
+          <a href="#mobile-lenses">렌즈 소개</a>
+          <a href="#mobile-team">W&amp;NK Profile</a>
+          <a href="#mobile-impact">KOICA Impact</a>
+          <button type="button" data-action="start">시력 검사 시작하기</button>
+        </nav>
+
+        <span class="mobile-figma-anchor anchor-lenses" id="mobile-lenses" aria-hidden="true"></span>
+        <span class="mobile-figma-anchor anchor-team" id="mobile-team" aria-hidden="true"></span>
+        <span class="mobile-figma-anchor anchor-impact" id="mobile-impact" aria-hidden="true"></span>
+
+        <button class="mobile-figma-hotspot mobile-hero-start" type="button" data-action="start" aria-label="시력 검사 시작하기"></button>
+
+        <a class="mobile-figma-hotspot mobile-profile-wenki" href="${homeProfileLinks.wenki}" target="_blank" rel="noreferrer" aria-label="WENKI 프로필 보기"></a>
+        <a class="mobile-figma-hotspot mobile-profile-euiseong" href="${homeProfileLinks.euiseong}" target="_blank" rel="noreferrer" aria-label="EUISEONG 프로필 보기"></a>
+        <a class="mobile-figma-hotspot mobile-profile-yeseul" href="${homeProfileLinks.yeseul}" target="_blank" rel="noreferrer" aria-label="YESEUL 프로필 보기"></a>
+        <a class="mobile-figma-hotspot mobile-profile-ain" href="${homeProfileLinks.ain}" target="_blank" rel="noreferrer" aria-label="AIN 프로필 보기"></a>
+        <a class="mobile-figma-hotspot mobile-profile-sua" href="${homeProfileLinks.sua}" target="_blank" rel="noreferrer" aria-label="SUA 프로필 보기"></a>
+
+        <a
+          class="mobile-figma-hotspot mobile-koica-link"
+          href="https://www.koica.go.kr/sites/koica_kr/index.do"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="KOICA 협력 더 알아보기"
+        ></a>
+
+        <button class="mobile-figma-hotspot mobile-bottom-start" type="button" data-action="start" aria-label="무료로 검사 시작하기"></button>
+      </div>
+    </div>
+  `;
+}
+
 function bindHomeInteractions() {
   app.querySelectorAll('[data-action="start"]').forEach((button) => {
     button.addEventListener("click", () => {
@@ -407,7 +472,7 @@ function renderHome({ replace = false } = {}) {
         <button class="home-hotspot home-bottom-start-hotspot" type="button" data-action="start" aria-label="무료로 검사 시작하기"></button>
       </div>
     </div>
-    ${getMobileHomeMarkup()}
+    ${getMobileFigmaHomeMarkup()}
   `;
 
   bindHomeInteractions();
