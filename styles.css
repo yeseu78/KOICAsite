@@ -4032,55 +4032,6 @@ body:has(.app-shell.is-home) {
     height: 2.1536%;
   }
 
-  .mobile-profile-photo-source {
-    z-index: 7;
-    overflow: hidden;
-  }
-
-  .mobile-profile-photo-source > img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .mobile-profile-photo-euiseong {
-    top: 54.1199%;
-    left: 40.7692%;
-    width: 21.4831%;
-    height: 4.9022%;
-  }
-
-  .mobile-profile-photo-yeseul {
-    top: 54.1199%;
-    left: 64.359%;
-    width: 21.8739%;
-    height: 4.954%;
-  }
-
-  .mobile-profile-photo-yeseul > img {
-    transform: rotate(-1deg) scale(1.01);
-  }
-
-  .mobile-profile-photo-ain {
-    top: 59.6273%;
-    left: 42.2059%;
-    width: 21.5223%;
-    height: 4.8381%;
-  }
-
-  .mobile-profile-photo-ain > img {
-    width: 95.876%;
-    height: 97.341%;
-    transform: rotate(2deg);
-  }
-
-  .mobile-profile-photo-sua {
-    top: 59.8783%;
-    left: 64.6154%;
-    width: 20.5128%;
-    height: 4.6816%;
-  }
-
   .mobile-profile-clip-back {
     top: 59.5037%;
     left: -3.0769%;
@@ -4154,48 +4105,6 @@ body:has(.app-shell.is-home) {
     height: 100%;
     object-fit: cover;
     transform: rotate(180deg) scaleY(-1);
-  }
-
-  .mobile-impact-photo-source {
-    z-index: 7;
-  }
-
-  .mobile-impact-photo-community {
-    top: 70.279%;
-    right: 0;
-    width: 26.4385%;
-    height: 3.787%;
-    overflow: hidden;
-  }
-
-  .mobile-impact-photo-community > img {
-    width: 93.674%;
-    height: 80.48%;
-    object-fit: cover;
-    transform: rotate(10deg);
-  }
-
-  .mobile-impact-photo-koica {
-    top: 71.4424%;
-    left: 56.5218%;
-    width: 29.1982%;
-    height: 4.355%;
-  }
-
-  .mobile-impact-photo-koica-mask {
-    display: block;
-    width: 89.703%;
-    height: 82.18%;
-    overflow: hidden;
-    -webkit-mask: url("./assets/figma/mobile-impact-photo-mask.svg") center / 100% 100% no-repeat;
-    mask: url("./assets/figma/mobile-impact-photo-mask.svg") center / 100% 100% no-repeat;
-    transform: rotate(-10deg);
-  }
-
-  .mobile-impact-photo-koica-mask > img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
   }
 
   .mobile-profile-logo-overlay {

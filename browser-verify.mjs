@@ -360,12 +360,12 @@ const highDpiMobile = await evaluate(`(() => ({
     };
   })(),
   featureNaturalWidths: [...document.querySelectorAll('.mobile-feature-source img')].map((img) => img.naturalWidth),
-  profileNaturalWidths: [...document.querySelectorAll('.mobile-profile-photo-source img')].map((img) => img.naturalWidth),
+  profilePhotoOverlayCount: document.querySelectorAll('.mobile-profile-photo-source').length,
+  impactPhotoOverlayCount: document.querySelectorAll('.mobile-impact-photo-source').length,
   profileShineCount: document.querySelectorAll('.mobile-profile-photo-shine').length,
   animatedProfileHotspots: document.querySelectorAll('.mobile-figma-hotspot[class*="mobile-profile-"][data-mobile-animate]').length,
   profileAlignment: (() => {
     const artboard = document.querySelector('.mobile-figma-artboard').getBoundingClientRect();
-    const photo = document.querySelector('.mobile-profile-photo-euiseong').getBoundingClientRect();
     const shine = document.querySelector('.mobile-profile-shine-euiseong').getBoundingClientRect();
     const hotspot = document.querySelector('.mobile-profile-euiseong').getBoundingClientRect();
     const box = (rect) => ({
@@ -374,7 +374,7 @@ const highDpiMobile = await evaluate(`(() => ({
       width: Math.round(rect.width),
       height: Math.round(rect.height)
     });
-    return { photo: box(photo), shine: box(shine), hotspot: box(hotspot) };
+    return { shine: box(shine), hotspot: box(hotspot) };
   })(),
   impactGlobeNaturalWidth: document.querySelector('.mobile-impact-globe-source img')?.naturalWidth,
   firstLensBox: (() => {
@@ -569,8 +569,8 @@ const passed =
   highDpiMobile.profileCardNaturalWidth === 132 &&
   highDpiMobile.profileCardWidth === 132 &&
   highDpiMobile.correctedBrand === "KOICA안경소" &&
-  highDpiMobile.sourceAssetCount === 25 &&
-  highDpiMobile.sourceAssetNaturalWidths.length === 24 &&
+  highDpiMobile.sourceAssetCount === 19 &&
+  highDpiMobile.sourceAssetNaturalWidths.length === 18 &&
   highDpiMobile.sourceAssetNaturalWidths.every((width) => width > 0) &&
   highDpiMobile.heroCollageAsset.includes("mobile-hero-collage-figma-4x.png") &&
   highDpiMobile.heroCollageNaturalWidth === 1304 &&
@@ -580,11 +580,14 @@ const passed =
   highDpiMobile.heroCollageBox.height === 266 &&
   highDpiMobile.featureNaturalWidths.length === 4 &&
   highDpiMobile.featureNaturalWidths.every((width) => width === 1536) &&
-  highDpiMobile.profileNaturalWidths.length === 4 &&
-  highDpiMobile.profileNaturalWidths.every((width) => width === 1080) &&
+  highDpiMobile.profilePhotoOverlayCount === 0 &&
+  highDpiMobile.impactPhotoOverlayCount === 0 &&
   highDpiMobile.profileShineCount === 5 &&
   highDpiMobile.animatedProfileHotspots === 0 &&
-  JSON.stringify(highDpiMobile.profileAlignment.photo) === JSON.stringify(highDpiMobile.profileAlignment.shine) &&
+  highDpiMobile.profileAlignment.shine.left === 159 &&
+  highDpiMobile.profileAlignment.shine.top === 1156 &&
+  highDpiMobile.profileAlignment.shine.width === 84 &&
+  highDpiMobile.profileAlignment.shine.height === 105 &&
   highDpiMobile.profileAlignment.hotspot.left === 152 &&
   highDpiMobile.profileAlignment.hotspot.top === 1144 &&
   highDpiMobile.profileAlignment.hotspot.width === 99 &&
