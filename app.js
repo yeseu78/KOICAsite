@@ -1194,6 +1194,16 @@ async function shareResultCard(format, cardPromise, shareData, correctionKey, co
   }
 }
 
+function withObjectParticle(value) {
+  const text = String(value).trim();
+  const lastCharacter = text.at(-1);
+  const hangulIndex = lastCharacter ? lastCharacter.charCodeAt(0) - 0xac00 : -1;
+  const isHangulSyllable = hangulIndex >= 0 && hangulIndex <= 0xd7a3 - 0xac00;
+  const hasFinalConsonant = isHangulSyllable && hangulIndex % 28 !== 0;
+
+  return `${text}${hasFinalConsonant ? "을" : "를"}`;
+}
+
 function renderResult(correctionKey, contentKey, rawResultType = "direct") {
   app.classList.remove("is-home");
   const safeCorrection = validCorrectionKeys.includes(correctionKey) ? correctionKey : "empathy";
@@ -1210,6 +1220,7 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
     empathyProgress,
   } = correction.diagnostics;
   const { sensitivityLabel, sensitivity } = content.matching;
+  const contentFieldWithObjectParticle = withObjectParticle(content.field);
   const combinationInterpretation = `${correction.interpretation} 현재 공감 시야각은 ${empathyAngle}°이며, ${content.field} 분야에는 ${sensitivity}%의 높은 감도를 보여 추천 콘텐츠와 잘 맞습니다.`;
 
   setDocumentTitle(`${correction.displayName} × ${content.displayName}`);
@@ -1236,8 +1247,8 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
           <p class="easy-result-label" id="easy-result-title">이 결과를 쉽게 말하면</p>
           <p class="easy-result-summary">${correction.interpretation}</p>
           <div class="easy-lens-roles">
-            <p><span>교정렌즈</span>지금 ODA를 바라보는 방식을 보완하기 위해 <strong>${correction.displayName}가</strong> 처방됐어요.</p>
-            <p><span>콘텐츠 렌즈</span>내가 선택한 ${content.field} 분야의 사례를 보기 위해 <strong>${content.displayName}가</strong> 연결됐어요.</p>
+            <p><span class="easy-lens-role-label">교정렌즈</span><span class="easy-lens-role-copy">지금 ODA를 바라보는 방식을 보완하기 위해 <strong>${correction.displayName}가</strong> 처방됐어요.</span></p>
+            <p><span class="easy-lens-role-label">콘텐츠 렌즈</span><span class="easy-lens-role-copy">내가 선택한 ${content.field} 분야의 사례를 보기 위해 <strong>${content.displayName}가</strong> 연결됐어요.</span></p>
           </div>
         </aside>
 
@@ -1272,7 +1283,7 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
               <span>${sensitivityLabel} 감도</span>
               <strong>${sensitivity}%</strong>
               <em>추천 분야 일치</em>
-              <small>${content.field}을 관심 분야로 직접 선택했기 때문에 ${content.displayName} 콘텐츠가 연결됐어요. 정답률이 아니라 선택 분야와 추천 콘텐츠가 정확히 일치한다는 뜻이에요.</small>
+              <small>${contentFieldWithObjectParticle} 관심 분야로 직접 선택했기 때문에 ${content.displayName} 콘텐츠가 연결됐어요. 정답률이 아니라 선택 분야와 추천 콘텐츠가 정확히 일치한다는 뜻이에요.</small>
             </article>
           </div>
           <div class="result-metric-help">

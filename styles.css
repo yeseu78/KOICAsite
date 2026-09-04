@@ -594,14 +594,15 @@ img {
 .easy-result-label {
   margin: 0 0 7px;
   color: var(--correction);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
+  line-height: 1.45;
 }
 
 .easy-result-summary {
   margin: 0;
   color: #332c35;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.65;
   word-break: keep-all;
@@ -616,30 +617,39 @@ img {
 }
 
 .easy-lens-roles p {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
   margin: 0;
   color: #625866;
-  font-size: 10.5px;
-  line-height: 1.55;
+  font-size: 12px;
+  line-height: 1.6;
   word-break: keep-all;
 }
 
-.easy-lens-roles p > span {
-  display: inline-block;
-  min-width: 68px;
-  margin-right: 5px;
+.easy-lens-role-label {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
+  line-height: 1.75;
 }
 
-.easy-lens-roles p:last-child > span,
-.easy-lens-roles p:last-child > strong {
+.easy-lens-roles p:last-child > .easy-lens-role-label {
   color: var(--blue);
 }
 
-.easy-lens-roles strong {
-  margin-right: 3px;
+.easy-lens-role-copy {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.easy-lens-role-copy strong {
   color: var(--correction);
+}
+
+.easy-lens-roles p:last-child .easy-lens-role-copy strong {
+  color: var(--blue);
 }
 
 .result-prescription {
@@ -651,7 +661,7 @@ img {
 .prescription-title {
   margin: 0 0 10px;
   color: var(--purple);
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1.4;
   letter-spacing: -0.02em;
 }
@@ -679,7 +689,7 @@ img {
   gap: 8px;
   margin: 0 0 9px;
   color: var(--correction);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.4;
 }
@@ -692,7 +702,7 @@ img {
   border-radius: 999px;
   background: var(--correction);
   color: #fff;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.01em;
 }
 
@@ -713,7 +723,7 @@ img {
 .result-metric-card {
   display: grid;
   min-width: 0;
-  min-height: 148px;
+  min-height: 166px;
   align-content: center;
   padding: 12px;
   border: 1px solid rgba(104, 18, 140, 0.1);
@@ -724,7 +734,7 @@ img {
 
 .result-metric-card > span {
   color: #54475a;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.35;
 }
@@ -744,7 +754,7 @@ img {
   border-radius: 999px;
   background: var(--correction-soft);
   color: var(--correction);
-  font-size: 8.5px;
+  font-size: 10.5px;
   font-style: normal;
   font-weight: 700;
   line-height: 1.35;
@@ -770,8 +780,8 @@ img {
 .result-metric-card > small {
   margin-top: 5px;
   color: #746b77;
-  font-size: 9px;
-  line-height: 1.45;
+  font-size: 11.5px;
+  line-height: 1.55;
   word-break: keep-all;
 }
 
@@ -781,12 +791,12 @@ img {
   gap: 5px;
   margin-top: 4px;
   color: #877d89;
-  font-size: 7.5px;
+  font-size: 9.5px;
   white-space: nowrap;
 }
 
 .content-sensitivity-card {
-  min-height: 132px;
+  min-height: 158px;
   border-color: rgba(63, 114, 232, 0.14);
 }
 
@@ -810,7 +820,7 @@ img {
 .result-metric-help > p {
   margin: 0;
   color: #4e4451;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 1.62;
   word-break: keep-all;
@@ -819,7 +829,7 @@ img {
 .result-metric-help > .metric-help-title {
   margin-bottom: 6px;
   color: var(--purple);
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .result-metric-help dl {
@@ -830,16 +840,16 @@ img {
 
 .result-metric-help dl > div {
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
-  gap: 7px;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 9px;
   align-items: start;
 }
 
 .result-metric-help dt,
 .result-metric-help dd {
   margin: 0;
-  font-size: 9.5px;
-  line-height: 1.5;
+  font-size: 11.5px;
+  line-height: 1.58;
 }
 
 .result-metric-help dt {
@@ -978,14 +988,14 @@ img {
   display: block;
   margin-bottom: 5px;
   color: var(--correction);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
 }
 
 .result-next-focus > p {
   margin: 0;
   color: #5b515e;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.58;
   word-break: keep-all;
 }
@@ -1001,7 +1011,7 @@ img {
   display: block;
   margin-bottom: 3px;
   color: var(--correction);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .content-card {

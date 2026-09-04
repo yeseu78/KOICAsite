@@ -156,6 +156,17 @@ await navigate(
 );
 const mobileResultMetrics = await evaluate(`(() => {
   const cards = [...document.querySelectorAll('.result-metric-card')];
+  const roleRows = [...document.querySelectorAll('.easy-lens-roles p')].map((row) => {
+    const copy = row.querySelector('.easy-lens-role-copy');
+    const copyRect = copy.getBoundingClientRect();
+    return {
+      display: getComputedStyle(row).display,
+      columns: getComputedStyle(row).gridTemplateColumns,
+      copyLeft: Math.round(copyRect.left),
+      copyWidth: Math.round(copyRect.width),
+      clipped: row.scrollWidth > row.clientWidth || row.scrollHeight > row.clientHeight
+    };
+  });
   const boxes = cards.map((card) => {
     const rect = card.getBoundingClientRect();
     return {
@@ -174,13 +185,45 @@ const mobileResultMetrics = await evaluate(`(() => {
     statuses: [...document.querySelectorAll('.result-metric-card > em')].map((item) => item.textContent.trim()),
     scaleWidths: [...document.querySelectorAll('.metric-scale > span')].map((item) => Math.round(item.getBoundingClientRect().width)),
     easySummary: document.querySelector('.result-at-a-glance').textContent.replace(/\\s+/g, ' ').trim(),
+    contentMatchExplanation: document.querySelector('.content-sensitivity-card > small').textContent.trim(),
     guidance: document.querySelector('.result-metric-help').textContent.replace(/\\s+/g, ' ').trim(),
     interpretation: document.querySelector('.combination-interpretation .diagnosis-text').textContent.trim(),
+    roleRows,
+    fontSizes: {
+      easyLabel: parseFloat(getComputedStyle(document.querySelector('.easy-result-label')).fontSize),
+      summary: parseFloat(getComputedStyle(document.querySelector('.easy-result-summary')).fontSize),
+      roleCopy: parseFloat(getComputedStyle(document.querySelector('.easy-lens-role-copy')).fontSize),
+      prescriptionTitle: parseFloat(getComputedStyle(document.querySelector('.prescription-title')).fontSize),
+      metricLabel: parseFloat(getComputedStyle(document.querySelector('.result-metric-card > span')).fontSize),
+      metricStatus: parseFloat(getComputedStyle(document.querySelector('.result-metric-card > em')).fontSize),
+      metricBody: parseFloat(getComputedStyle(document.querySelector('.content-sensitivity-card > small')).fontSize),
+      helperBody: parseFloat(getComputedStyle(document.querySelector('.result-metric-help dd')).fontSize),
+      nextFocus: parseFloat(getComputedStyle(document.querySelector('.result-next-focus > p')).fontSize)
+    },
     boxes,
     horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
   };
 })()`);
 await screenshot("./.artifacts/result-metrics-mobile-390-dpr3.png");
+await evaluate(`document.querySelector('.result-metric-help').scrollIntoView({ block: 'start', behavior: 'instant' })`);
+await new Promise((resolve) => setTimeout(resolve, 100));
+await screenshot("./.artifacts/result-details-mobile-390-dpr3.png");
+
+await send("Emulation.setDeviceMetricsOverride", {
+  width: 320,
+  height: 740,
+  deviceScaleFactor: 1,
+  mobile: true,
+});
+await navigate(
+  "http://127.0.0.1:4173/?view=result&correction=case&content=education",
+);
+const compactResult = await evaluate(`(() => ({
+  explanation: document.querySelector('.content-sensitivity-card > small').textContent.trim(),
+  metricColumns: getComputedStyle(document.querySelector('.result-metric-grid')).gridTemplateColumns,
+  cardsClipped: [...document.querySelectorAll('.result-metric-card')].some((card) => card.scrollWidth > card.clientWidth || card.scrollHeight > card.clientHeight),
+  horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
+}))()`);
 
 await send("Emulation.setDeviceMetricsOverride", {
   width: 500,
@@ -524,6 +567,7 @@ const checks = {
   switchSelection,
   fullFlowResult,
   mobileResultMetrics,
+  compactResult,
   shareUi,
   storyMedia,
   homeEffects,
@@ -561,6 +605,22 @@ const passed =
   mobileResultMetrics.easySummary.includes("이 결과를 쉽게 말하면") &&
   mobileResultMetrics.easySummary.includes("지금 ODA를 바라보는 방식을 보완하기 위해 협력렌즈가 처방됐어요") &&
   mobileResultMetrics.easySummary.includes("내가 선택한 ICT 분야의 사례를 보기 위해 테크렌즈가 연결됐어요") &&
+  mobileResultMetrics.contentMatchExplanation.startsWith("ICT를 관심 분야로") &&
+  !mobileResultMetrics.contentMatchExplanation.includes("ICT을") &&
+  mobileResultMetrics.roleRows.length === 2 &&
+  mobileResultMetrics.roleRows.every((row) => row.display === "grid") &&
+  mobileResultMetrics.roleRows.every((row) => row.columns.startsWith("76px")) &&
+  mobileResultMetrics.roleRows.every((row) => row.copyLeft === mobileResultMetrics.roleRows[0].copyLeft) &&
+  mobileResultMetrics.roleRows.every((row) => row.copyWidth >= 200 && row.clipped === false) &&
+  mobileResultMetrics.fontSizes.easyLabel >= 15 &&
+  mobileResultMetrics.fontSizes.summary >= 13 &&
+  mobileResultMetrics.fontSizes.roleCopy >= 12 &&
+  mobileResultMetrics.fontSizes.prescriptionTitle >= 20 &&
+  mobileResultMetrics.fontSizes.metricLabel >= 13 &&
+  mobileResultMetrics.fontSizes.metricStatus >= 10 &&
+  mobileResultMetrics.fontSizes.metricBody >= 11 &&
+  mobileResultMetrics.fontSizes.helperBody >= 11 &&
+  mobileResultMetrics.fontSizes.nextFocus >= 12 &&
   mobileResultMetrics.guidance.includes("협력도와 공감 시야각은 현재 ODA 인식을 분석한 교정렌즈 진단 결과예요") &&
   mobileResultMetrics.guidance.includes("수치가 높을수록 더 많은 인식 교정이 필요해요") &&
   mobileResultMetrics.guidance.includes("각도가 넓을수록 협력의 연결 관계를 폭넓게 바라보고 있어요") &&
@@ -575,6 +635,10 @@ const passed =
   mobileResultMetrics.boxes[2].width > mobileResultMetrics.boxes[0].width * 1.8 &&
   mobileResultMetrics.boxes.every((box) => box.clipped === false) &&
   mobileResultMetrics.horizontalOverflow === false &&
+  compactResult.explanation.startsWith("교육을 관심 분야로") &&
+  compactResult.metricColumns.split(" ").length === 1 &&
+  compactResult.cardsClipped === false &&
+  compactResult.horizontalOverflow === false &&
   shareUi.shareButtons === 4 &&
   shareUi.copyStatus.includes("복사") &&
   !shareUi.copyStatus.includes("복사하지 못했어요") &&
