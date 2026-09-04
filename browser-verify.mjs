@@ -347,10 +347,11 @@ const highDpiMobile = await evaluate(`(() => ({
   correctedBrand: document.querySelector('.mobile-header-koica-correction')?.textContent.trim(),
   sourceAssetCount: document.querySelectorAll('.mobile-source-asset').length,
   sourceAssetNaturalWidths: [...document.querySelectorAll('.mobile-source-asset img')].map((img) => img.naturalWidth),
-  globeAsset: document.querySelector('.mobile-globe-base')?.currentSrc,
-  globeBox: (() => {
+  heroCollageAsset: document.querySelector('.mobile-hero-collage-original')?.currentSrc,
+  heroCollageNaturalWidth: document.querySelector('.mobile-hero-collage-original')?.naturalWidth,
+  heroCollageBox: (() => {
     const artboard = document.querySelector('.mobile-figma-artboard').getBoundingClientRect();
-    const asset = document.querySelector('.mobile-globe-sticker-source').getBoundingClientRect();
+    const asset = document.querySelector('.mobile-hero-collage-original').getBoundingClientRect();
     return {
       left: Math.round(asset.left - artboard.left),
       top: Math.round(asset.top - artboard.top),
@@ -358,6 +359,24 @@ const highDpiMobile = await evaluate(`(() => ({
       height: Math.round(asset.height)
     };
   })(),
+  featureNaturalWidths: [...document.querySelectorAll('.mobile-feature-source img')].map((img) => img.naturalWidth),
+  profileNaturalWidths: [...document.querySelectorAll('.mobile-profile-photo-source img')].map((img) => img.naturalWidth),
+  profileShineCount: document.querySelectorAll('.mobile-profile-photo-shine').length,
+  animatedProfileHotspots: document.querySelectorAll('.mobile-figma-hotspot[class*="mobile-profile-"][data-mobile-animate]').length,
+  profileAlignment: (() => {
+    const artboard = document.querySelector('.mobile-figma-artboard').getBoundingClientRect();
+    const photo = document.querySelector('.mobile-profile-photo-euiseong').getBoundingClientRect();
+    const shine = document.querySelector('.mobile-profile-shine-euiseong').getBoundingClientRect();
+    const hotspot = document.querySelector('.mobile-profile-euiseong').getBoundingClientRect();
+    const box = (rect) => ({
+      left: Math.round(rect.left - artboard.left),
+      top: Math.round(rect.top - artboard.top),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height)
+    });
+    return { photo: box(photo), shine: box(shine), hotspot: box(hotspot) };
+  })(),
+  impactGlobeNaturalWidth: document.querySelector('.mobile-impact-globe-source img')?.naturalWidth,
   firstLensBox: (() => {
     const artboard = document.querySelector('.mobile-figma-artboard').getBoundingClientRect();
     const asset = document.querySelector('.mobile-lens-cooperation-icon').getBoundingClientRect();
@@ -396,6 +415,8 @@ highDpiMobile.teamMotion = await evaluate(`(() => ({
   activeElements: document.querySelectorAll('[data-mobile-animate].is-in-view').length
 }))()`);
 await screenshot("./.artifacts/home-mobile-team-dpr3.png");
+await new Promise((resolve) => setTimeout(resolve, 4200));
+await screenshot("./.artifacts/home-mobile-team-shine-dpr3.png");
 
 await send("Emulation.setDeviceMetricsOverride", {
   width: 320,
@@ -548,14 +569,27 @@ const passed =
   highDpiMobile.profileCardNaturalWidth === 132 &&
   highDpiMobile.profileCardWidth === 132 &&
   highDpiMobile.correctedBrand === "KOICA안경소" &&
-  highDpiMobile.sourceAssetCount === 11 &&
-  highDpiMobile.sourceAssetNaturalWidths.length === 12 &&
-  highDpiMobile.sourceAssetNaturalWidths.every((width) => width >= 1024) &&
-  highDpiMobile.globeAsset.includes("mobile-globe-base.png") &&
-  highDpiMobile.globeBox.left === 40 &&
-  highDpiMobile.globeBox.top === 336 &&
-  highDpiMobile.globeBox.width === 47 &&
-  highDpiMobile.globeBox.height === 47 &&
+  highDpiMobile.sourceAssetCount === 25 &&
+  highDpiMobile.sourceAssetNaturalWidths.length === 24 &&
+  highDpiMobile.sourceAssetNaturalWidths.every((width) => width > 0) &&
+  highDpiMobile.heroCollageAsset.includes("mobile-hero-collage-figma-4x.png") &&
+  highDpiMobile.heroCollageNaturalWidth === 1304 &&
+  highDpiMobile.heroCollageBox.left === 13 &&
+  highDpiMobile.heroCollageBox.top === 209 &&
+  highDpiMobile.heroCollageBox.width === 349 &&
+  highDpiMobile.heroCollageBox.height === 266 &&
+  highDpiMobile.featureNaturalWidths.length === 4 &&
+  highDpiMobile.featureNaturalWidths.every((width) => width === 1536) &&
+  highDpiMobile.profileNaturalWidths.length === 4 &&
+  highDpiMobile.profileNaturalWidths.every((width) => width === 1080) &&
+  highDpiMobile.profileShineCount === 5 &&
+  highDpiMobile.animatedProfileHotspots === 0 &&
+  JSON.stringify(highDpiMobile.profileAlignment.photo) === JSON.stringify(highDpiMobile.profileAlignment.shine) &&
+  highDpiMobile.profileAlignment.hotspot.left === 152 &&
+  highDpiMobile.profileAlignment.hotspot.top === 1144 &&
+  highDpiMobile.profileAlignment.hotspot.width === 99 &&
+  highDpiMobile.profileAlignment.hotspot.height === 148 &&
+  highDpiMobile.impactGlobeNaturalWidth === 1024 &&
   highDpiMobile.firstLensBox.left === 26 &&
   highDpiMobile.firstLensBox.top === 878 &&
   highDpiMobile.firstLensBox.width === 63 &&
