@@ -406,7 +406,7 @@ const passed =
   homeEffects.startButtons === 5 &&
   homeEffects.mobileHotspots === 8 &&
   homeEffects.mobileProfileLinks === 5 &&
-  homeEffects.mobileAsset.includes("home-mobile-responsive.png") &&
+  homeEffects.mobileAsset.includes("home-mobile-responsive-hd.png") &&
   homeEffects.mobileNaturalWidth === 390 &&
   homeEffects.mobileNaturalHeight === 2136 &&
   homeEffects.profileLinks === 5 &&
