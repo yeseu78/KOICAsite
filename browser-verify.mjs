@@ -326,6 +326,9 @@ const highDpiMobile = await evaluate(`(() => ({
   profileLogoWidth: Math.round(document.querySelector('.mobile-profile-wenk-logo-overlay')?.getBoundingClientRect().width || 0),
   profileLabel: document.querySelector('.mobile-profile-label-overlay')?.currentSrc,
   profileLabelNaturalWidth: document.querySelector('.mobile-profile-label-overlay')?.naturalWidth,
+  profileCard: document.querySelector('.mobile-profile-wenki-card-overlay')?.currentSrc,
+  profileCardNaturalWidth: document.querySelector('.mobile-profile-wenki-card-overlay')?.naturalWidth,
+  profileCardWidth: Math.round(document.querySelector('.mobile-profile-wenki-card-overlay')?.getBoundingClientRect().width || 0),
   horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
 }))()`);
 await screenshot("./.artifacts/home-phone-390-dpr3.png");
@@ -476,6 +479,9 @@ const passed =
   highDpiMobile.profileLogoWidth === 155 &&
   highDpiMobile.profileLabel.includes("profile-label.svg") &&
   highDpiMobile.profileLabelNaturalWidth === 51 &&
+  highDpiMobile.profileCard.includes("profile-wenki-card.svg") &&
+  highDpiMobile.profileCardNaturalWidth === 132 &&
+  highDpiMobile.profileCardWidth === 132 &&
   highDpiMobile.horizontalOverflow === false &&
   smallHome.viewportWidth === 320 &&
   smallHome.horizontalOverflow === false &&

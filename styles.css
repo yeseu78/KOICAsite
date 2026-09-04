@@ -3858,6 +3858,12 @@ body:has(.app-shell.is-home) {
     width: 13.0769%;
   }
 
+  .mobile-profile-wenki-card-overlay {
+    top: 55.1498%;
+    left: 6.1538%;
+    width: 33.8462%;
+  }
+
   .mobile-figma-menu-toggle {
     position: absolute;
     z-index: 30;
