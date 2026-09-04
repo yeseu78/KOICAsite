@@ -343,8 +343,8 @@ function getMobileFigmaHomeMarkup() {
       <div class="mobile-figma-artboard" aria-label="ODA OPTICA by KOICA 모바일 홈">
         <img
           class="mobile-figma-image"
-          src="./assets/figma/home-mobile-responsive.png"
-          srcset="./assets/figma/home-mobile-responsive.png 1x, ./assets/figma/home-mobile-responsive-2x.jpg 2x, ./assets/figma/home-mobile-responsive-4x.jpg 4x"
+          src="./assets/figma/home-mobile-responsive-hd.png"
+          srcset="./assets/figma/home-mobile-responsive-hd.png 1x, ./assets/figma/home-mobile-responsive-hd-2x.jpg 2x, ./assets/figma/home-mobile-responsive-hd-4x.jpg 4x"
           width="390"
           height="2136"
           decoding="sync"
