@@ -316,24 +316,31 @@ await send("Emulation.setDeviceMetricsOverride", {
   mobile: true,
 });
 await navigate("http://127.0.0.1:4173/");
+await new Promise((resolve) => setTimeout(resolve, 260));
 const highDpiMobile = await evaluate(`(() => ({
   dpr: window.devicePixelRatio,
   image: document.querySelector('.mobile-figma-image')?.currentSrc,
   imageWidth: Math.round(document.querySelector('.mobile-figma-image')?.getBoundingClientRect().width || 0),
   imageHeight: Math.round(document.querySelector('.mobile-figma-image')?.getBoundingClientRect().height || 0),
-  profileLogo: document.querySelector('.mobile-profile-wenk-logo-overlay')?.currentSrc,
-  profileLogoNaturalWidth: document.querySelector('.mobile-profile-wenk-logo-overlay')?.naturalWidth,
+  profileLogoInline: Boolean(document.querySelector('.mobile-profile-wenk-logo-overlay > svg')),
+  profileLogoViewBox: document.querySelector('.mobile-profile-wenk-logo-overlay > svg')?.getAttribute('viewBox'),
   profileLogoWidth: Math.round(document.querySelector('.mobile-profile-wenk-logo-overlay')?.getBoundingClientRect().width || 0),
-  profileLabel: document.querySelector('.mobile-profile-label-overlay')?.currentSrc,
-  profileLabelNaturalWidth: document.querySelector('.mobile-profile-label-overlay')?.naturalWidth,
+  profileLabelInline: Boolean(document.querySelector('.mobile-profile-label-overlay > svg')),
+  profileLabelViewBox: document.querySelector('.mobile-profile-label-overlay > svg')?.getAttribute('viewBox'),
   profileCard: document.querySelector('.mobile-profile-wenki-card-overlay')?.currentSrc,
   profileCardNaturalWidth: document.querySelector('.mobile-profile-wenki-card-overlay')?.naturalWidth,
   profileCardWidth: Math.round(document.querySelector('.mobile-profile-wenki-card-overlay')?.getBoundingClientRect().width || 0),
+  motionElements: document.querySelectorAll('[data-mobile-animate]').length,
   horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
 }))()`);
 await screenshot("./.artifacts/home-phone-390-dpr3.png");
 await evaluate(`document.querySelector('.anchor-team').scrollIntoView({ block: 'start', behavior: 'instant' })`);
-await new Promise((resolve) => setTimeout(resolve, 80));
+await new Promise((resolve) => setTimeout(resolve, 220));
+highDpiMobile.teamMotion = await evaluate(`(() => ({
+  logoVisible: document.querySelector('.mobile-profile-wenk-logo-overlay')?.classList.contains('is-in-view'),
+  cardVisible: document.querySelector('.mobile-profile-wenki-card-overlay')?.classList.contains('is-in-view'),
+  activeElements: document.querySelectorAll('[data-mobile-animate].is-in-view').length
+}))()`);
 await screenshot("./.artifacts/home-mobile-team-dpr3.png");
 
 await send("Emulation.setDeviceMetricsOverride", {
@@ -474,14 +481,18 @@ const passed =
   highDpiMobile.image.includes("home-mobile-figma-vector.svg") &&
   highDpiMobile.imageWidth === 390 &&
   highDpiMobile.imageHeight === 2136 &&
-  highDpiMobile.profileLogo.includes("profile-wenk-logo.svg") &&
-  highDpiMobile.profileLogoNaturalWidth === 155 &&
+  highDpiMobile.profileLogoInline === true &&
+  highDpiMobile.profileLogoViewBox === "0 0 155 61" &&
   highDpiMobile.profileLogoWidth === 155 &&
-  highDpiMobile.profileLabel.includes("profile-label.svg") &&
-  highDpiMobile.profileLabelNaturalWidth === 51 &&
+  highDpiMobile.profileLabelInline === true &&
+  highDpiMobile.profileLabelViewBox === "0 0 51 18" &&
   highDpiMobile.profileCard.includes("profile-wenki-card.svg") &&
   highDpiMobile.profileCardNaturalWidth === 132 &&
   highDpiMobile.profileCardWidth === 132 &&
+  highDpiMobile.motionElements >= 20 &&
+  highDpiMobile.teamMotion.logoVisible === true &&
+  highDpiMobile.teamMotion.cardVisible === true &&
+  highDpiMobile.teamMotion.activeElements >= 8 &&
   highDpiMobile.horizontalOverflow === false &&
   smallHome.viewportWidth === 320 &&
   smallHome.horizontalOverflow === false &&
