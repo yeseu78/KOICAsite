@@ -3837,6 +3837,27 @@ body:has(.app-shell.is-home) {
     width: 100%;
   }
 
+  .mobile-profile-logo-overlay {
+    position: absolute;
+    z-index: 7;
+    display: block;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .mobile-profile-wenk-logo-overlay {
+    top: 52.2533%;
+    left: 0;
+    width: 39.7436%;
+  }
+
+  .mobile-profile-label-overlay {
+    top: 54.3656%;
+    left: 25.0056%;
+    width: 13.0769%;
+  }
+
   .mobile-figma-menu-toggle {
     position: absolute;
     z-index: 30;

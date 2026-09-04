@@ -224,7 +224,7 @@ const homeEffects = await evaluate(`(() => ({
   desktopVisible: getComputedStyle(document.querySelector('.figma-home-exact')).display !== 'none',
   startButtons: document.querySelectorAll('[data-action="start"]').length,
   mobileHotspots: document.querySelectorAll('.mobile-figma-hotspot').length,
-  mobileProfileLinks: document.querySelectorAll('[class*="mobile-profile-"]').length,
+  mobileProfileLinks: document.querySelectorAll('.mobile-figma-hotspot[class*="mobile-profile-"]').length,
   profileLinks: document.querySelectorAll('.home-profile-hotspot').length,
   koicaLinks: document.querySelectorAll('.home-koica-hotspot').length,
   polishElements: document.querySelectorAll('.home-polish-layer > span').length,
@@ -279,7 +279,7 @@ const narrowHome = await evaluate(`(() => ({
     return { width: Math.round(rect.width), height: Math.round(rect.height) };
   })(),
   hotspotCount: document.querySelectorAll('.mobile-figma-hotspot').length,
-  profileLinkCount: document.querySelectorAll('[class*="mobile-profile-"]').length,
+  profileLinkCount: document.querySelectorAll('.mobile-figma-hotspot[class*="mobile-profile-"]').length,
   scrollHeight: document.documentElement.scrollHeight,
   viewportHeight: window.innerHeight
 }))()`);
@@ -321,9 +321,17 @@ const highDpiMobile = await evaluate(`(() => ({
   image: document.querySelector('.mobile-figma-image')?.currentSrc,
   imageWidth: Math.round(document.querySelector('.mobile-figma-image')?.getBoundingClientRect().width || 0),
   imageHeight: Math.round(document.querySelector('.mobile-figma-image')?.getBoundingClientRect().height || 0),
+  profileLogo: document.querySelector('.mobile-profile-wenk-logo-overlay')?.currentSrc,
+  profileLogoNaturalWidth: document.querySelector('.mobile-profile-wenk-logo-overlay')?.naturalWidth,
+  profileLogoWidth: Math.round(document.querySelector('.mobile-profile-wenk-logo-overlay')?.getBoundingClientRect().width || 0),
+  profileLabel: document.querySelector('.mobile-profile-label-overlay')?.currentSrc,
+  profileLabelNaturalWidth: document.querySelector('.mobile-profile-label-overlay')?.naturalWidth,
   horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
 }))()`);
 await screenshot("./.artifacts/home-phone-390-dpr3.png");
+await evaluate(`document.querySelector('.anchor-team').scrollIntoView({ block: 'start', behavior: 'instant' })`);
+await new Promise((resolve) => setTimeout(resolve, 80));
+await screenshot("./.artifacts/home-mobile-team-dpr3.png");
 
 await send("Emulation.setDeviceMetricsOverride", {
   width: 320,
@@ -463,6 +471,11 @@ const passed =
   highDpiMobile.image.includes("home-mobile-figma-vector.svg") &&
   highDpiMobile.imageWidth === 390 &&
   highDpiMobile.imageHeight === 2136 &&
+  highDpiMobile.profileLogo.includes("profile-wenk-logo.svg") &&
+  highDpiMobile.profileLogoNaturalWidth === 155 &&
+  highDpiMobile.profileLogoWidth === 155 &&
+  highDpiMobile.profileLabel.includes("profile-label.svg") &&
+  highDpiMobile.profileLabelNaturalWidth === 51 &&
   highDpiMobile.horizontalOverflow === false &&
   smallHome.viewportWidth === 320 &&
   smallHome.horizontalOverflow === false &&
