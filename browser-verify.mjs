@@ -349,6 +349,7 @@ const highDpiMobile = await evaluate(`(() => ({
   sourceAssetNaturalWidths: [...document.querySelectorAll('.mobile-source-asset img')].map((img) => img.naturalWidth),
   heroCollageAsset: document.querySelector('.mobile-hero-collage-original')?.currentSrc,
   heroCollageNaturalWidth: document.querySelector('.mobile-hero-collage-original')?.naturalWidth,
+  heroCollageClipPath: getComputedStyle(document.querySelector('.mobile-hero-collage-original')).clipPath,
   heroCollageBox: (() => {
     const artboard = document.querySelector('.mobile-figma-artboard').getBoundingClientRect();
     const asset = document.querySelector('.mobile-hero-collage-original').getBoundingClientRect();
@@ -574,6 +575,7 @@ const passed =
   highDpiMobile.sourceAssetNaturalWidths.every((width) => width > 0) &&
   highDpiMobile.heroCollageAsset.includes("mobile-hero-collage-figma-4x.png") &&
   highDpiMobile.heroCollageNaturalWidth === 1304 &&
+  highDpiMobile.heroCollageClipPath === "inset(5% 0px 0px)" &&
   highDpiMobile.heroCollageBox.left === 13 &&
   highDpiMobile.heroCollageBox.top === 209 &&
   highDpiMobile.heroCollageBox.width === 349 &&
