@@ -95,6 +95,9 @@ for (const feature of [
   "이 결과를 쉽게 말하면",
   "정답률이 아니라 선택 분야와 추천 콘텐츠가 정확히 일치한다는 뜻이에요.",
   "이제 무엇을 보면 좋을까요?",
+  "function withObjectParticle",
+  'hasFinalConsonant ? "을" : "를"',
+  'class="easy-lens-role-copy"',
   "home-mobile-figma-vector.svg",
   "home-mobile-figma-original-2x.png 2x",
   "home-mobile-figma-original-4x.png 4x",
@@ -111,6 +114,8 @@ for (const feature of [
   ".result-at-a-glance",
   ".metric-scale",
   ".result-next-focus",
+  ".easy-lens-role-copy",
+  "grid-template-columns: 76px minmax(0, 1fr)",
 ]) {
   if (!styleSource.includes(feature)) errors.push(`스타일 누락: ${feature}`);
 }
