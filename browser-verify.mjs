@@ -273,6 +273,20 @@ const narrowHome = await evaluate(`(() => ({
   imageWidth: Math.round(document.querySelector('.mobile-figma-image').getBoundingClientRect().width),
   imageHeight: Math.round(document.querySelector('.mobile-figma-image').getBoundingClientRect().height),
   heroCtaHeight: Math.round(document.querySelector('.mobile-hero-start').getBoundingClientRect().height),
+  heroCtaTop: (() => {
+    const artboard = document.querySelector('.mobile-figma-artboard').getBoundingClientRect();
+    const button = document.querySelector('.mobile-hero-start').getBoundingClientRect();
+    return Math.round(button.top - artboard.top);
+  })(),
+  heroEffect: (() => {
+    const artboard = document.querySelector('.mobile-figma-artboard').getBoundingClientRect();
+    const effect = document.querySelector('.mobile-cta-motion').getBoundingClientRect();
+    return {
+      top: Math.round(effect.top - artboard.top),
+      width: Math.round(effect.width),
+      height: Math.round(effect.height)
+    };
+  })(),
   bottomCtaHeight: Math.round(document.querySelector('.mobile-bottom-start').getBoundingClientRect().height),
   menuButtonSize: (() => {
     const rect = document.querySelector('.mobile-menu-toggle').getBoundingClientRect();
@@ -469,6 +483,10 @@ const passed =
   narrowHome.imageWidth === 390 &&
   narrowHome.imageHeight === 2136 &&
   narrowHome.heroCtaHeight >= 48 &&
+  narrowHome.heroCtaTop === 537 &&
+  narrowHome.heroEffect.top === 537 &&
+  narrowHome.heroEffect.width === 322 &&
+  narrowHome.heroEffect.height === 46 &&
   narrowHome.bottomCtaHeight >= 48 &&
   narrowHome.menuButtonSize.width >= 44 &&
   narrowHome.menuButtonSize.height >= 44 &&

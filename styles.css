@@ -4130,12 +4130,25 @@ body:has(.app-shell.is-home) {
   }
 
   .mobile-hero-start {
-    top: 26.31%;
+    top: 25.1404%;
     left: 8.72%;
     width: 82.56%;
-    height: 2.16%;
+    height: 2.1536%;
     min-height: 48px;
     border-radius: 13px;
+  }
+
+  .mobile-cta-motion {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    display: block;
+    aspect-ratio: 322 / 46;
+    overflow: hidden;
+    border-radius: 12px;
+    isolation: isolate;
+    pointer-events: none;
   }
 
   .mobile-profile-wenki {
@@ -4196,7 +4209,7 @@ body:has(.app-shell.is-home) {
     isolation: isolate;
   }
 
-  .mobile-hero-start::before,
+  .mobile-hero-start .mobile-cta-motion::before,
   .mobile-bottom-start::before {
     position: absolute;
     z-index: -1;
@@ -4207,7 +4220,7 @@ body:has(.app-shell.is-home) {
     content: "";
   }
 
-  .mobile-hero-start::after,
+  .mobile-hero-start .mobile-cta-motion::after,
   .mobile-bottom-start::after,
   .mobile-figma-hotspot[data-mobile-animate="card-link"]::after {
     position: absolute;
@@ -4220,12 +4233,12 @@ body:has(.app-shell.is-home) {
     transform: skewX(-18deg);
   }
 
-  .mobile-hero-start.is-in-view::before,
+  .mobile-hero-start.is-in-view .mobile-cta-motion::before,
   .mobile-bottom-start.is-in-view::before {
     animation: mobile-button-pulse 2.7s 500ms ease-in-out infinite;
   }
 
-  .mobile-hero-start.is-in-view::after,
+  .mobile-hero-start.is-in-view .mobile-cta-motion::after,
   .mobile-bottom-start.is-in-view::after {
     animation: mobile-sheen 3.9s 800ms ease-in-out infinite;
   }
