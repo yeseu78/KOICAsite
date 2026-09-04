@@ -423,7 +423,7 @@ const passed =
   homeEffects.startButtons === 5 &&
   homeEffects.mobileHotspots === 8 &&
   homeEffects.mobileProfileLinks === 5 &&
-  homeEffects.mobileAsset.includes("home-mobile-figma-original-1x.png") &&
+  homeEffects.mobileAsset.includes("home-mobile-figma-vector.svg") &&
   homeEffects.mobileNaturalWidth === 390 &&
   homeEffects.mobileNaturalHeight === 2136 &&
   homeEffects.profileLinks === 5 &&

@@ -344,7 +344,6 @@ function getMobileFigmaHomeMarkup() {
         <picture class="mobile-figma-picture">
           <source
             type="image/svg+xml"
-            media="(min-resolution: 3dppx)"
             srcset="./assets/figma/home-mobile-figma-vector.svg"
           />
           <img
