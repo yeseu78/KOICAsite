@@ -344,6 +344,7 @@ function getMobileFigmaHomeMarkup() {
         <img
           class="mobile-figma-image"
           src="./assets/figma/home-mobile-responsive.png"
+          srcset="./assets/figma/home-mobile-responsive.png 1x, ./assets/figma/home-mobile-responsive-2x.jpg 2x, ./assets/figma/home-mobile-responsive-4x.jpg 4x"
           width="390"
           height="2136"
           decoding="sync"
