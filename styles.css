@@ -3892,6 +3892,7 @@ body:has(.app-shell.is-home) {
     left: 6.1538%;
     width: 83.5897%;
     height: 11.6573%;
+    clip-path: inset(5% 0 0);
     transform: scale(1.07);
     transform-origin: center;
   }
