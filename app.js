@@ -857,6 +857,8 @@ function calculateResult() {
 function getResultShareData(correctionKey, contentKey) {
   const correction = correctionLensData[correctionKey];
   const content = contentLensData[contentKey];
+  const { cooperationDegree, empathyAngle } = correction.diagnostics;
+  const { sensitivityLabel, sensitivity } = content.matching;
   const url = new URL(window.location.href);
   url.search = new URLSearchParams({
     view: "quiz",
@@ -867,8 +869,8 @@ function getResultShareData(correctionKey, contentKey) {
   }).toString();
 
   return {
-    title: `나의 weKO 렌즈는 ${correction.displayName} + ${content.displayName}`,
-    text: `내 AI 시력검사 결과는 ${correction.displayName} + ${content.displayName}였어! 👓\n너는 어떤 렌즈가 나오는지 한번 해봐!`,
+    title: `나의 weKO 렌즈는 ${correction.displayName} × ${content.displayName}`,
+    text: `내 AI 시력검사 결과는 ${correction.displayName} × ${content.displayName}였어! 👓\n협력도 ${cooperationDegree} · 공감 시야각 ${empathyAngle}° · ${sensitivityLabel} 감도 ${sensitivity}%\n너는 어떤 렌즈가 나오는지 한번 해봐!`,
     url: url.toString(),
   };
 }
@@ -980,7 +982,7 @@ function drawWrappedText(context, text, x, y, maxWidth, lineHeight, maxLines = 1
 }
 
 function drawCombination(context, correction, content, y, fontSize, canvasWidth) {
-  const plus = " + ";
+  const plus = " × ";
   context.font = `700 ${fontSize}px "Noto Sans KR", sans-serif`;
   const correctionWidth = context.measureText(correction.displayName).width;
   const plusWidth = context.measureText(plus).width;
@@ -1199,8 +1201,11 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
   const correction = correctionLensData[safeCorrection];
   const content = contentLensData[safeContent];
   const copy = combinationCopy[safeCorrection][safeContent];
+  const { cooperationDegree, empathyAngle } = correction.diagnostics;
+  const { sensitivityLabel, sensitivity } = content.matching;
+  const combinationInterpretation = `${correction.interpretation} 현재 공감 시야각은 ${empathyAngle}°이며, ${content.field} 분야에는 ${sensitivity}%의 높은 감도를 보여 추천 콘텐츠와 잘 맞습니다.`;
 
-  setDocumentTitle(`${correction.displayName} + ${content.displayName}`);
+  setDocumentTitle(`${correction.displayName} × ${content.displayName}`);
 
   app.innerHTML = `
     <article
@@ -1212,13 +1217,48 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
     >
       <header class="result-header">
         <span class="completion-badge">AI 시력검사 완료!</span>
-        <h1 class="result-kicker">당신에게 필요한 렌즈는</h1>
-        <div class="lens-combination" aria-label="${correction.displayName} 더하기 ${content.displayName}">
+        <h1 class="result-kicker">당신을 위한 렌즈 처방이 완료됐어요</h1>
+        <div class="lens-combination" aria-label="${correction.displayName} 곱하기 ${content.displayName}">
           <span class="correction-name">${correction.displayName}</span>
-          <span class="combination-plus" aria-hidden="true">+</span>
+          <span class="combination-plus" aria-hidden="true">×</span>
           <span class="content-name">${content.displayName}</span>
         </div>
         <p class="combination-copy">${copy}</p>
+
+        <section class="result-prescription" aria-labelledby="prescription-metrics-title">
+          <h2 class="prescription-title" id="prescription-metrics-title">렌즈 진단표</h2>
+          <div class="result-metric-group correction-metric-group">
+            <p class="metric-group-title"><span>교정렌즈 진단</span>${correction.displayName}</p>
+            <div class="result-metric-grid">
+              <article class="result-metric-card" data-metric="cooperation-degree">
+                <span>협력도</span>
+                <strong>${cooperationDegree}</strong>
+                <small>ODA 인식 교정 도수</small>
+              </article>
+              <article class="result-metric-card" data-metric="empathy-angle">
+                <span>공감 시야각</span>
+                <strong>${empathyAngle}°</strong>
+                <small>협력을 바라보는 범위</small>
+              </article>
+            </div>
+          </div>
+          <div class="result-metric-group content-metric-group">
+            <p class="metric-group-title"><span>콘텐츠 렌즈 매칭</span>${content.displayName}</p>
+            <article class="result-metric-card content-sensitivity-card" data-metric="content-sensitivity">
+              <span>${sensitivityLabel} 감도</span>
+              <strong>${sensitivity}%</strong>
+              <small>${content.field} 관심 분야와 추천 콘텐츠 매칭</small>
+            </article>
+          </div>
+          <div class="result-metric-help">
+            <p>협력도와 공감 시야각은 현재 ODA 인식을 분석한 교정렌즈 진단 결과예요. 콘텐츠 감도는 내가 관심 있게 바라보는 분야를 분석한 콘텐츠 렌즈 매칭 결과예요.</p>
+            <dl>
+              <div><dt><span aria-hidden="true">i</span> 협력도</dt><dd>수치가 높을수록 더 많은 인식 교정이 필요해요.</dd></div>
+              <div><dt><span aria-hidden="true">i</span> 공감 시야각</dt><dd>각도가 넓을수록 협력의 연결 관계를 폭넓게 바라보고 있어요.</dd></div>
+              <div><dt><span aria-hidden="true">i</span> 콘텐츠 감도</dt><dd>선택한 관심 분야와 추천 콘텐츠의 매칭 정도예요.</dd></div>
+            </dl>
+          </div>
+        </section>
       </header>
 
       <hr class="section-divider" />
@@ -1242,6 +1282,10 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
           <div class="diagnosis-callout">
             <p class="callout-label">진단 결과</p>
             <p class="diagnosis-text">${correction.diagnosis}</p>
+          </div>
+          <div class="combination-interpretation">
+            <p class="callout-label">렌즈 조합 해석</p>
+            <p class="diagnosis-text">${combinationInterpretation}</p>
           </div>
         </div>
       </section>

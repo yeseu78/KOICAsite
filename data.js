@@ -1,6 +1,12 @@
 export const correctionLensData = {
   cooperation: {
     displayName: "협력렌즈",
+    diagnostics: {
+      cooperationDegree: "+2.0",
+      empathyAngle: 60,
+    },
+    interpretation:
+      "ODA를 일방적인 도움이나 기부로 바라보는 경향이 있어, 국가와 지역이 함께 문제를 해결하는 협력 과정을 살펴볼 필요가 있어요.",
     shortCopy: "혼자 끙끙대지 말고, 같이 보면 답이 커져요.",
     description: "혼자 해결하는 문제가 아니라, 여러 사람이 함께 만드는 변화를 보는 렌즈",
     diagnosis:
@@ -11,6 +17,12 @@ export const correctionLensData = {
   },
   participation: {
     displayName: "참여렌즈",
+    diagnostics: {
+      cooperationDegree: "+0.5",
+      empathyAngle: 180,
+    },
+    interpretation:
+      "ODA와 나의 연결 관계를 폭넓게 이해하고 있어요. 이제 관심을 작은 실천으로 이어갈 준비가 되어 있어요.",
     shortCopy: "구경만 하기엔 아깝잖아요. 이번엔 직접 끼어들어봐요.",
     description: "알고 있던 문제를 나의 작은 행동과 연결해보는 렌즈",
     diagnosis:
@@ -21,6 +33,12 @@ export const correctionLensData = {
   },
   case: {
     displayName: "사례렌즈",
+    diagnostics: {
+      cooperationDegree: "+1.5",
+      empathyAngle: 120,
+    },
+    interpretation:
+      "ODA의 개념이 아직 다소 흐릿해, 실제 현장에서 어떤 변화가 만들어지는지 구체적인 사례로 확인해볼 필요가 있어요.",
     shortCopy: "말로만 듣던 변화, 진짜 있었는지 확인해봐요.",
     description: "막연했던 개발협력을 실제 현장의 변화로 확인하는 렌즈",
     diagnosis:
@@ -31,6 +49,12 @@ export const correctionLensData = {
   },
   empathy: {
     displayName: "공감렌즈",
+    diagnostics: {
+      cooperationDegree: "+1.0",
+      empathyAngle: 90,
+    },
+    interpretation:
+      "국제협력의 중요성은 알고 있지만 나와의 연결이 아직 멀게 느껴져, 한 사람의 삶과 변화를 가까이 바라볼 필요가 있어요.",
     shortCopy: "남의 일 같던 이야기도 렌즈를 바꾸면 꽤 가까워져요.",
     description: "먼 나라의 이야기를 ‘나와 연결된 변화’로 느끼게 하는 렌즈",
     diagnosis:
@@ -44,6 +68,10 @@ export const correctionLensData = {
 export const contentLensData = {
   education: {
     displayName: "배움렌즈",
+    matching: {
+      sensitivityLabel: "배움",
+      sensitivity: 100,
+    },
     field: "교육",
     country: "우즈베키스탄",
     project: "우즈베키스탄 타슈켄트 직업훈련원 역량 강화 및 ICT·기술 교육 지원 사업",
@@ -61,7 +89,11 @@ export const contentLensData = {
     subImage: "./assets/stories/education-sub.png",
   },
   health: {
-    displayName: "생명렌즈",
+    displayName: "헬스렌즈",
+    matching: {
+      sensitivityLabel: "헬스",
+      sensitivity: 100,
+    },
     field: "보건",
     country: "네팔",
     project: "네팔 박타푸르 취약지역 빈곤층 건강수준 향상을 위한 역량강화 및 의료인프라 개선사업",
@@ -79,7 +111,11 @@ export const contentLensData = {
     subImage: "./assets/stories/health-sub.png",
   },
   water: {
-    displayName: "물결렌즈",
+    displayName: "샘물렌즈",
+    matching: {
+      sensitivityLabel: "샘물",
+      sensitivity: 100,
+    },
     field: "식수",
     country: "탄자니아",
     project: "음타마 군 지역사회 기반의 포괄적 식수위생 개선사업",
@@ -97,7 +133,11 @@ export const contentLensData = {
     subImage: "./assets/stories/water-sub.png",
   },
   ict: {
-    displayName: "연결렌즈",
+    displayName: "테크렌즈",
+    matching: {
+      sensitivityLabel: "테크",
+      sensitivity: 100,
+    },
     field: "ICT",
     country: "필리핀",
     project: "필리핀 국가사이버안전센터 구축 사업",
@@ -115,7 +155,11 @@ export const contentLensData = {
     subImage: "./assets/stories/ict-sub.png",
   },
   peace: {
-    displayName: "재건렌즈",
+    displayName: "평화렌즈",
+    matching: {
+      sensitivityLabel: "평화",
+      sensitivity: 100,
+    },
     field: "평화",
     country: "레바논 및 아르메니아",
     project: "IOM 중동·CIS 권역 분쟁 및 취약지역 내 생계 강화 및 경제 활성화 사업",
