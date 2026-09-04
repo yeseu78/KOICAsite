@@ -341,16 +341,23 @@ function getMobileFigmaHomeMarkup() {
   return `
     <div class="mobile-home mobile-home-figma" data-mobile-home>
       <div class="mobile-figma-artboard" aria-label="ODA OPTICA by KOICA 모바일 홈">
-        <img
-          class="mobile-figma-image"
-          src="./assets/figma/home-mobile-figma-original-1x.png"
-          srcset="./assets/figma/home-mobile-figma-original-1x.png 1x, ./assets/figma/home-mobile-figma-original-2x.png 2x, ./assets/figma/home-mobile-figma-original-4x.png 4x"
-          width="390"
-          height="2136"
-          decoding="sync"
-          fetchpriority="high"
-          alt="당신의 시선, 세상을 바꾸는 렌즈가 될 수 있어요. WE:NK 팀과 네 가지 렌즈, KOICA 개발협력 이야기를 소개합니다."
-        />
+        <picture class="mobile-figma-picture">
+          <source
+            type="image/svg+xml"
+            media="(min-resolution: 3dppx)"
+            srcset="./assets/figma/home-mobile-figma-vector.svg"
+          />
+          <img
+            class="mobile-figma-image"
+            src="./assets/figma/home-mobile-figma-original-1x.png"
+            srcset="./assets/figma/home-mobile-figma-original-1x.png 1x, ./assets/figma/home-mobile-figma-original-2x.png 2x, ./assets/figma/home-mobile-figma-original-4x.png 4x"
+            width="390"
+            height="2136"
+            decoding="sync"
+            fetchpriority="high"
+            alt="당신의 시선, 세상을 바꾸는 렌즈가 될 수 있어요. WE:NK 팀과 네 가지 렌즈, KOICA 개발협력 이야기를 소개합니다."
+          />
+        </picture>
 
         <button
           class="mobile-menu-toggle mobile-figma-menu-toggle"

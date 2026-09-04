@@ -3832,6 +3832,11 @@ body:has(.app-shell.is-home) {
     user-select: none;
   }
 
+  .mobile-figma-picture {
+    display: block;
+    width: 100%;
+  }
+
   .mobile-figma-menu-toggle {
     position: absolute;
     z-index: 30;
