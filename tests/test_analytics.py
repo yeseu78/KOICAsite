@@ -1,12 +1,27 @@
 import os
 import unittest
 from datetime import datetime, timezone
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
+from urllib.error import URLError
 
-from analytics import build_summary, classify_source, normalize_event
+from analytics import SupabaseError, SupabaseEventStore, build_summary, classify_source, normalize_event
 
 
 class AnalyticsTests(unittest.TestCase):
+    @patch("analytics.urlopen")
+    def test_supabase_readiness_accepts_a_list_response(self, urlopen):
+        response = MagicMock()
+        response.status = 200
+        response.read.return_value = b"[]"
+        urlopen.return_value.__enter__.return_value = response
+
+        SupabaseEventStore("https://example.supabase.co", "secret").check_connection()
+
+    @patch("analytics.urlopen", side_effect=URLError("offline"))
+    def test_supabase_readiness_wraps_connection_errors(self, _urlopen):
+        with self.assertRaises(SupabaseError):
+            SupabaseEventStore("https://example.supabase.co", "secret").check_connection()
+
     def test_source_classification(self):
         self.assertEqual(classify_source("instagram", ""), "Instagram")
         self.assertEqual(classify_source("", "https://talk.kakao.com/path"), "Kakao")

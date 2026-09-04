@@ -585,7 +585,6 @@ function bindMobileAnimations(mobileHome) {
 function bindHomeInteractions() {
   app.querySelectorAll('[data-action="start"]').forEach((button) => {
     button.addEventListener("click", () => {
-      trackEvent("survey_start");
       state.answers = [];
       state.field = null;
       state.questionIndex = 0;
@@ -1506,7 +1505,6 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
   });
 
   app.querySelector('[data-action="retake"]').addEventListener("click", () => {
-    trackEvent("survey_start");
     state.answers = [];
     state.field = null;
     state.questionIndex = 0;

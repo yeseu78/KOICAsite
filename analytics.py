@@ -200,6 +200,28 @@ class SupabaseEventStore:
         except URLError as error:
             raise SupabaseError("Supabase에 연결할 수 없습니다.") from error
 
+    def check_connection(self) -> None:
+        query = urlencode({"select": "id", "limit": 1})
+        request = Request(
+            f"{self.endpoint}?{query}",
+            headers=self._headers(),
+            method="GET",
+        )
+        try:
+            with urlopen(request, timeout=self.timeout) as response:
+                if response.status != 200:
+                    raise SupabaseError(f"Supabase readiness check failed ({response.status})")
+                payload = json.loads(response.read().decode("utf-8"))
+        except HTTPError as error:
+            detail = error.read().decode("utf-8", errors="replace")[:500]
+            raise SupabaseError(
+                f"Supabase readiness check failed ({error.code}): {detail}"
+            ) from error
+        except (URLError, json.JSONDecodeError) as error:
+            raise SupabaseError("Supabase 연결 상태를 확인할 수 없습니다.") from error
+        if not isinstance(payload, list):
+            raise SupabaseError("Supabase readiness 응답 형식이 올바르지 않습니다.")
+
     def fetch_events(self) -> list[dict[str, Any]]:
         selected = (
             "event_type,visitor_id,visit_id,question_id,answer_value,result_type,"

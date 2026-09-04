@@ -126,6 +126,19 @@ def health():
     return jsonify({"status": "ok", "analytics_configured": SupabaseEventStore.from_environment() is not None})
 
 
+@app.get("/ready")
+def ready():
+    store = SupabaseEventStore.from_environment()
+    if store is None:
+        return jsonify({"status": "degraded", "analytics": "not_configured"}), 503
+    try:
+        store.check_connection()
+    except SupabaseError:
+        app.logger.exception("Supabase readiness check failed")
+        return jsonify({"status": "degraded", "analytics": "unavailable"}), 503
+    return jsonify({"status": "ready", "analytics": "connected"})
+
+
 @app.get("/assets/<path:filename>")
 def public_asset(filename: str):
     return send_from_directory(ROOT / "assets", filename)
