@@ -424,7 +424,9 @@ function getMobileFigmaHomeMarkup() {
         <span class="mobile-figma-anchor anchor-team" id="mobile-team" aria-hidden="true"></span>
         <span class="mobile-figma-anchor anchor-impact" id="mobile-impact" aria-hidden="true"></span>
 
-        <button class="mobile-figma-hotspot mobile-hero-start" type="button" data-action="start" aria-label="시력 검사 시작하기"></button>
+        <button class="mobile-figma-hotspot mobile-hero-start" type="button" data-action="start" aria-label="시력 검사 시작하기">
+          <span class="mobile-cta-motion" aria-hidden="true"></span>
+        </button>
 
         <a class="mobile-figma-hotspot mobile-profile-wenki" href="${homeProfileLinks.wenki}" target="_blank" rel="noreferrer" aria-label="WENKI 프로필 보기"></a>
         <a class="mobile-figma-hotspot mobile-profile-euiseong" href="${homeProfileLinks.euiseong}" target="_blank" rel="noreferrer" aria-label="EUISEONG 프로필 보기"></a>
