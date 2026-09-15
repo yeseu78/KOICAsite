@@ -2821,6 +2821,17 @@ body:has(.app-shell.is-home) {
   backface-visibility: hidden;
 }
 
+.home-brand-copy {
+  position: absolute;
+  z-index: 3;
+  top: 1.08696%;
+  left: 1.41026%;
+  display: block;
+  width: 6.41026%;
+  height: auto;
+  background: #faf4ee;
+}
+
 .figma-home-exact .home-start-hotspot {
   top: 15.3691%;
   left: 12.0513%;
@@ -3278,7 +3289,7 @@ body:has(.app-shell.is-home) {
   }
 }
 
-/* Mobile-only ODA OPTICA landing layout ----------------------------------- */
+/* Mobile-only Odavich landing layout ----------------------------------- */
 .mobile-home {
   display: none;
 }
@@ -4726,6 +4737,14 @@ body:has(.app-shell.is-home) {
     height: 4.6816%;
   }
 
+  }
+
+  .mobile-figma-artboard .home-brand-copy {
+    z-index: 21;
+    top: 1.12360%;
+    left: 0.51282%;
+    width: 16.41026%;
+    background: #fbf4ec;
   }
 
   .mobile-figma-menu-toggle {

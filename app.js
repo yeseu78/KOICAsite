@@ -295,8 +295,8 @@ function getMobileHomeMarkup() {
   return `
     <div class="mobile-home" data-mobile-home>
       <header class="mobile-header landing-container">
-        <a class="mobile-brand" href="#mobile-home-top" aria-label="ODA OPTICA by KOICA 홈으로 이동">
-          <span>ODA OPTICA</span>
+        <a class="mobile-brand" href="#mobile-home-top" aria-label="Odavich by KOICA 홈으로 이동">
+          <span>Odavich</span>
           <small>BY KOICA</small>
         </a>
         <button
@@ -425,7 +425,7 @@ function getMobileHomeMarkup() {
 function getMobileFigmaHomeMarkup() {
   return `
     <div class="mobile-home mobile-home-figma" data-mobile-home>
-      <div class="mobile-figma-artboard" aria-label="ODA OPTICA by KOICA 모바일 홈">
+      <div class="mobile-figma-artboard" aria-label="Odavich by KOICA 모바일 홈">
         <picture class="mobile-figma-picture">
           <source
             type="image/svg+xml"
@@ -566,6 +566,8 @@ function getMobileFigmaHomeMarkup() {
           <span class="mobile-profile-photo-shine mobile-profile-shine-ain" data-mobile-animate="profile-photo" style="--motion-delay: 540ms"></span>
           <span class="mobile-profile-photo-shine mobile-profile-shine-sua" data-mobile-animate="profile-photo" style="--motion-delay: 720ms"></span>
         </div>
+
+        <img class="home-brand-copy" src="./assets/home/brand-copy.svg" alt="Odavich KOICA안경소" width="100" height="35" />
 
         <button
           class="mobile-menu-toggle mobile-figma-menu-toggle"
@@ -721,6 +723,8 @@ function renderHome({ replace = false } = {}) {
           fetchpriority="high"
           alt="당신의 시선, 세상을 바꾸는 렌즈가 될 수 있어요. WE:NK 팀과 네 가지 렌즈, KOICA 개발협력 이야기를 소개합니다."
         />
+
+        <img class="home-brand-copy" src="./assets/home/brand-copy.svg" alt="Odavich KOICA안경소" width="100" height="35" />
 
         <div class="home-polish-layer" aria-hidden="true">
           <span class="home-hero-glow"></span>
