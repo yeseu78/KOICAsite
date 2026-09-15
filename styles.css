@@ -2824,10 +2824,10 @@ body:has(.app-shell.is-home) {
 .home-brand-copy {
   position: absolute;
   z-index: 3;
-  top: 1.08696%;
-  left: 1.41026%;
+  top: 0.20222%;
+  left: 0.76923%;
   display: block;
-  width: 6.41026%;
+  width: 7.69231%;
   height: auto;
   background: #faf4ee;
 }
@@ -4741,9 +4741,9 @@ body:has(.app-shell.is-home) {
 
   .mobile-figma-artboard .home-brand-copy {
     z-index: 21;
-    top: 1.12360%;
-    left: 0.51282%;
-    width: 16.41026%;
+    top: 0.09363%;
+    left: -1.02564%;
+    width: 19.48718%;
     background: #fbf4ec;
   }
 
