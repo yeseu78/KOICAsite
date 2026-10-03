@@ -14,11 +14,29 @@ const state = {
   answers: [],
   field: null,
   questionIndex: 0,
+  attemptId: null,
+  attemptStarted: false,
 };
 
 function makeAnonymousId() {
   if (crypto.randomUUID) return crypto.randomUUID();
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
+
+function beginSurveyAttempt() {
+  state.answers = [];
+  state.field = null;
+  state.questionIndex = 0;
+  state.attemptId = makeAnonymousId();
+  state.attemptStarted = false;
+}
+
+function ensureSurveyAttempt() {
+  if (!state.attemptId) {
+    state.attemptId = makeAnonymousId();
+    state.attemptStarted = false;
+  }
+  return state.attemptId;
 }
 
 function getStoredId(storage, key) {
@@ -108,13 +126,16 @@ function writeAnalyticsQueue(queue) {
 }
 
 function analyticsEventKey(payload) {
+  const attemptScope = payload.attempt_id
+    ? `${payload.visit_id}:${payload.attempt_id}`
+    : payload.visit_id;
   if (payload.event_type === "answer") {
-    return `answer:${payload.visit_id}:${payload.question_id}`;
+    return `answer:${attemptScope}:${payload.question_id}`;
   }
   if (payload.event_type === "share") {
     return `share:${payload.visit_id}:${payload.event_id}`;
   }
-  return `${payload.event_type}:${payload.visit_id}`;
+  return `${payload.event_type}:${attemptScope}`;
 }
 
 function queueAnalyticsPayload(payload) {
@@ -161,6 +182,7 @@ function trackEvent(eventType, detail = {}) {
     event_type: eventType,
     visitor_id: analyticsContext.visitor_id,
     visit_id: analyticsContext.visit_id,
+    ...(state.attemptId ? { attempt_id: state.attemptId } : {}),
     ...detail,
   };
   if (queueAnalyticsPayload(payload)) {
@@ -672,9 +694,7 @@ function bindMobileAnimations(mobileHome) {
 function bindHomeInteractions() {
   app.querySelectorAll('[data-action="start"]').forEach((button) => {
     button.addEventListener("click", () => {
-      state.answers = [];
-      state.field = null;
-      state.questionIndex = 0;
+      beginSurveyAttempt();
       updateRoute({ view: "quiz", question: "1" });
       renderQuestion(0);
     });
@@ -763,8 +783,12 @@ function renderHome({ replace = false } = {}) {
 
 function renderQuestion(index) {
   setHomeEventPopup(false);
+  ensureSurveyAttempt();
   const safeIndex = Math.min(Math.max(index, 0), questions.length - 1);
-  if (safeIndex === 0) trackEvent("survey_start");
+  if (!state.attemptStarted) {
+    trackEvent("survey_start");
+    state.attemptStarted = true;
+  }
   const question = questions[safeIndex];
   const currentAnswer = state.answers[safeIndex] ?? null;
   const currentAnswerIndex = question.options.indexOf(currentAnswer);
@@ -1597,9 +1621,7 @@ function renderResult(correctionKey, contentKey, rawResultType = "direct") {
   });
 
   app.querySelector('[data-action="retake"]').addEventListener("click", () => {
-    state.answers = [];
-    state.field = null;
-    state.questionIndex = 0;
+    beginSurveyAttempt();
     updateRoute({ view: "quiz", question: "1" });
     renderQuestion(0);
   });

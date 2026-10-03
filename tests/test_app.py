@@ -32,6 +32,13 @@ class FlaskAppTests(unittest.TestCase):
         source = (Path(__file__).resolve().parents[1] / "app.js").read_text(encoding="utf-8")
         self.assertEqual(source.count('trackEvent("survey_start")'), 1)
 
+    def test_each_survey_attempt_gets_a_fresh_identifier(self):
+        source = (Path(__file__).resolve().parents[1] / "app.js").read_text(encoding="utf-8")
+        self.assertIn("function beginSurveyAttempt()", source)
+        self.assertIn("state.attemptId = makeAnonymousId()", source)
+        self.assertIn("attempt_id: state.attemptId", source)
+        self.assertEqual(source.count("beginSurveyAttempt();"), 2)
+
     def test_failed_analytics_events_are_queued_and_retried(self):
         source = (Path(__file__).resolve().parents[1] / "app.js").read_text(encoding="utf-8")
         self.assertIn("queueAnalyticsPayload(payload)", source)

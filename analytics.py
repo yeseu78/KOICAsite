@@ -93,14 +93,16 @@ def classify_source(source: Any, referrer: Any = "") -> str:
 def make_event_key(payload: dict[str, Any]) -> str:
     event_type = payload["event_type"]
     visit_id = payload["visit_id"]
+    attempt_id = _clean_text(payload.get("attempt_id"), 80)
+    attempt_scope = f"{visit_id}:{attempt_id}" if attempt_id else visit_id
     if event_type == "answer":
-        return f"answer:{visit_id}:{payload['question_id']}"
+        return f"answer:{attempt_scope}:{payload['question_id']}"
     if event_type == "share":
         event_id = _clean_text(payload.get("event_id"), 80)
         if not event_id:
             raise ValueError("공유 이벤트 식별자가 필요합니다.")
         return f"share:{visit_id}:{event_id}"
-    return f"{event_type}:{visit_id}"
+    return f"{event_type}:{attempt_scope}"
 
 
 def normalize_event(payload: dict[str, Any]) -> dict[str, Any]:
@@ -110,10 +112,15 @@ def normalize_event(payload: dict[str, Any]) -> dict[str, Any]:
 
     visitor_id = _clean_text(payload.get("visitor_id"), 80)
     visit_id = _clean_text(payload.get("visit_id"), 80)
+    attempt_id = _clean_text(payload.get("attempt_id"), 80) or None
     if not visitor_id or not visit_id:
         raise ValueError("방문자 및 방문 식별자가 필요합니다.")
     if not all(character.isalnum() or character in "-_" for character in visitor_id + visit_id):
         raise ValueError("이벤트 식별자 형식이 올바르지 않습니다.")
+    if attempt_id and not all(
+        character.isalnum() or character in "-_" for character in attempt_id
+    ):
+        raise ValueError("설문 시도 식별자 형식이 올바르지 않습니다.")
 
     question_id = _clean_text(payload.get("question_id"), 100) or None
     if event_type == "answer" and not question_id:
@@ -135,6 +142,7 @@ def normalize_event(payload: dict[str, Any]) -> dict[str, Any]:
         "event_type": event_type,
         "visitor_id": visitor_id,
         "visit_id": visit_id,
+        "attempt_id": attempt_id,
         "question_id": question_id,
         "answer_value": _clean_text(payload.get("answer_value"), 500) or None,
         "result_type": _clean_text(payload.get("result_type"), 100) or None,
@@ -242,7 +250,7 @@ class SupabaseEventStore:
 
     def fetch_events(self) -> list[dict[str, Any]]:
         selected = (
-            "event_type,visitor_id,visit_id,question_id,answer_value,result_type,"
+            "event_type,visitor_id,visit_id,attempt_id,question_id,answer_value,result_type,"
             "share_channel,source,medium,campaign,traffic_source,metadata,occurred_at"
         )
         events: list[dict[str, Any]] = []
@@ -280,6 +288,13 @@ def _latest_by(events: Iterable[dict[str, Any]], key) -> list[dict[str, Any]]:
         if current is None or _event_datetime(event) >= _event_datetime(current):
             latest[item_key] = event
     return list(latest.values())
+
+
+def _attempt_key(event: dict[str, Any]) -> tuple[str, str]:
+    """Identify one survey attempt while remaining compatible with legacy events."""
+    visit_id = _clean_text(event.get("visit_id"), 80)
+    attempt_id = _clean_text(event.get("attempt_id"), 80)
+    return (visit_id, attempt_id or "__legacy_visit__")
 
 
 def _percentage(numerator: int | float, denominator: int | float) -> float:
@@ -324,21 +339,17 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
     shares = [event for event in events if event.get("event_type") == "share"]
     answers = [event for event in events if event.get("event_type") == "answer"]
 
-    latest_start_visitors = _latest_by(starts, lambda event: event.get("visitor_id"))
-    participant_ids = {
-        event.get("visitor_id")
-        for event in latest_start_visitors
-        if event.get("visitor_id")
-    }
-    latest_completion_visitors = [
+    latest_start_attempts = _latest_by(starts, _attempt_key)
+    started_attempts = {_attempt_key(event) for event in latest_start_attempts}
+    latest_completion_attempts = [
         event
-        for event in _latest_by(completions, lambda event: event.get("visitor_id"))
-        if event.get("visitor_id") in participant_ids
+        for event in _latest_by(completions, _attempt_key)
+        if _attempt_key(event) in started_attempts
     ]
-    latest_results = latest_completion_visitors
+    latest_results = latest_completion_attempts
     latest_answers = _latest_by(
         answers,
-        lambda event: (event.get("visitor_id"), event.get("question_id")),
+        lambda event: (_attempt_key(event), event.get("question_id")),
     )
     latest_answers = [
         event for event in latest_answers if event.get("answer_value") not in (None, "")
@@ -349,13 +360,19 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
         parsed = _parse_datetime(event.get("occurred_at"))
         return parsed.astimezone(SEOUL).date() if parsed else None
 
-    total_participants = len(latest_start_visitors)
-    today_participants = sum(seoul_date(event) == today for event in latest_start_visitors)
+    total_participants = len(latest_start_attempts)
+    today_participants = sum(seoul_date(event) == today for event in latest_start_attempts)
     week_participants = sum(
         bool((event_date := seoul_date(event)) and week_start <= event_date <= today)
-        for event in latest_start_visitors
+        for event in latest_start_attempts
     )
-    completed_participants = len(latest_completion_visitors)
+    completed_participants = len(latest_completion_attempts)
+    total_surveys = len(latest_completion_attempts)
+    today_surveys = sum(seoul_date(event) == today for event in latest_completion_attempts)
+    week_surveys = sum(
+        bool((event_date := seoul_date(event)) and week_start <= event_date <= today)
+        for event in latest_completion_attempts
+    )
     completion_rate = _percentage(completed_participants, total_participants)
     dropoffs = max(total_participants - completed_participants, 0)
 
@@ -476,18 +493,18 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
     else:
         first_date = today - timedelta(days=days - 1)
     day_count = max((today - first_date).days + 1, 1)
-    daily_visitors: dict[Any, set[str]] = defaultdict(set)
-    for event in starts:
+    daily_attempts: dict[Any, set[tuple[str, str]]] = defaultdict(set)
+    for event in latest_completion_attempts:
         event_date = seoul_date(event)
-        if event_date and event_date >= first_date and event.get("visitor_id"):
-            daily_visitors[event_date].add(event["visitor_id"])
+        if event_date and event_date >= first_date:
+            daily_attempts[event_date].add(_attempt_key(event))
     trend = [
         {
             "date": (first_date + timedelta(days=index)).isoformat(),
             "label": (first_date + timedelta(days=index)).strftime("%-m/%-d")
             if os.name != "nt"
             else f"{(first_date + timedelta(days=index)).month}/{(first_date + timedelta(days=index)).day}",
-            "count": len(daily_visitors[first_date + timedelta(days=index)]),
+            "count": len(daily_attempts[first_date + timedelta(days=index)]),
         }
         for index in range(day_count)
     ]
@@ -495,7 +512,7 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
     most_common_result = result_distribution[0] if result_distribution else None
     instagram_visits = traffic_counts.get("Instagram", 0)
     kpis = [
-        _build_kpi("설문 참여자", total_participants, "KPI_SURVEY_TARGET", "명"),
+        _build_kpi("설문 완료", total_surveys, "KPI_SURVEY_TARGET", "건"),
         _build_kpi("공유 횟수", len(shares), "KPI_SHARE_TARGET", "회"),
         _build_kpi("설문 완료율", completion_rate, "KPI_COMPLETION_RATE_TARGET", "%"),
         _build_kpi("Instagram 유입", instagram_visits, "KPI_INSTAGRAM_TARGET", "회"),
@@ -509,6 +526,9 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
             "total_participants": total_participants,
             "today_participants": today_participants,
             "week_participants": week_participants,
+            "total_surveys": total_surveys,
+            "today_surveys": today_surveys,
+            "week_surveys": week_surveys,
             "completed_participants": completed_participants,
             "completion_rate": completion_rate,
             "dropoffs": dropoffs,

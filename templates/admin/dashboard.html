@@ -52,13 +52,13 @@
 
       <section class="metric-grid" aria-label="핵심 통계">
         <article class="metric-card metric-card-primary">
-          <span>누적 참여자</span><strong data-metric="total_participants">—</strong><small>명 · 중복 제외</small>
+          <span>누적 설문 완료</span><strong data-metric="total_surveys">—</strong><small>건 · 반복 참여 포함</small>
         </article>
         <article class="metric-card">
-          <span>오늘 참여자</span><strong data-metric="today_participants">—</strong><small>명 · 한국시간</small>
+          <span>오늘 설문 완료</span><strong data-metric="today_surveys">—</strong><small>건 · 한국시간</small>
         </article>
         <article class="metric-card">
-          <span>이번 주 참여자</span><strong data-metric="week_participants">—</strong><small>명 · 월요일부터</small>
+          <span>이번 주 설문 완료</span><strong data-metric="week_surveys">—</strong><small>건 · 월요일부터</small>
         </article>
         <article class="metric-card">
           <span>설문 완료율</span><strong data-metric="completion_rate">—</strong><small>%</small>
@@ -70,10 +70,10 @@
 
       <section class="panel panel-wide">
         <div class="panel-heading">
-          <div><p class="section-eyebrow">PARTICIPATION</p><h2>날짜별 참여 추이</h2></div>
-          <span class="panel-note">Asia/Seoul 기준 · 중복 방문자 제외</span>
+          <div><p class="section-eyebrow">PARTICIPATION</p><h2>날짜별 설문 완료 추이</h2></div>
+          <span class="panel-note">Asia/Seoul 기준 · 같은 기기의 반복 설문 포함</span>
         </div>
-        <div class="line-chart" data-trend-chart aria-label="날짜별 설문 참여자 선 그래프"></div>
+        <div class="line-chart" data-trend-chart aria-label="날짜별 설문 완료 건수 선 그래프"></div>
       </section>
 
       <div class="dashboard-grid">
@@ -116,14 +116,14 @@
             <div><p class="section-eyebrow">FUNNEL</p><h2>설문 완료 현황</h2></div>
           </div>
           <div class="funnel-stats">
-            <div><span>설문 시작</span><strong data-metric="total_participants">—</strong><small>명</small></div>
+            <div><span>설문 시작</span><strong data-metric="total_participants">—</strong><small>건</small></div>
             <i aria-hidden="true">→</i>
-            <div><span>설문 완료</span><strong data-metric="completed_participants">—</strong><small>명</small></div>
+            <div><span>설문 완료</span><strong data-metric="completed_participants">—</strong><small>건</small></div>
           </div>
           <div class="completion-bar"><span data-completion-bar></span></div>
           <div class="completion-meta">
             <span>완료율 <strong data-completion-rate>—</strong></span>
-            <span title="설문을 시작했지만 한 번도 완료하지 않은 고유 방문자">중도 이탈 <strong data-dropoffs>—</strong></span>
+            <span title="시작했지만 완료하지 않은 설문 시도">중도 이탈 <strong data-dropoffs>—</strong></span>
           </div>
         </section>
 

@@ -7,6 +7,7 @@ create table if not exists public.weko_analytics_events (
   ),
   visitor_id text not null,
   visit_id text not null,
+  attempt_id text,
   question_id text,
   answer_value text,
   result_type text,
@@ -21,12 +22,18 @@ create table if not exists public.weko_analytics_events (
   occurred_at timestamptz not null default now()
 );
 
+alter table public.weko_analytics_events
+  add column if not exists attempt_id text;
+
 create index if not exists weko_analytics_event_type_time_idx
   on public.weko_analytics_events (event_type, occurred_at desc);
 create index if not exists weko_analytics_visitor_idx
   on public.weko_analytics_events (visitor_id, occurred_at desc);
 create index if not exists weko_analytics_visit_idx
   on public.weko_analytics_events (visit_id, occurred_at desc);
+create index if not exists weko_analytics_attempt_idx
+  on public.weko_analytics_events (attempt_id, occurred_at desc)
+  where attempt_id is not null;
 create index if not exists weko_analytics_question_idx
   on public.weko_analytics_events (question_id, occurred_at desc)
   where question_id is not null;

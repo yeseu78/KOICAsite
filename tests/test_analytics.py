@@ -56,13 +56,37 @@ class AnalyticsTests(unittest.TestCase):
                 "event_type": "answer",
                 "visitor_id": "visitor-1",
                 "visit_id": "visit-1",
+                "attempt_id": "attempt-1",
                 "question_id": "oda-image",
                 "answer_value": "1",
                 "metadata": {"answer_label": "응답"},
             }
         )
-        self.assertEqual(event["event_key"], "answer:visit-1:oda-image")
+        self.assertEqual(event["event_key"], "answer:visit-1:attempt-1:oda-image")
+        self.assertEqual(event["attempt_id"], "attempt-1")
         self.assertEqual(event["metadata"]["answer_label"], "응답")
+
+    def test_survey_attempts_get_distinct_event_keys_in_one_visit(self):
+        first = normalize_event(
+            {
+                "event_type": "survey_complete",
+                "visitor_id": "visitor-1",
+                "visit_id": "visit-1",
+                "attempt_id": "attempt-1",
+            }
+        )
+        second = normalize_event(
+            {
+                "event_type": "survey_complete",
+                "visitor_id": "visitor-1",
+                "visit_id": "visit-1",
+                "attempt_id": "attempt-2",
+            }
+        )
+
+        self.assertEqual(first["event_key"], "survey_complete:visit-1:attempt-1")
+        self.assertEqual(second["event_key"], "survey_complete:visit-1:attempt-2")
+        self.assertNotEqual(first["event_key"], second["event_key"])
 
     @patch.dict(os.environ, {"KPI_SURVEY_TARGET": "10"}, clear=False)
     def test_summary_uses_seoul_dates_and_real_events(self):
@@ -106,6 +130,7 @@ class AnalyticsTests(unittest.TestCase):
             now=datetime(2026, 8, 28, 1, tzinfo=timezone.utc),
         )
         self.assertEqual(summary["summary"]["today_participants"], 1)
+        self.assertEqual(summary["summary"]["today_surveys"], 1)
         self.assertEqual(summary["summary"]["completion_rate"], 100.0)
         self.assertEqual(summary["traffic"][0]["visits"], 1)
         self.assertEqual(summary["most_common_result"]["label"], "공감 렌즈")
@@ -120,7 +145,7 @@ class AnalyticsTests(unittest.TestCase):
             {"event_type": "visit", "visitor_id": "v3", "visit_id": "shared-1", "source": "shared_link", "traffic_source": "Other", "occurred_at": "2026-09-04T00:20:00Z"},
             {"event_type": "visit", "visitor_id": "v4", "visit_id": "direct-only", "traffic_source": "Direct", "occurred_at": "2026-09-04T00:30:00Z"},
             {"event_type": "visit", "visitor_id": "v5", "visit_id": "other-1", "source": "newsletter", "traffic_source": "Other", "occurred_at": "2026-09-04T00:40:00Z"},
-            # Four unique participants. v1 starts repeatedly but remains one person.
+            # Five survey attempts. Legacy events use visit_id as the attempt key.
             {"event_type": "survey_start", "visitor_id": "v1", "visit_id": "ig-1", "occurred_at": "2026-09-04T00:01:00Z"},
             {"event_type": "survey_start", "visitor_id": "v1", "visit_id": "ig-1", "occurred_at": "2026-09-04T00:02:00Z"},
             {"event_type": "survey_start", "visitor_id": "v1", "visit_id": "direct-repeat", "occurred_at": "2026-09-04T01:01:00Z"},
@@ -149,10 +174,11 @@ class AnalyticsTests(unittest.TestCase):
         data = build_summary(events, now=datetime(2026, 9, 4, 3, tzinfo=timezone.utc))
         summary = data["summary"]
         self.assertEqual(summary["total_visits"], 6)
-        self.assertEqual(summary["total_participants"], 4)
+        self.assertEqual(summary["total_participants"], 5)
         self.assertEqual(summary["completed_participants"], 3)
-        self.assertEqual(summary["dropoffs"], 1)
-        self.assertEqual(summary["completion_rate"], 75.0)
+        self.assertEqual(summary["total_surveys"], 3)
+        self.assertEqual(summary["dropoffs"], 2)
+        self.assertEqual(summary["completion_rate"], 60.0)
         self.assertEqual(summary["share_clicks"], 5)
         self.assertEqual(summary["share_users"], 3)
         self.assertEqual(summary["result_view_users"], 2)
@@ -171,10 +197,44 @@ class AnalyticsTests(unittest.TestCase):
         self.assertEqual(shares["instagram_story"], 1)
         self.assertEqual(shares["native_share"], 1)
         self.assertEqual(shares["kakao"], 1)
-        self.assertEqual(data["questions"][0]["total"], 2)
+        self.assertEqual(data["questions"][0]["total"], 3)
         answers = {item["key"]: item["count"] for item in data["questions"][0]["options"]}
-        self.assertEqual(answers, {"1": 1, "0": 1})
+        self.assertEqual(answers, {"0": 2, "1": 1})
         self.assertEqual(sum(item["count"] for item in data["results"]), 3)
+
+    def test_same_device_and_visit_counts_each_attempt(self):
+        events = [
+            {
+                "event_type": event_type,
+                "visitor_id": "same-device",
+                "visit_id": "same-visit",
+                "attempt_id": attempt_id,
+                "question_id": "q1" if event_type == "answer" else None,
+                "answer_value": answer if event_type == "answer" else None,
+                "result_type": result if event_type == "survey_complete" else None,
+                "occurred_at": occurred_at,
+            }
+            for attempt_id, answer, result, minute in (
+                ("attempt-1", "0", "cooperation", 1),
+                ("attempt-2", "1", "empathy", 11),
+            )
+            for event_type, offset in (
+                ("survey_start", 0),
+                ("answer", 1),
+                ("survey_complete", 2),
+            )
+            for occurred_at in [f"2026-10-03T00:{minute + offset:02d}:00Z"]
+        ]
+
+        data = build_summary(events, now=datetime(2026, 10, 3, 3, tzinfo=timezone.utc))
+
+        self.assertEqual(data["summary"]["total_participants"], 2)
+        self.assertEqual(data["summary"]["total_surveys"], 2)
+        self.assertEqual(data["summary"]["today_surveys"], 2)
+        self.assertEqual(data["summary"]["completion_rate"], 100.0)
+        self.assertEqual(data["trend"][-1]["count"], 2)
+        self.assertEqual(data["questions"][0]["total"], 2)
+        self.assertEqual(sum(item["count"] for item in data["results"]), 2)
 
 
 if __name__ == "__main__":

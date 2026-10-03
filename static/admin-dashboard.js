@@ -84,11 +84,11 @@ function renderTrend(items) {
     .map(
       (point) => `
         <g class="trend-point"><circle cx="${point.x}" cy="${point.y}" r="4"></circle>
-        <title>${escapeHtml(point.date)}: ${formatNumber(point.count)}명</title></g>`,
+        <title>${escapeHtml(point.date)}: ${formatNumber(point.count)}건</title></g>`,
     )
     .join("");
   container.innerHTML = `
-    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="참여자 수 선 그래프">
+    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="설문 완료 건수 선 그래프">
       <defs><linearGradient id="trend-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#8d4bbe" stop-opacity=".24"/><stop offset="1" stop-color="#8d4bbe" stop-opacity="0"/></linearGradient></defs>
       <line class="chart-grid" x1="${left}" y1="${top}" x2="${left}" y2="${top + plotHeight}"></line>
       <line class="chart-grid" x1="${left}" y1="${top + plotHeight}" x2="${width - right}" y2="${top + plotHeight}"></line>
