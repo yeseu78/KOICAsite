@@ -29,6 +29,8 @@ RESULT_LABELS = {
     "case": "사례 렌즈",
     "empathy": "공감 렌즈",
 }
+FEATURED_KPI_DATES = ("2026-10-03", "2026-10-04")
+FEATURED_RESULT_ORDER = ("participation", "empathy", "case", "cooperation")
 SOURCE_ORDER = ["Instagram", "Kakao", "Shared Link", "Direct", "Other"]
 SOURCE_LABELS = {
     "Instagram": "Instagram",
@@ -346,6 +348,9 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
         for event in _latest_by(completions, _attempt_key)
         if _attempt_key(event) in started_attempts
     ]
+    completion_by_attempt = {
+        _attempt_key(event): event for event in latest_completion_attempts
+    }
     latest_results = latest_completion_attempts
     latest_answers = _latest_by(
         answers,
@@ -366,6 +371,13 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
         bool((event_date := seoul_date(event)) and week_start <= event_date <= today)
         for event in latest_start_attempts
     )
+    week_start_attempts = {
+        _attempt_key(event)
+        for event in latest_start_attempts
+        if bool((event_date := seoul_date(event)) and week_start <= event_date <= today)
+    }
+    week_completed_attempts = len(week_start_attempts & completion_by_attempt.keys())
+    week_completion_rate = _percentage(week_completed_attempts, len(week_start_attempts))
     completed_participants = len(latest_completion_attempts)
     total_surveys = len(latest_completion_attempts)
     today_surveys = sum(seoul_date(event) == today for event in latest_completion_attempts)
@@ -449,6 +461,41 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
         for channel, count in share_counts.most_common()
     ]
 
+    daily_kpis = []
+    for date_text in FEATURED_KPI_DATES:
+        report_date = datetime.fromisoformat(date_text).date()
+        day_starts = [
+            event for event in latest_start_attempts if seoul_date(event) == report_date
+        ]
+        day_attempt_keys = {_attempt_key(event) for event in day_starts}
+        day_completions = [
+            completion_by_attempt[key]
+            for key in day_attempt_keys
+            if key in completion_by_attempt
+        ]
+        day_results = Counter(
+            event.get("result_type") or "unknown" for event in day_completions
+        )
+        daily_kpis.append(
+            {
+                "date": date_text,
+                "label": f"{report_date.month}월 {report_date.day}일",
+                "starts": len(day_starts),
+                "completed": len(day_completions),
+                "completion_rate": _percentage(len(day_completions), len(day_starts)),
+                "visits": sum(seoul_date(event) == report_date for event in unique_visits),
+                "shares": sum(seoul_date(event) == report_date for event in shares),
+                "results": [
+                    {
+                        "key": result_type,
+                        "label": RESULT_LABELS[result_type],
+                        "count": day_results.get(result_type, 0),
+                    }
+                    for result_type in FEATURED_RESULT_ORDER
+                ],
+            }
+        )
+
     def event_source(event: dict[str, Any]) -> str:
         metadata = event.get("metadata") if isinstance(event.get("metadata"), dict) else {}
         raw_source = event.get("source")
@@ -529,6 +576,8 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
             "total_surveys": total_surveys,
             "today_surveys": today_surveys,
             "week_surveys": week_surveys,
+            "week_completed_participants": week_completed_attempts,
+            "week_completion_rate": week_completion_rate,
             "completed_participants": completed_participants,
             "completion_rate": completion_rate,
             "dropoffs": dropoffs,
@@ -544,5 +593,6 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
         "most_common_result": most_common_result,
         "questions": question_stats,
         "shares": share_channels,
+        "daily_kpis": daily_kpis,
         "kpis": kpis,
     }

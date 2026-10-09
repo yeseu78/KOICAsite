@@ -61,11 +61,19 @@
           <span>이번 주 설문 완료</span><strong data-metric="week_surveys">—</strong><small>건 · 월요일부터</small>
         </article>
         <article class="metric-card">
-          <span>설문 완료율</span><strong data-metric="completion_rate">—</strong><small>%</small>
+          <span>이번 주 설문 완료율</span><strong data-metric="week_completion_rate">—</strong><small>% · 이번 주 시작 기준</small>
         </article>
         <article class="metric-card">
           <span>총 공유</span><strong data-metric="share_clicks">—</strong><small>회 · 성공 클릭</small>
         </article>
+      </section>
+
+      <section class="panel panel-wide daily-kpi-panel">
+        <div class="panel-heading">
+          <div><p class="section-eyebrow">EVENT KPI</p><h2>10월 3·4일 KPI</h2></div>
+          <span class="panel-note">Asia/Seoul 기준 · 해당 날짜에 시작한 설문 기준</span>
+        </div>
+        <div class="daily-kpi-grid" data-daily-kpis></div>
       </section>
 
       <section class="panel panel-wide">
@@ -150,7 +158,7 @@
 
       <section class="panel panel-wide">
         <div class="panel-heading">
-          <div><p class="section-eyebrow">KPI</p><h2>목표 대비 진행률</h2></div>
+          <div><p class="section-eyebrow">KPI</p><h2>누적 목표 대비 진행률</h2></div>
           <span class="panel-note">목표값은 Render 환경변수에서 관리합니다.</span>
         </div>
         <div class="kpi-list" data-kpi-list></div>

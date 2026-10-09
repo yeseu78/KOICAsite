@@ -165,6 +165,34 @@ function renderKpis(items) {
     .join("");
 }
 
+function renderDailyKpis(items) {
+  const container = document.querySelector("[data-daily-kpis]");
+  container.innerHTML = items.length
+    ? items
+        .map(
+          (item) => `
+            <article class="daily-kpi-card">
+              <div class="daily-kpi-heading">
+                <div><span>EVENT DAY</span><h3>${escapeHtml(item.label)}</h3></div>
+                <strong>${Number(item.completion_rate || 0).toFixed(1)}%<small>완료율</small></strong>
+              </div>
+              <div class="daily-kpi-metrics">
+                <div><span>설문 시작</span><strong>${formatNumber(item.starts)}<small>건</small></strong></div>
+                <div><span>설문 완료</span><strong>${formatNumber(item.completed)}<small>건</small></strong></div>
+                <div><span>방문</span><strong>${formatNumber(item.visits)}<small>회</small></strong></div>
+                <div><span>공유</span><strong>${formatNumber(item.shares)}<small>회</small></strong></div>
+              </div>
+              <div class="daily-result-list" aria-label="${escapeHtml(item.label)} 렌즈 결과">
+                ${item.results
+                  .map((result) => `<div><span>${escapeHtml(result.label)}</span><strong>${formatNumber(result.count)}장</strong></div>`)
+                  .join("")}
+              </div>
+            </article>`,
+        )
+        .join("")
+    : '<p class="empty-state">표시할 행사 KPI가 없습니다.</p>';
+}
+
 function renderDashboard(data) {
   Object.entries(data.summary).forEach(([key, value]) => setMetric(key, value));
   document.querySelector("[data-completion-bar]").style.width = `${Math.min(data.summary.completion_rate, 100)}%`;
@@ -175,6 +203,7 @@ function renderDashboard(data) {
   renderResults(data.results, data.most_common_result);
   renderBars(document.querySelector("[data-share-bars]"), data.shares);
   renderQuestions(data.questions);
+  renderDailyKpis(data.daily_kpis || []);
   renderKpis(data.kpis);
 }
 

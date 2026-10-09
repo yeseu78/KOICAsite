@@ -815,6 +815,116 @@ tbody tr:last-child td {
   gap: 20px 28px;
 }
 
+.daily-kpi-panel {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 96% 8%, rgba(238, 150, 61, 0.13), transparent 24%),
+    var(--paper);
+}
+
+.daily-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.daily-kpi-card {
+  padding: 24px;
+  border: 1px solid #e8deed;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #fdfbfe, #fffaf5);
+}
+
+.daily-kpi-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e8e2ea;
+}
+
+.daily-kpi-heading span {
+  color: var(--purple);
+  letter-spacing: 0.12em;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.daily-kpi-heading h3 {
+  margin: 4px 0 0;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+}
+
+.daily-kpi-heading > strong {
+  color: var(--purple-dark);
+  font-size: 24px;
+  line-height: 1;
+  text-align: right;
+}
+
+.daily-kpi-heading > strong small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.daily-kpi-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.daily-kpi-metrics > div {
+  padding: 13px 10px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.daily-kpi-metrics span,
+.daily-result-list span {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.daily-kpi-metrics strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 18px;
+}
+
+.daily-kpi-metrics strong small {
+  margin-left: 2px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.daily-result-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.daily-result-list > div {
+  padding: 11px 10px;
+  border-radius: 11px;
+  background: var(--purple-soft);
+}
+
+.daily-result-list strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--purple-dark);
+  font-size: 13px;
+}
+
 .kpi-row {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -929,7 +1039,8 @@ tbody tr:last-child td {
   }
 
   .question-list,
-  .kpi-list {
+  .kpi-list,
+  .daily-kpi-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -968,6 +1079,11 @@ tbody tr:last-child td {
 
   .share-summary {
     grid-template-columns: 1fr;
+  }
+
+  .daily-kpi-metrics,
+  .daily-result-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .funnel-stats {

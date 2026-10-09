@@ -236,6 +236,39 @@ class AnalyticsTests(unittest.TestCase):
         self.assertEqual(data["questions"][0]["total"], 2)
         self.assertEqual(sum(item["count"] for item in data["results"]), 2)
 
+    def test_week_completion_rate_and_featured_day_kpis_use_start_cohorts(self):
+        events = [
+            {"event_type": "visit", "visitor_id": "oct3-a", "visit_id": "oct3-a", "occurred_at": "2026-10-03T01:00:00Z"},
+            {"event_type": "survey_start", "visitor_id": "oct3-a", "visit_id": "oct3-a", "occurred_at": "2026-10-03T01:01:00Z"},
+            {"event_type": "survey_complete", "visitor_id": "oct3-a", "visit_id": "oct3-a", "result_type": "participation", "occurred_at": "2026-10-03T01:02:00Z"},
+            {"event_type": "share", "visitor_id": "oct3-a", "visit_id": "oct3-a", "occurred_at": "2026-10-03T01:03:00Z"},
+            {"event_type": "survey_start", "visitor_id": "oct3-b", "visit_id": "oct3-b", "occurred_at": "2026-10-03T02:00:00Z"},
+            {"event_type": "survey_start", "visitor_id": "oct4-a", "visit_id": "oct4-a", "occurred_at": "2026-10-04T01:00:00Z"},
+            {"event_type": "survey_complete", "visitor_id": "oct4-a", "visit_id": "oct4-a", "result_type": "case", "occurred_at": "2026-10-04T01:02:00Z"},
+            {"event_type": "survey_start", "visitor_id": "week-a", "visit_id": "week-a", "occurred_at": "2026-10-06T01:00:00Z"},
+            {"event_type": "survey_complete", "visitor_id": "week-a", "visit_id": "week-a", "result_type": "empathy", "occurred_at": "2026-10-06T01:02:00Z"},
+            {"event_type": "survey_start", "visitor_id": "week-b", "visit_id": "week-b", "occurred_at": "2026-10-07T01:00:00Z"},
+        ]
+
+        data = build_summary(events, now=datetime(2026, 10, 9, 3, tzinfo=timezone.utc))
+
+        self.assertEqual(data["summary"]["week_participants"], 2)
+        self.assertEqual(data["summary"]["week_completed_participants"], 1)
+        self.assertEqual(data["summary"]["week_completion_rate"], 50.0)
+        daily = {item["date"]: item for item in data["daily_kpis"]}
+        self.assertEqual(daily["2026-10-03"]["starts"], 2)
+        self.assertEqual(daily["2026-10-03"]["completed"], 1)
+        self.assertEqual(daily["2026-10-03"]["completion_rate"], 50.0)
+        self.assertEqual(daily["2026-10-03"]["visits"], 1)
+        self.assertEqual(daily["2026-10-03"]["shares"], 1)
+        self.assertEqual(
+            {item["key"]: item["count"] for item in daily["2026-10-03"]["results"]},
+            {"participation": 1, "empathy": 0, "case": 0, "cooperation": 0},
+        )
+        self.assertEqual(daily["2026-10-04"]["starts"], 1)
+        self.assertEqual(daily["2026-10-04"]["completed"], 1)
+        self.assertEqual(daily["2026-10-04"]["completion_rate"], 100.0)
+
 
 if __name__ == "__main__":
     unittest.main()
