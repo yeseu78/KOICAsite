@@ -367,24 +367,19 @@ def build_summary(events: list[dict[str, Any]], period: str = "7d", now: datetim
 
     total_participants = len(latest_start_attempts)
     today_participants = sum(seoul_date(event) == today for event in latest_start_attempts)
-    week_participants = sum(
-        bool((event_date := seoul_date(event)) and week_start <= event_date <= today)
-        for event in latest_start_attempts
-    )
     week_start_attempts = {
         _attempt_key(event)
         for event in latest_start_attempts
         if bool((event_date := seoul_date(event)) and week_start <= event_date <= today)
     }
+    week_participants = len(week_start_attempts)
     week_completed_attempts = len(week_start_attempts & completion_by_attempt.keys())
-    week_completion_rate = _percentage(week_completed_attempts, len(week_start_attempts))
+    # Weekly counts and completion rate use the same set of survey starts.
+    week_surveys = week_completed_attempts
+    week_completion_rate = _percentage(week_surveys, week_participants)
     completed_participants = len(latest_completion_attempts)
     total_surveys = len(latest_completion_attempts)
     today_surveys = sum(seoul_date(event) == today for event in latest_completion_attempts)
-    week_surveys = sum(
-        bool((event_date := seoul_date(event)) and week_start <= event_date <= today)
-        for event in latest_completion_attempts
-    )
     completion_rate = _percentage(completed_participants, total_participants)
     dropoffs = max(total_participants - completed_participants, 0)
 

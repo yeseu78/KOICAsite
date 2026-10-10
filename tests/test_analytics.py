@@ -253,6 +253,7 @@ class AnalyticsTests(unittest.TestCase):
         data = build_summary(events, now=datetime(2026, 10, 9, 3, tzinfo=timezone.utc))
 
         self.assertEqual(data["summary"]["week_participants"], 2)
+        self.assertEqual(data["summary"]["week_surveys"], 1)
         self.assertEqual(data["summary"]["week_completed_participants"], 1)
         self.assertEqual(data["summary"]["week_completion_rate"], 50.0)
         daily = {item["date"]: item for item in data["daily_kpis"]}
@@ -268,6 +269,82 @@ class AnalyticsTests(unittest.TestCase):
         self.assertEqual(daily["2026-10-04"]["starts"], 1)
         self.assertEqual(daily["2026-10-04"]["completed"], 1)
         self.assertEqual(daily["2026-10-04"]["completion_rate"], 100.0)
+
+    def test_weekly_cards_exclude_previous_week_starts_completed_today(self):
+        events = [
+            {"event_type": "survey_start", "visit_id": "previous-week", "occurred_at": "2026-10-04T14:59:00Z"},
+            {"event_type": "survey_complete", "visit_id": "previous-week", "occurred_at": "2026-10-05T00:01:00Z"},
+            {"event_type": "survey_start", "visit_id": "this-week-complete", "occurred_at": "2026-10-05T00:02:00Z"},
+            {"event_type": "survey_complete", "visit_id": "this-week-complete", "occurred_at": "2026-10-05T00:03:00Z"},
+            {"event_type": "survey_start", "visit_id": "this-week-incomplete", "occurred_at": "2026-10-05T00:04:00Z"},
+        ]
+
+        data = build_summary(events, now=datetime(2026, 10, 5, 3, tzinfo=timezone.utc))
+        summary = data["summary"]
+
+        self.assertEqual(summary["week_participants"], 2)
+        self.assertEqual(summary["week_surveys"], 1)
+        self.assertEqual(summary["week_completed_participants"], 1)
+        self.assertEqual(summary["week_completion_rate"], 50.0)
+        self.assertEqual(summary["today_surveys"], 2)
+        self.assertEqual(summary["total_surveys"], 2)
+        self.assertEqual(data["trend"][-1]["date"], "2026-10-05")
+        self.assertEqual(data["trend"][-1]["count"], 2)
+
+    def test_weekly_cards_reset_at_seoul_monday_and_dedupe_repeat_attempts(self):
+        events = [
+            {
+                "event_type": event_type,
+                "visitor_id": "same-device",
+                "visit_id": "same-visit",
+                "attempt_id": attempt_id,
+                "occurred_at": occurred_at,
+            }
+            for event_type, attempt_id, occurred_at in (
+                ("survey_start", "sunday", "2026-10-04T14:59:00Z"),
+                ("survey_complete", "sunday", "2026-10-04T14:59:30Z"),
+                ("survey_start", "monday-first", "2026-10-04T15:00:00Z"),
+                ("survey_complete", "monday-first", "2026-10-04T15:00:10Z"),
+                ("survey_complete", "monday-first", "2026-10-04T15:00:20Z"),
+                ("survey_start", "monday-second", "2026-10-04T15:01:00Z"),
+                ("survey_complete", "monday-second", "2026-10-04T15:02:00Z"),
+                ("survey_start", "monday-incomplete", "2026-10-04T15:03:00Z"),
+            )
+        ]
+
+        sunday = build_summary(
+            events[:2], now=datetime(2026, 10, 4, 14, 59, 59, tzinfo=timezone.utc)
+        )["summary"]
+        self.assertEqual(sunday["week_participants"], 1)
+        self.assertEqual(sunday["week_surveys"], 1)
+        self.assertEqual(sunday["week_completion_rate"], 100.0)
+
+        data = build_summary(events, now=datetime(2026, 10, 4, 15, 10, tzinfo=timezone.utc))
+        monday = data["summary"]
+        self.assertEqual(monday["week_participants"], 3)
+        self.assertEqual(monday["week_surveys"], 2)
+        self.assertEqual(monday["week_completed_participants"], 2)
+        self.assertEqual(monday["week_completion_rate"], 66.7)
+        self.assertEqual(monday["today_surveys"], 2)
+        self.assertEqual(monday["total_surveys"], 3)
+        trend = {item["date"]: item["count"] for item in data["trend"]}
+        self.assertEqual(trend["2026-10-04"], 1)
+        self.assertEqual(trend["2026-10-05"], 2)
+
+    def test_weekly_cards_are_zero_without_this_week_starts(self):
+        previous_week_attempt = [
+            {"event_type": "survey_start", "visit_id": "previous-week", "occurred_at": "2026-10-04T14:59:00Z"},
+            {"event_type": "survey_complete", "visit_id": "previous-week", "occurred_at": "2026-10-05T00:01:00Z"},
+        ]
+        for events in ([], previous_week_attempt):
+            with self.subTest(event_count=len(events)):
+                summary = build_summary(
+                    events, now=datetime(2026, 10, 5, 3, tzinfo=timezone.utc)
+                )["summary"]
+                self.assertEqual(summary["week_participants"], 0)
+                self.assertEqual(summary["week_surveys"], 0)
+                self.assertEqual(summary["week_completed_participants"], 0)
+                self.assertEqual(summary["week_completion_rate"], 0.0)
 
 
 if __name__ == "__main__":

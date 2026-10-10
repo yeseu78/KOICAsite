@@ -353,7 +353,7 @@ select {
 
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 18px;
 }
@@ -1011,6 +1011,10 @@ tbody tr:last-child td {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .metric-card:last-child {
+    grid-column: 1 / -1;
+  }
+
   .metric-card {
     min-height: 124px;
     padding: 20px;
@@ -1067,10 +1071,6 @@ tbody tr:last-child td {
   .metric-card {
     min-height: 116px;
     padding: 17px;
-  }
-
-  .metric-card:nth-child(5) {
-    grid-column: 1 / -1;
   }
 
   .panel-note {
