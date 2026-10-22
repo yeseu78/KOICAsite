@@ -5,7 +5,6 @@ import {
   correctionLensMap,
   questions,
 } from "./data.js";
-import { setHomeEventPopup } from "./static/event-popup.js?v=20261001-1";
 
 const app = document.querySelector("#app");
 let mobileMotionObserver = null;
@@ -778,11 +777,9 @@ function renderHome({ replace = false } = {}) {
   bindHomeInteractions();
 
   scrollToTop();
-  setHomeEventPopup(true);
 }
 
 function renderQuestion(index) {
-  setHomeEventPopup(false);
   ensureSurveyAttempt();
   const safeIndex = Math.min(Math.max(index, 0), questions.length - 1);
   if (!state.attemptStarted) {
@@ -1319,7 +1316,6 @@ function withObjectParticle(value) {
 }
 
 function renderResult(correctionKey, contentKey, rawResultType = "direct") {
-  setHomeEventPopup(false);
   app.classList.remove("is-home");
   const safeCorrection = validCorrectionKeys.includes(correctionKey) ? correctionKey : "empathy";
   const safeContent = validContentKeys.includes(contentKey) ? contentKey : "water";

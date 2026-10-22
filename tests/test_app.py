@@ -28,6 +28,15 @@ class FlaskAppTests(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             response.close()
 
+    def test_public_home_does_not_load_event_popup(self):
+        root = Path(__file__).resolve().parents[1]
+        index_source = (root / "index.html").read_text(encoding="utf-8")
+        app_source = (root / "app.js").read_text(encoding="utf-8")
+
+        self.assertNotIn("event-popup.css", index_source)
+        self.assertNotIn("event-popup.js", app_source)
+        self.assertNotIn("setHomeEventPopup", app_source)
+
     def test_survey_start_event_has_one_emission_point(self):
         source = (Path(__file__).resolve().parents[1] / "app.js").read_text(encoding="utf-8")
         self.assertEqual(source.count('trackEvent("survey_start")'), 1)

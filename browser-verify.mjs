@@ -52,8 +52,6 @@ async function navigate(url) {
   const loaded = waitForEvent("Page.loadEventFired");
   await send("Page.navigate", { url });
   await loaded;
-  // Dismiss the home announcement before inspecting the underlying survey UI.
-  await evaluate(`document.querySelector('#wenk-event-popup[open]')?.close()`);
   await new Promise((resolve) => setTimeout(resolve, 180));
 }
 
