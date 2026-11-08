@@ -36,6 +36,7 @@ SUPABASE_SERVICE_ROLE_KEY=기존 service_role 키
 
 ```text
 SUPABASE_ANALYTICS_TABLE=weko_analytics_events
+ANALYTICS_COLLECTION_ENABLED=false
 KPI_SURVEY_TARGET=1500
 KPI_SHARE_TARGET=500
 KPI_COMPLETION_RATE_TARGET=85
@@ -43,6 +44,8 @@ KPI_INSTAGRAM_TARGET=1000
 ```
 
 KPI 목표를 설정하지 않으면 대시보드에서 해당 KPI를 “목표값 미설정”으로 표시합니다. 비밀키는 HTML이나 JavaScript에 전달되지 않습니다.
+
+현재 `ANALYTICS_COLLECTION_ENABLED=false`로 새 이벤트 저장을 중지합니다. 이 설정은 기존 Supabase 행을 수정하거나 삭제하지 않으므로 관리자 대시보드에서는 중지 전까지 쌓인 과거 데이터를 그대로 조회할 수 있습니다. 나중에 수집을 다시 시작해야 할 때만 값을 `true`로 변경합니다.
 
 ## 3. Render 배포
 

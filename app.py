@@ -64,6 +64,15 @@ _summary_cache: dict[str, tuple[float, dict[str, Any]]] = {}
 _analytics_origins = {"https://yeseu78.github.io"}
 
 
+def _analytics_collection_enabled() -> bool:
+    return os.getenv("ANALYTICS_COLLECTION_ENABLED", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
 def _rate_limited(bucket: dict[str, deque[float]], key: str, limit: int, window: int) -> bool:
     now = time.time()
     with _rate_lock:
@@ -235,6 +244,11 @@ def admin_summary():
 
 @app.post("/api/analytics/events")
 def capture_event():
+    # Accept-and-discard prevents cached public clients from retrying old queued
+    # events while guaranteeing that neither Supabase nor the dashboard changes.
+    if not _analytics_collection_enabled():
+        return jsonify({"accepted": False, "reason": "analytics_collection_disabled"}), 202
+
     client_key = request.remote_addr or "unknown"
     if _rate_limited(_event_attempts, client_key, limit=180, window=60):
         return jsonify({"error": "요청이 너무 많습니다."}), 429

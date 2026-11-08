@@ -48,16 +48,14 @@ class FlaskAppTests(unittest.TestCase):
         self.assertIn("attempt_id: state.attemptId", source)
         self.assertEqual(source.count("beginSurveyAttempt();"), 2)
 
-    def test_failed_analytics_events_are_queued_and_retried(self):
+    def test_browser_analytics_collection_is_disabled(self):
         source = (Path(__file__).resolve().parents[1] / "app.js").read_text(encoding="utf-8")
-        self.assertIn("queueAnalyticsPayload(payload)", source)
-        self.assertIn("if (!response.ok)", source)
-        self.assertIn('window.addEventListener("online", flushAnalyticsQueue)', source)
-
-    def test_instagram_and_kakao_in_app_browsers_are_detected(self):
-        source = (Path(__file__).resolve().parents[1] / "app.js").read_text(encoding="utf-8")
-        self.assertIn('userAgent.includes("instagram")', source)
-        self.assertIn('userAgent.includes("kakaotalk")', source)
+        self.assertIn("function disableAnalyticsCollection()", source)
+        self.assertIn('const analyticsQueueKey = "weko_analytics_queue_v1"', source)
+        self.assertIn("localStorage.removeItem(analyticsQueueKey)", source)
+        self.assertIn("function trackEvent()", source)
+        self.assertNotIn("analyticsEndpoint", source)
+        self.assertNotIn("/api/analytics/events", source)
 
     def test_dashboard_uses_original_question_order(self):
         source = (
@@ -145,6 +143,7 @@ class FlaskAppTests(unittest.TestCase):
     @patch.dict(
         os.environ,
         {
+            "ANALYTICS_COLLECTION_ENABLED": "1",
             "SUPABASE_URL": "",
             "SUPABASE_SECRET_KEY": "",
             "SUPABASE_SERVICE_ROLE_KEY": "",
@@ -163,6 +162,26 @@ class FlaskAppTests(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 503)
         self.assertFalse(response.get_json()["accepted"])
+
+    @patch.dict(os.environ, {"ANALYTICS_COLLECTION_ENABLED": ""})
+    @patch("app.SupabaseEventStore.from_environment")
+    def test_analytics_endpoint_discards_events_without_database_write(self, from_environment):
+        response = self.client.post(
+            "/api/analytics/events",
+            json={
+                "event_type": "survey_complete",
+                "visitor_id": "visitor-test",
+                "visit_id": "visit-test",
+                "result_type": "cooperation",
+            },
+        )
+
+        self.assertEqual(response.status_code, 202)
+        self.assertEqual(
+            response.get_json(),
+            {"accepted": False, "reason": "analytics_collection_disabled"},
+        )
+        from_environment.assert_not_called()
 
 
 if __name__ == "__main__":

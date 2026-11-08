@@ -38,159 +38,23 @@ function ensureSurveyAttempt() {
   return state.attemptId;
 }
 
-function getStoredId(storage, key) {
-  try {
-    const current = storage.getItem(key);
-    if (current) return current;
-    const created = makeAnonymousId();
-    storage.setItem(key, created);
-    return created;
-  } catch {
-    return makeAnonymousId();
-  }
-}
-
-function getAttribution() {
-  const storageKey = "weko_attribution";
-  try {
-    const stored = sessionStorage.getItem(storageKey);
-    if (stored) return JSON.parse(stored);
-  } catch {
-    // Privacy-restricted browsers can continue without session storage.
-  }
-
-  const params = new URLSearchParams(window.location.search);
-  let externalReferrer = "";
-  try {
-    externalReferrer = document.referrer && new URL(document.referrer).origin !== window.location.origin
-      ? new URL(document.referrer).origin
-      : "";
-  } catch {
-    externalReferrer = "";
-  }
-  const campaignSource = params.get("utm_source") || "";
-  const userAgent = navigator.userAgent.toLowerCase();
-  const inAppSource = userAgent.includes("instagram")
-    ? "instagram_in_app"
-    : userAgent.includes("kakaotalk")
-      ? "kakao_in_app"
-      : "";
-  const attribution = {
-    // Generic shared links opened inside Instagram/KakaoTalk are attributed to
-    // the actual in-app browser; medium/campaign still identify them as shares.
-    source: campaignSource === "shared_link" && inAppSource
-      ? inAppSource
-      : campaignSource || inAppSource,
-    medium: params.get("utm_medium") || "",
-    campaign: params.get("utm_campaign") || "",
-    referrer: externalReferrer,
-  };
-  try {
-    sessionStorage.setItem(storageKey, JSON.stringify(attribution));
-  } catch {
-    // Analytics must never block the survey experience.
-  }
-  return attribution;
-}
-
-const analyticsContext = {
-  visitor_id: getStoredId(localStorage, "weko_visitor_id"),
-  visit_id: getStoredId(sessionStorage, "weko_visit_id"),
-  attribution: getAttribution(),
-};
-
-const analyticsEndpoint = window.location.hostname === "yeseu78.github.io"
-  ? "https://weko-traffic.onrender.com/api/analytics/events"
-  : "/api/analytics/events";
-
 const analyticsQueueKey = "weko_analytics_queue_v1";
-let analyticsFlushPromise = null;
 
-function readAnalyticsQueue() {
+function disableAnalyticsCollection() {
+  // Remove events and anonymous identifiers created by earlier site versions.
+  // The server also rejects ingestion so cached clients cannot persist data.
   try {
-    const queue = JSON.parse(localStorage.getItem(analyticsQueueKey) || "[]");
-    return Array.isArray(queue) ? queue : [];
+    localStorage.removeItem(analyticsQueueKey);
+    localStorage.removeItem("weko_visitor_id");
+    sessionStorage.removeItem("weko_visit_id");
+    sessionStorage.removeItem("weko_attribution");
   } catch {
-    return [];
+    // Privacy-restricted browsers can continue without storage access.
   }
 }
 
-function writeAnalyticsQueue(queue) {
-  try {
-    localStorage.setItem(analyticsQueueKey, JSON.stringify(queue.slice(-120)));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function analyticsEventKey(payload) {
-  const attemptScope = payload.attempt_id
-    ? `${payload.visit_id}:${payload.attempt_id}`
-    : payload.visit_id;
-  if (payload.event_type === "answer") {
-    return `answer:${attemptScope}:${payload.question_id}`;
-  }
-  if (payload.event_type === "share") {
-    return `share:${payload.visit_id}:${payload.event_id}`;
-  }
-  return `${payload.event_type}:${attemptScope}`;
-}
-
-function queueAnalyticsPayload(payload) {
-  const eventKey = analyticsEventKey(payload);
-  const pending = readAnalyticsQueue().filter((entry) => entry.event_key !== eventKey);
-  pending.push({ queue_id: makeAnonymousId(), event_key: eventKey, payload });
-  return writeAnalyticsQueue(pending);
-}
-
-async function postAnalyticsPayload(payload) {
-  const response = await fetch(analyticsEndpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-    keepalive: true,
-  });
-  if (!response.ok) throw new Error(`Analytics request failed (${response.status})`);
-}
-
-function flushAnalyticsQueue() {
-  if (analyticsFlushPromise) return analyticsFlushPromise;
-  analyticsFlushPromise = (async () => {
-    while (true) {
-      const entry = readAnalyticsQueue()[0];
-      if (!entry) break;
-      try {
-        await postAnalyticsPayload(entry.payload);
-      } catch {
-        break;
-      }
-      const remaining = readAnalyticsQueue().filter(
-        (candidate) => candidate.queue_id !== entry.queue_id,
-      );
-      writeAnalyticsQueue(remaining);
-    }
-  })().finally(() => {
-    analyticsFlushPromise = null;
-  });
-  return analyticsFlushPromise;
-}
-
-function trackEvent(eventType, detail = {}) {
-  const payload = {
-    event_type: eventType,
-    visitor_id: analyticsContext.visitor_id,
-    visit_id: analyticsContext.visit_id,
-    ...(state.attemptId ? { attempt_id: state.attemptId } : {}),
-    ...detail,
-  };
-  if (queueAnalyticsPayload(payload)) {
-    flushAnalyticsQueue();
-    return;
-  }
-  postAnalyticsPayload(payload).catch(() => {
-    // Tracking failures must not change the public survey flow.
-  });
+function trackEvent() {
+  // Analytics collection is intentionally disabled.
 }
 
 function trackShare(channel) {
@@ -200,11 +64,7 @@ function trackShare(channel) {
   });
 }
 
-trackEvent("visit", analyticsContext.attribution);
-window.addEventListener("online", flushAnalyticsQueue);
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") flushAnalyticsQueue();
-});
+disableAnalyticsCollection();
 
 const validCorrectionKeys = Object.keys(correctionLensData);
 const validContentKeys = Object.keys(contentLensData);
